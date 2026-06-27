@@ -3268,12 +3268,11 @@ table.data tr.memory-inactive{opacity:.55}
 window.toast=function(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(window._tt);window._tt=setTimeout(function(){t.classList.remove("show");},2600);};
 
 /* ====== Connexion n8n (données réelles de la console) ======
-   Requête "simple" (text/plain) => pas de préflight CORS. Secret dans le corps. */
+   Requête "simple" (text/plain) => pas de préflight CORS. Auth par JETON de session (aucun secret ici). */
 window.N8N            = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook";
 window.MEMORY_URL     = window.N8N + "/memoire-qwamplify";
-window.MEMORY_SECRET  = "qwam-mem-2026";
 window.NOTES_READ_URL = window.N8N + "/notes-vacances-lire";
-window.NOTES_SECRET   = "qwam-vacances-2026";
+window.authToken = function(){ try{ var s=JSON.parse(localStorage.getItem("qw_session")||"null"); return (s&&s.token)?s.token:""; }catch(e){ return ""; } };
 window.n8nCall = function(url, payload){
   return fetch(url, {method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify(payload||{})})
     .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); });
@@ -4540,7 +4539,7 @@ window.init_memory = function(){
   }
   function loadData(){
     if(countLabel) countLabel.textContent = 'Chargement…';
-    window.n8nCall(window.MEMORY_URL, {secret:window.MEMORY_SECRET, action:'list', owner:''})
+    window.n8nCall(window.MEMORY_URL, {token:window.authToken(), action:'list', owner:''})
       .then(function(res){ data = (res && res.memories ? res.memories : []).map(mapEntry); render(); })
       .catch(function(){ data=[]; render(); if(window.toast) window.toast('⚠️ Mémoire injoignable — le workflow « Mémoire » est-il activé dans n8n ?'); });
   }
@@ -4658,11 +4657,11 @@ window.init_memory = function(){
     var editId = state.editId;
     var btn = document.getElementById('memory-modal-save'); if(btn) btn.disabled = true;
     function doAdd(){
-      return window.n8nCall(window.MEMORY_URL, {secret:window.MEMORY_SECRET, action:'add', scope:'entreprise', owner:'', contenu:content, auteur:author, cree_le:new Date().toISOString()});
+      return window.n8nCall(window.MEMORY_URL, {token:window.authToken(), action:'add', scope:'entreprise', owner:'', contenu:content, auteur:author, cree_le:new Date().toISOString()});
     }
     // édition = suppression de l'ancienne entrée puis ré-ajout (le webhook ne gère pas l'update)
     var p = editId
-      ? window.n8nCall(window.MEMORY_URL, {secret:window.MEMORY_SECRET, action:'delete', id:editId}).then(doAdd)
+      ? window.n8nCall(window.MEMORY_URL, {token:window.authToken(), action:'delete', id:editId}).then(doAdd)
       : doAdd();
     p.then(function(res){
       if(res && res.ok){ if(window.toast) window.toast(editId ? "Info mise à jour." : "Info ajoutée à la mémoire entreprise."); closeModal(); loadData(); }
@@ -4711,7 +4710,7 @@ window.init_memory = function(){
     var act = btn.getAttribute('data-act');
     if(act==='edit'){ openModal(entry); }
     else if(act==='del'){
-      window.n8nCall(window.MEMORY_URL, {secret:window.MEMORY_SECRET, action:'delete', id:id})
+      window.n8nCall(window.MEMORY_URL, {token:window.authToken(), action:'delete', id:id})
         .then(function(res){ if(res && res.ok){ if(window.toast) window.toast("Info supprimée."); loadData(); } else if(window.toast) window.toast("Suppression refusée."); })
         .catch(function(){ if(window.toast) window.toast("Suppression impossible."); });
     }

@@ -874,28 +874,15 @@
 <script>
   /* ============================ RÉGLAGES ============================ */
   const WEBHOOK_URL = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/17d87543-8aaa-43e8-815f-1b0fd92752f9/chat";
-  const LOGIN    = "hugo.boc";
-  const PASSWORD = "gay";
-
-  // Mémoire de l'IA (profil + entreprise) — webhook dédié + secret partagé
+  // Adresses des webhooks (publiques — aucun secret n'est stocké dans le site)
   const MEMORY_URL    = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/memoire-qwamplify";
-  const MEMORY_SECRET = "qwam-mem-2026";
-
-  // Préférences de confidentialité — webhook dédié + secret partagé
-  const PREFS_URL    = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/preferences-boite";
-  const PREFS_SECRET = "qwam-pref-2026";
-
-  // Transparence & autorisations — webhook dédié + secret partagé
-  const TRANS_URL    = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/transparence";
-  const TRANS_SECRET = "qwam-trans-2026";
-
-  // Notes de vacances — webhooks dédiés (lire / écrire) + secret partagé
+  const PREFS_URL     = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/preferences-boite";
+  const TRANS_URL     = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/transparence";
   const NOTES_READ_URL  = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/notes-vacances-lire";
   const NOTES_WRITE_URL = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/notes-vacances-ecrire";
-  const NOTES_SECRET    = "qwam-vacances-2026";
-
-  // Connexion par compte (jeton de session)
   const CONNEXION_URL   = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/connexion-qwamplify";
+  // Authentification : on n'envoie plus de secret en dur, mais le JETON de session (obtenu à la connexion).
+  function authToken(){ try{ const s=JSON.parse(localStorage.getItem("qw_session")||"null"); return (s&&s.token)?s.token:""; }catch(e){ return ""; } }
 
   /* ====================================================================
      INTRO — 3 comètes (particules) -> crash -> assemblage -> logo NET
@@ -1447,8 +1434,7 @@
     const typing=bulleTyping();
     try{
       const headers={"Content-Type":"application/json"};
-      if(LOGIN) headers["Authorization"]="Basic "+btoa(LOGIN+":"+PASSWORD);
-      const corps={action:"sendMessage", sessionId:profil+"::"+convId, chatInput:q||"(fichier joint, sans texte)"};
+      const corps={action:"sendMessage", sessionId:profil+"::"+convId, chatInput:q||"(fichier joint, sans texte)", token:authToken()};
       if(filesPayload.length) corps.files=filesPayload;
       const r=await fetch(WEBHOOK_URL,{method:"POST",headers,body:JSON.stringify(corps)});
       const data=await r.json(); typing.remove();
@@ -1481,7 +1467,7 @@
     const r = await fetch(MEMORY_URL, {
       method:"POST",
       headers:{"Content-Type":"text/plain"},
-      body: JSON.stringify(Object.assign({secret:MEMORY_SECRET}, payload))
+      body: JSON.stringify(Object.assign({token:authToken()}, payload))
     });
     return r.json();
   }
@@ -1581,7 +1567,7 @@
     const list=document.getElementById("nvList");
     list.innerHTML='<div class="mem-empty">Chargement…</div>';
     try{
-      const r=await fetch(NOTES_READ_URL,{ method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify({secret:NOTES_SECRET}) });
+      const r=await fetch(NOTES_READ_URL,{ method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify({token:authToken()}) });
       const data=await r.json();
       renderNotes((data && data.notes) ? data.notes : []);
     }catch(e){ list.innerHTML='<div class="mem-empty">⚠️ Connexion impossible. Le workflow « Notes de vacances — API UI » est-il activé dans n8n ?</div>'; }
@@ -1596,7 +1582,7 @@
     const btn=document.getElementById("nvAdd"); btn.disabled=true;
     try{
       const r=await fetch(NOTES_WRITE_URL,{ method:"POST", headers:{"Content-Type":"text/plain"},
-        body:JSON.stringify({ secret:NOTES_SECRET, personne:who, message:msg, date_debut:d1, date_fin:d2, auteur:profil }) });
+        body:JSON.stringify({ token:authToken(), personne:who, message:msg, date_debut:d1, date_fin:d2, auteur:profil }) });
       const data=await r.json();
       if(data && data.ok){
         document.getElementById("nvWho").value=""; document.getElementById("nvMsg").value="";
@@ -1730,7 +1716,7 @@
     const r = await fetch(PREFS_URL, {
       method:"POST",
       headers:{"Content-Type":"text/plain"},
-      body: JSON.stringify(Object.assign({secret:PREFS_SECRET}, payload))
+      body: JSON.stringify(Object.assign({token:authToken()}, payload))
     });
     return r.json();
   }
@@ -1831,7 +1817,7 @@
     const r = await fetch(TRANS_URL, {
       method:"POST",
       headers:{"Content-Type":"text/plain"},
-      body: JSON.stringify(Object.assign({secret:TRANS_SECRET}, payload))
+      body: JSON.stringify(Object.assign({token:authToken()}, payload))
     });
     return r.json();
   }
