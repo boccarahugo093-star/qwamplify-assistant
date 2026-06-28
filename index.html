@@ -1150,14 +1150,25 @@
       else setTimeout(go,100);
     }
 
-    if(window.gsap && window.MotionPathPlugin){
-      gsap.registerPlugin(MotionPathPlugin);
-      whenReady(begin);
-      setTimeout(()=>{ if(!chatRevealed){ try{revealLogo();}catch(e){ skipIntro(); } } }, 13000); // filet de sécurité
-    } else {
-      // GSAP absent (hors-ligne ?) : on saute l'animation et on montre tout.
-      showLettersInstant(); finishToChat();
-    }
+    if(window.gsap && window.MotionPathPlugin){ gsap.registerPlugin(MotionPathPlugin); }
+    // L'intro ne démarre plus au chargement : elle est jouée APRÈS la connexion (voir enterApp).
+    window.qwPlayIntro = function(){
+      try{
+        const introEl=document.getElementById("intro");
+        if(introEl){ introEl.style.display=""; introEl.style.opacity="1"; }
+        const sk2=document.getElementById("skip"); if(sk2) sk2.style.display="";
+        chatRevealed=false;
+        if(window.gsap && window.MotionPathPlugin){
+          whenReady(begin);
+          setTimeout(()=>{ if(!chatRevealed){ try{revealLogo();}catch(e){ skipIntro(); } } }, 13000); // filet de sécurité
+        } else {
+          showLettersInstant(); finishToChat();
+        }
+      }catch(e){
+        const a=document.getElementById("app"); if(a) a.style.opacity="1";
+        const i=document.getElementById("intro"); if(i) i.style.display="none";
+      }
+    };
   })();
 
   /* ===================== CHAT · PROFILS · HISTORIQUE ===================== */
@@ -2172,10 +2183,10 @@
   function logout(){ localStorage.removeItem("qw_session"); location.reload(); }
   function enterApp(prof, role){
     window.qwRole = role || "user";
-    const app=document.getElementById("app"); if(app) app.style.opacity="1";
-    const intro=document.getElementById("intro"); if(intro) intro.style.display="none";
     hideLogin();
-    setProfile(prof);   // entre dans l'app (déjà authentifié, pas de PIN)
+    setProfile(prof);   // entre dans l'app (déjà authentifié, pas de PIN) — l'app reste masquée
+    if(typeof window.qwPlayIntro==="function"){ window.qwPlayIntro(); }   // joue l'animation du logo, qui révèle l'app à la fin
+    else { const app=document.getElementById("app"); if(app) app.style.opacity="1"; const intro=document.getElementById("intro"); if(intro) intro.style.display="none"; }
   }
   async function doLogin(){
     const email=(document.getElementById("loginEmail").value||"").trim().toLowerCase();
