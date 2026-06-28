@@ -613,10 +613,18 @@
         <div class="login-form">
           <label class="login-lab" for="loginEmail">Email</label>
           <input id="loginEmail" class="login-input" type="email" autocomplete="username" placeholder="prenom@qwamplify.com" />
-          <label class="login-lab" for="loginPwd">Mot de passe</label>
+          <label class="login-lab" id="loginPwdLab" for="loginPwd">Mot de passe</label>
           <input id="loginPwd" class="login-input" type="password" autocomplete="current-password" placeholder="••••••••" />
           <div id="loginErr" class="login-err"></div>
           <button id="loginBtn" class="login-btn" type="button">Se connecter</button>
+          <div id="loginSetBlock" style="display:none">
+            <div class="login-q-sub" style="margin:8px 0 12px">🔐 Première connexion — crée ton mot de passe</div>
+            <label class="login-lab" for="loginNewPwd">Nouveau mot de passe</label>
+            <input id="loginNewPwd" class="login-input" type="password" autocomplete="new-password" placeholder="Choisis un mot de passe (min. 6 caractères)" />
+            <label class="login-lab" for="loginNewPwd2">Confirme</label>
+            <input id="loginNewPwd2" class="login-input" type="password" autocomplete="new-password" placeholder="Retape ton mot de passe" />
+            <button id="loginSetBtn" class="login-btn" type="button">Créer mon mot de passe</button>
+          </div>
         </div>
         <div class="login-foot">Qwamplify.ai · accès réservé</div>
       </div>
@@ -881,6 +889,7 @@
   const NOTES_READ_URL  = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/notes-vacances-lire";
   const NOTES_WRITE_URL = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/notes-vacances-ecrire";
   const CONNEXION_URL   = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/connexion-qwamplify";
+  const DEFINIR_URL     = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/definir-mot-de-passe";
   // Authentification : on n'envoie plus de secret en dur, mais le JETON de session (obtenu à la connexion).
   function authToken(){ try{ const s=JSON.parse(localStorage.getItem("qw_session")||"null"); return (s&&s.token)?s.token:""; }catch(e){ return ""; } }
 
@@ -2141,6 +2150,11 @@
   function loginPick(name){
     const a=document.getElementById("loginAvaBig"); if(a) a.textContent=initials(name);
     const g=document.getElementById("loginGreet"); if(g) g.textContent="Bonjour "+String(name).split(" ")[0]+" 👋";
+    // réinitialise l'état (au cas où on revient d'une création de mot de passe)
+    const sbk=document.getElementById("loginSetBlock"); if(sbk) sbk.style.display="none";
+    const lpw=document.getElementById("loginPwd"); if(lpw){ lpw.style.display=""; lpw.value=""; }
+    const lpl=document.getElementById("loginPwdLab"); if(lpl) lpl.style.display="";
+    const lbt=document.getElementById("loginBtn"); if(lbt) lbt.style.display="";
     loginStep("cred");
     setTimeout(function(){ const e=document.getElementById("loginEmail"); if(e) e.focus(); },350);
   }
@@ -2178,11 +2192,38 @@
         const exp=Date.now()+11*60*60*1000; // ~11 h (le serveur garde la session 12 h)
         localStorage.setItem("qw_session", JSON.stringify({token:data.token, profil:data.profil, role:data.role||"user", exp}));
         enterApp(data.profil, data.role||"user");
+      } else if(data && data.needSet){
+        window._setEmail = data.email || email;
+        const lp=document.getElementById("loginPwd"); if(lp) lp.style.display="none";
+        const pl=document.getElementById("loginPwdLab"); if(pl) pl.style.display="none";
+        const lb=document.getElementById("loginBtn"); if(lb) lb.style.display="none";
+        const sb=document.getElementById("loginSetBlock"); if(sb) sb.style.display="block";
+        const gr=document.getElementById("loginGreet"); if(gr) gr.textContent="Bienvenue 👋";
+        errEl.textContent="";
+        setTimeout(function(){ const e=document.getElementById("loginNewPwd"); if(e) e.focus(); },50);
       } else {
         errEl.textContent="Email ou mot de passe incorrect.";
       }
     }catch(e){ errEl.textContent="Connexion impossible. Réessaie dans un instant."; }
     finally{ btn.disabled=false; btn.textContent="Se connecter"; }
+  }
+  async function doSetPassword(){
+    const p1=document.getElementById("loginNewPwd").value||"";
+    const p2=document.getElementById("loginNewPwd2").value||"";
+    const errEl=document.getElementById("loginErr"); errEl.textContent="";
+    if(p1.length<6){ errEl.textContent="Mot de passe trop court (min. 6 caractères)."; return; }
+    if(p1!==p2){ errEl.textContent="Les deux mots de passe ne correspondent pas."; return; }
+    const btn=document.getElementById("loginSetBtn"); btn.disabled=true; btn.textContent="Création…";
+    try{
+      const r=await fetch(DEFINIR_URL,{ method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify({email:window._setEmail, password:p1}) });
+      const data=await r.json();
+      if(data && data.ok && data.token){
+        const exp=Date.now()+11*60*60*1000;
+        localStorage.setItem("qw_session", JSON.stringify({token:data.token, profil:data.profil, role:data.role||"user", exp}));
+        enterApp(data.profil, data.role||"user");
+      } else { errEl.textContent=(data&&data.message)||"Impossible de créer le mot de passe."; }
+    }catch(e){ errEl.textContent="Connexion impossible. Réessaie."; }
+    finally{ btn.disabled=false; btn.textContent="Créer mon mot de passe"; }
   }
   (function wireLogin(){
     const b=document.getElementById("loginBtn"); if(b) b.addEventListener("click", doLogin);
@@ -2190,6 +2231,8 @@
     const em=document.getElementById("loginEmail"); if(em) em.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); document.getElementById("loginPwd").focus(); } });
     const lo=document.getElementById("setLogout"); if(lo) lo.addEventListener("click", logout);
     const bk=document.getElementById("loginBack"); if(bk) bk.addEventListener("click", function(){ loginStep("who"); });
+    const spb=document.getElementById("loginSetBtn"); if(spb) spb.addEventListener("click", doSetPassword);
+    const np2=document.getElementById("loginNewPwd2"); if(np2) np2.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); doSetPassword(); } });
   })();
 
   /* ---------- init ---------- */
