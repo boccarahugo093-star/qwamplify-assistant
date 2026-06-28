@@ -1284,7 +1284,7 @@ table.data tr.memory-inactive{opacity:.55}
   <div class="sec-head">
     <div>
       <h2 class="sec-title">Utilisateurs &amp; organigramme</h2>
-      <p class="sec-sub">Gerez les 13 collaborateurs de Qwamplify, leurs acces a l'assistant IA et la hierarchie qui pilote les droits.</p>
+      <p class="sec-sub">Gerez les comptes de l'assistant IA : ajoutez une personne, elle cree son mot de passe a sa premiere connexion.</p>
     </div>
     <div class="users-head-actions">
       <button class="btn ghost sm" id="users-btn-export">
@@ -1301,24 +1301,24 @@ table.data tr.memory-inactive{opacity:.55}
   <!-- KPIs -->
   <div class="grid users-kpis">
     <div class="card kpi">
-      <div class="kpi-val">13</div>
-      <div class="kpi-label">Collaborateurs</div>
-      <div class="kpi-trend up">+2 ce trimestre</div>
+      <div class="kpi-val" id="users-kpi-total">-</div>
+      <div class="kpi-label">Comptes</div>
+      <div class="kpi-trend">total dans l'assistant</div>
     </div>
     <div class="card kpi">
-      <div class="kpi-val">12</div>
+      <div class="kpi-val" id="users-kpi-actifs">-</div>
       <div class="kpi-label">Comptes actifs</div>
-      <div class="kpi-trend up">92% de l'effectif</div>
+      <div class="kpi-trend up">mot de passe defini</div>
     </div>
     <div class="card kpi">
-      <div class="kpi-val">4</div>
-      <div class="kpi-label">Sur Claude Sonnet</div>
-      <div class="kpi-trend">profils a fort volume</div>
+      <div class="kpi-val" id="users-kpi-attente">-</div>
+      <div class="kpi-label">En attente</div>
+      <div class="kpi-trend">1re connexion a faire</div>
     </div>
     <div class="card kpi">
-      <div class="kpi-val">3</div>
-      <div class="kpi-label">Poles metier</div>
-      <div class="kpi-trend">IT, Commercial, Studio</div>
+      <div class="kpi-val" id="users-kpi-admins">-</div>
+      <div class="kpi-label">Administrateurs</div>
+      <div class="kpi-trend">acces console</div>
     </div>
   </div>
 
@@ -1326,39 +1326,30 @@ table.data tr.memory-inactive{opacity:.55}
   <div class="card users-toolbar">
     <div class="users-search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      <input type="text" id="users-search-input" placeholder="Rechercher un nom, un email, un role...">
-    </div>
-    <div class="seg users-seg" id="users-filter-pole">
-      <button class="active" data-pole="all">Tous</button>
-      <button data-pole="Direction">Direction</button>
-      <button data-pole="IT">IT</button>
-      <button data-pole="Commercial">Commercial</button>
-      <button data-pole="Studio">Studio</button>
-    </div>
-    <div class="field users-field-model">
-      <select id="users-filter-model">
-        <option value="all">Tous les modeles</option>
-        <option value="Sonnet">Claude Sonnet</option>
-        <option value="Haiku">Claude Haiku</option>
-      </select>
+      <input type="text" id="users-search-input" placeholder="Rechercher un email, un profil...">
     </div>
     <label class="switch users-switch-inactive">
       <input type="checkbox" id="users-toggle-inactive">
       <span></span>
-      <em class="muted">Afficher inactifs</em>
+      <em class="muted">Afficher les desactives</em>
     </label>
+    <button class="btn ghost sm" id="users-btn-refresh" style="margin-left:auto;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>
+      Rafraichir
+    </button>
   </div>
 
   <!-- Tableau -->
   <div class="card users-table-card">
     <div class="sec-head users-table-head">
       <div>
-        <h3 class="sec-title users-h3">Annuaire des collaborateurs</h3>
-        <p class="sec-sub" id="users-count-label">13 collaborateurs affiches</p>
+        <h3 class="sec-title users-h3">Comptes de l'assistant</h3>
+        <p class="sec-sub" id="users-count-label">Chargement...</p>
       </div>
       <div class="users-legend">
-        <span class="badge info">Sonnet = volume eleve</span>
-        <span class="badge">Haiku = usage standard</span>
+        <span class="badge ok">Actif</span>
+        <span class="badge warn">En attente</span>
+        <span class="badge danger">Desactive</span>
       </div>
     </div>
     <div class="tbl">
@@ -1366,12 +1357,10 @@ table.data tr.memory-inactive{opacity:.55}
         <thead>
           <tr>
             <th>Collaborateur</th>
-            <th>Role</th>
             <th>Email</th>
-            <th>Manager</th>
-            <th>Modele</th>
+            <th>Role</th>
             <th>Statut</th>
-            <th>Derniere activite</th>
+            <th>Cree le</th>
             <th class="users-col-act">Actions</th>
           </tr>
         </thead>
@@ -1533,8 +1522,8 @@ table.data tr.memory-inactive{opacity:.55}
     <div class="card users-modal-card">
       <div class="sec-head">
         <div>
-          <h3 class="sec-title users-h3" id="users-modal-title">Ajouter un utilisateur</h3>
-          <p class="sec-sub" id="users-modal-sub">Les droits d'acces seront herites automatiquement du poste choisi.</p>
+          <h3 class="sec-title users-h3" id="users-modal-title">Ajouter une personne</h3>
+          <p class="sec-sub" id="users-modal-sub">Cree un compte. La personne definira son mot de passe a sa 1re connexion.</p>
         </div>
         <button class="btn icon ghost" id="users-modal-close" aria-label="Fermer">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -1542,61 +1531,32 @@ table.data tr.memory-inactive{opacity:.55}
       </div>
       <div class="divider"></div>
       <div class="grid users-form-grid">
-        <div class="field">
-          <label>Prenom</label>
-          <input type="text" id="users-f-first" placeholder="Ex : Camille">
-        </div>
-        <div class="field">
-          <label>Nom</label>
-          <input type="text" id="users-f-last" placeholder="Ex : MOREAU">
-        </div>
-        <div class="field">
-          <label>Email professionnel</label>
+        <div class="field users-field-full">
+          <label>Email professionnel <span style="color:var(--danger)">*</span></label>
           <input type="email" id="users-f-email" placeholder="prenom.nom@qwamplify.com">
         </div>
         <div class="field">
-          <label>Role / poste</label>
-          <input type="text" id="users-f-role" placeholder="Ex : Directeur de clientele">
+          <label>Profil (identite dans l'assistant)</label>
+          <select id="users-f-profil"></select>
         </div>
         <div class="field">
-          <label>Pole</label>
-          <select id="users-f-pole">
-            <option>Direction</option>
-            <option>IT</option>
-            <option selected>Commercial</option>
-            <option>Studio</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Manager (N+1)</label>
-          <select id="users-f-manager">
-            <option>Marjorie DIEN</option>
-            <option>David QUARTINO</option>
-            <option selected>Franck RAMOS</option>
-            <option>Valentine VERSON</option>
-            <option>Leo SINGLARD</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Modele assigne</label>
-          <select id="users-f-model">
-            <option value="Sonnet">Claude Sonnet (volume eleve)</option>
-            <option value="Haiku" selected>Claude Haiku (usage standard)</option>
+          <label>Role</label>
+          <select id="users-f-role">
+            <option value="user" selected>Utilisateur</option>
+            <option value="admin">Administrateur (acces console)</option>
           </select>
         </div>
         <div class="field users-field-full">
-          <label>Acces herites du poste</label>
-          <div class="users-rights" id="users-rights-preview">
-            <span class="chip">Gmail pro partage</span>
-            <span class="chip">Drive - dossier Commercial</span>
-            <span class="chip">CRM - portefeuille assigne</span>
+          <div class="alert-card" style="margin:4px 0 0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <div>Le compte est cree <strong>sans mot de passe</strong>. La personne choisira le sien a sa <strong>premiere connexion</strong> sur le site (email + profil), en toute securite.</div>
           </div>
         </div>
       </div>
       <div class="divider"></div>
       <div class="users-modal-foot">
         <button class="btn ghost" id="users-modal-cancel">Annuler</button>
-        <button class="btn primary" id="users-modal-save">Creer le compte &amp; envoyer l'invitation</button>
+        <button class="btn primary" id="users-modal-save">Creer le compte</button>
       </div>
     </div>
   </div>
@@ -1607,18 +1567,17 @@ table.data tr.memory-inactive{opacity:.55}
       <div class="users-offb-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
       </div>
-      <h3 class="sec-title users-h3">Desactiver ce collaborateur ?</h3>
-      <p class="sec-sub" id="users-offb-sub">La desactivation coupe immediatement tous les acces de l'assistant IA.</p>
+      <h3 class="sec-title users-h3">Supprimer ce compte ?</h3>
+      <p class="sec-sub" id="users-offb-sub">La personne ne pourra plus se connecter a l'assistant.</p>
       <div class="users-offb-list">
-        <div class="users-offb-line"><span class="badge danger">Coupe</span> Acces Gmail (perso &amp; pro partage)</div>
-        <div class="users-offb-line"><span class="badge danger">Coupe</span> Acces Drive et dossiers herites</div>
-        <div class="users-offb-line"><span class="badge danger">Coupe</span> Acces CRM et portefeuille client</div>
-        <div class="users-offb-line"><span class="badge warn">Conserve</span> Historique &amp; journal d'acces (audit)</div>
+        <div class="users-offb-line"><span class="badge danger">Supprime</span> L'acces a l'assistant IA (connexion impossible)</div>
+        <div class="users-offb-line"><span class="badge danger">Supprime</span> Le mot de passe enregistre du compte</div>
+        <div class="users-offb-line"><span class="badge warn">Conserve</span> Les conversations stockees sur son propre appareil</div>
       </div>
       <div class="divider"></div>
       <div class="users-modal-foot">
         <button class="btn ghost" id="users-offb-cancel">Annuler</button>
-        <button class="btn danger" id="users-offb-confirm">Confirmer la desactivation</button>
+        <button class="btn danger" id="users-offb-confirm">Supprimer definitivement</button>
       </div>
     </div>
   </div>
@@ -3272,6 +3231,7 @@ window.toast=function(msg){var t=document.getElementById("toast");t.textContent=
 window.N8N            = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook";
 window.MEMORY_URL     = window.N8N + "/memoire-qwamplify";
 window.NOTES_READ_URL = window.N8N + "/notes-vacances-lire";
+window.ADMIN_COMPTES_URL = window.N8N + "/admin-comptes";
 window.authToken = function(){ try{ var s=JSON.parse(localStorage.getItem("qw_session")||"null"); return (s&&s.token)?s.token:""; }catch(e){ return ""; } };
 window.n8nCall = function(url, payload){
   return fetch(url, {method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify(payload||{})})
@@ -3358,216 +3318,196 @@ window.init_users = function(){
 
   var toast = window.toast || function(m){ console.log('[toast]', m); };
 
-  // ----- Donnees mock : 13 collaborateurs Qwamplify -----
-  var users = [
-    { id:'u1',  first:'Marjorie',  last:'DIEN',     init:'MD', role:'Directrice Poles Emailing & Programmatique', pole:'Direction',  email:'marjorie.dien@qwamplify.com',     manager:'-',                model:'Sonnet', active:true,  last:"Aujourd'hui, 09:12" },
-    { id:'u2',  first:'David',     last:'QUARTINO', init:'DQ', role:'Lead Developer',          pole:'IT',         email:'david.quartino@qwamplify.com',   manager:'Marjorie DIEN',    model:'Sonnet', active:true,  last:"Aujourd'hui, 08:47" },
-    { id:'u3',  first:'Jeremie',   last:'FLAHAUT',  init:'JF', role:'Developpeur',             pole:'IT',         email:'jeremie.flahaut@qwamplify.com',  manager:'David QUARTINO',   model:'Haiku',  active:true,  last:'Hier, 18:30' },
-    { id:'u4',  first:'Guillaume', last:'PERONA',   init:'GP', role:'Dev Web PHP',             pole:'IT',         email:'guillaume.perona@qwamplify.com', manager:'David QUARTINO',   model:'Haiku',  active:true,  last:"Aujourd'hui, 10:05" },
-    { id:'u5',  first:'Franck',    last:'RAMOS',    init:'FR', role:'Directeur Commercial',    pole:'Commercial', email:'franck.ramos@qwamplify.com',     manager:'Marjorie DIEN',    model:'Sonnet', active:true,  last:"Aujourd'hui, 09:58" },
-    { id:'u6',  first:'Sarra',     last:'DJAOUI',   init:'SD', role:'Directrice de clientele', pole:'Commercial', email:'sarra.djaoui@qwamplify.com',     manager:'Franck RAMOS',     model:'Haiku',  active:true,  last:"Aujourd'hui, 09:21" },
-    { id:'u7',  first:'Tamsir',    last:'SENE',     init:'TS', role:'Directeur de clientele',  pole:'Commercial', email:'tamsir.sene@qwamplify.com',      manager:'Franck RAMOS',     model:'Haiku',  active:true,  last:'Hier, 17:12' },
-    { id:'u8',  first:'Patrick',   last:'GOUGEON',  init:'PG', role:'Directeur de clientele',  pole:'Commercial', email:'patrick.gougeon@qwamplify.com',  manager:'Franck RAMOS',     model:'Haiku',  active:false, last:'12 juin 2026' },
-    { id:'u9',  first:'Leo',       last:'SINGLARD', init:'LS', role:'Directeur de clientele',  pole:'Commercial', email:'leo.singlard@qwamplify.com',     manager:'Franck RAMOS',     model:'Sonnet', active:true,  last:"Aujourd'hui, 11:03" },
-    { id:'u10', first:'Hugo',      last:'BOCCARA',  init:'HB', role:'Stagiaire marketing & commerce', pole:'Commercial', email:'hugo.boccara@qwamplify.com', manager:'Leo SINGLARD', model:'Haiku',  active:true,  last:"Aujourd'hui, 11:40", self:true },
-    { id:'u11', first:'Valentine', last:'VERSON',   init:'VV', role:'Responsable Studio',      pole:'Studio',     email:'valentine.verson@qwamplify.com', manager:'Marjorie DIEN',    model:'Haiku',  active:true,  last:'Hier, 16:44' },
-    { id:'u12', first:'Alize',     last:'TERLAUD',  init:'AT', role:'Graphiste',               pole:'Studio',     email:'alize.terlaud@qwamplify.com',    manager:'Valentine VERSON', model:'Haiku',  active:true,  last:"Aujourd'hui, 08:59" }
-  ];
-  // 13e : compte recemment cree, en attente (inactif)
-  users.push({ id:'u13', first:'Camille', last:'MOREAU', init:'CM', role:'Directrice de clientele', pole:'Commercial', email:'camille.moreau@qwamplify.com', manager:'Franck RAMOS', model:'Haiku', active:false, last:'Invitation envoyee - 20 juin 2026' });
+  // Profils possibles (identite dans l'assistant) - aligne sur EMPLOYES du site
+  var EMPLOYES = ["Hugo","Leo","Marjorie","Marie","Guillaume","Jeremie","David","Tamsir","Valentine","Alize","Frank","Alexis","Sarah","Patrick"];
 
-  var tbody = document.getElementById('users-tbody');
-  var countLabel = document.getElementById('users-count-label');
+  var comptes = [];                       // donnees REELLES (table comptes via n8n)
+  var state = { q:'', showInactive:false };
+
+  var tbody       = document.getElementById('users-tbody');
+  var countLabel  = document.getElementById('users-count-label');
   var searchInput = document.getElementById('users-search-input');
-  var modelFilter = document.getElementById('users-filter-model');
   var toggleInactive = document.getElementById('users-toggle-inactive');
-  var segBtns = panel.querySelectorAll('#users-filter-pole button');
+  var btnRefresh  = document.getElementById('users-btn-refresh');
 
-  var state = { q:'', pole:'all', model:'all', showInactive:false };
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function setTxt(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; }
+  function dispName(c){ return (c.profil && String(c.profil).trim()) ? String(c.profil).trim() : String(c.email||'').split('@')[0]; }
+  function initials(name){ name=String(name||'').trim(); if(!name) return '?'; var p=name.split(/[\s._\-]+/).filter(Boolean); var a=(p[0]||'')[0]||''; var b=(p[1]||'')[0]||''; return ((a+b)||name[0]).toUpperCase(); }
+  function roleBadge(c){ return c.role==='admin' ? '<span class="badge info">Admin</span>' : '<span class="badge">Utilisateur</span>'; }
+  function statutBadge(c){
+    if(c.actif===false) return '<span class="badge danger">Desactive</span>';
+    if(!c.aMotDePasse)   return '<span class="badge warn">En attente (1re connexion)</span>';
+    return '<span class="badge ok">Actif</span>';
+  }
 
-  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function updateKpis(){
+    var total=comptes.length, actifs=0, attente=0, admins=0;
+    comptes.forEach(function(c){
+      if(c.role==='admin') admins++;
+      if(c.actif===false) return;
+      if(c.aMotDePasse) actifs++; else attente++;
+    });
+    setTxt('users-kpi-total', total);
+    setTxt('users-kpi-actifs', actifs);
+    setTxt('users-kpi-attente', attente);
+    setTxt('users-kpi-admins', admins);
+  }
 
   function render(){
-    var rows = users.filter(function(u){
-      if(!state.showInactive && !u.active) return false;
-      if(state.pole !== 'all' && u.pole !== state.pole) return false;
-      if(state.model !== 'all' && u.model !== state.model) return false;
+    var rows = comptes.filter(function(c){
+      if(!state.showInactive && c.actif===false) return false;
       if(state.q){
-        var hay = (u.first+' '+u.last+' '+u.email+' '+u.role+' '+u.manager).toLowerCase();
+        var hay = ((c.email||'')+' '+(c.profil||'')+' '+(c.role||'')).toLowerCase();
         if(hay.indexOf(state.q) === -1) return false;
       }
       return true;
     });
 
-    tbody.innerHTML = rows.map(function(u){
-      var statut = u.active
-        ? '<span class="badge ok">Actif</span>'
-        : (u.last.indexOf('Invitation') === 0 ? '<span class="badge warn">En attente</span>' : '<span class="badge danger">Inactif</span>');
-      var modelBadge = u.model === 'Sonnet'
-        ? '<span class="badge info">Sonnet</span>'
-        : '<span class="badge">Haiku</span>';
-      var nameExtra = u.self ? '<span class="users-self-tag">vous</span>' : '';
-      var disableBtn = u.active
-        ? '<button class="btn sm ghost danger users-act-off" data-id="'+u.id+'">Desactiver</button>'
-        : '<button class="btn sm ghost users-act-on" data-id="'+u.id+'">Reactiver</button>';
-      return ''+
-        '<tr class="'+(u.active?'':'users-inactive')+'">'+
-          '<td><div class="users-user-cell"><div class="av">'+u.init+'</div>'+
-            '<div class="users-user-meta"><span class="users-user-name">'+esc(u.first+' '+u.last)+nameExtra+'</span>'+
-            '<span class="users-user-pole">'+esc(u.pole)+'</span></div></div></td>'+
-          '<td>'+esc(u.role)+'</td>'+
-          '<td class="users-mono">'+esc(u.email)+'</td>'+
-          '<td class="users-mgr">'+esc(u.manager)+'</td>'+
-          '<td>'+modelBadge+'</td>'+
-          '<td>'+statut+'</td>'+
-          '<td class="users-mono">'+esc(u.last)+'</td>'+
-          '<td class="users-col-act"><div class="users-row-actions">'+
-            '<button class="btn sm ghost users-act-edit" data-id="'+u.id+'">Editer</button>'+
-            disableBtn+
-          '</div></td>'+
-        '</tr>';
-    }).join('');
-
     if(!rows.length){
-      tbody.innerHTML = '<tr><td colspan="8" class="muted" style="text-align:center;padding:26px;">Aucun collaborateur ne correspond a ces criteres.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="muted" style="text-align:center;padding:26px;">Aucun compte a afficher. Cliquez sur &laquo; Ajouter une personne &raquo;.</td></tr>';
+    } else {
+      tbody.innerHTML = rows.map(function(c){
+        var nm = dispName(c);
+        return ''+
+          '<tr class="'+(c.actif===false?'users-inactive':'')+'">'+
+            '<td><div class="users-user-cell"><div class="av">'+esc(initials(nm))+'</div>'+
+              '<div class="users-user-meta"><span class="users-user-name">'+esc(nm)+'</span></div></div></td>'+
+            '<td class="users-mono">'+esc(c.email)+'</td>'+
+            '<td>'+roleBadge(c)+'</td>'+
+            '<td>'+statutBadge(c)+'</td>'+
+            '<td class="users-mono">'+esc(c.cree_le||'-')+'</td>'+
+            '<td class="users-col-act"><div class="users-row-actions">'+
+              '<button class="btn sm ghost danger users-act-del" data-email="'+esc(c.email)+'">Supprimer</button>'+
+            '</div></td>'+
+          '</tr>';
+      }).join('');
     }
 
-    countLabel.textContent = rows.length + (rows.length > 1 ? ' collaborateurs affiches' : ' collaborateur affiche');
+    countLabel.textContent = rows.length + (rows.length > 1 ? ' comptes affiches' : ' compte affiche');
+    updateKpis();
     bindRowActions();
   }
 
   function bindRowActions(){
-    panel.querySelectorAll('.users-act-edit').forEach(function(b){
-      b.onclick = function(){ openModal('edit', b.getAttribute('data-id')); };
-    });
-    panel.querySelectorAll('.users-act-off').forEach(function(b){
-      b.onclick = function(){ openOffb(b.getAttribute('data-id')); };
-    });
-    panel.querySelectorAll('.users-act-on').forEach(function(b){
-      b.onclick = function(){
-        var u = byId(b.getAttribute('data-id'));
-        if(u){ u.active = true; u.last = "Aujourd'hui, " + new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); render(); toast('Compte de ' + u.first + ' ' + u.last + ' reactive. Acces du poste restaures.'); }
-      };
+    panel.querySelectorAll('.users-act-del').forEach(function(b){
+      b.onclick = function(){ openDel(b.getAttribute('data-email')); };
     });
   }
 
-  function byId(id){ for(var i=0;i<users.length;i++){ if(users[i].id===id) return users[i]; } return null; }
+  // ----- Chargement des comptes REELS -----
+  function load(){
+    countLabel.textContent = 'Chargement...';
+    tbody.innerHTML = '<tr><td colspan="6" class="muted" style="text-align:center;padding:26px;">Chargement des comptes...</td></tr>';
+    return window.n8nCall(window.ADMIN_COMPTES_URL, {token:window.authToken(), action:'list'})
+      .then(function(res){
+        if(!res || res.ok===false){ throw new Error(res && res.error ? res.error : 'Acces refuse'); }
+        comptes = (res.comptes||[]).slice().sort(function(a,b){
+          return String(dispName(a)).localeCompare(String(dispName(b)));
+        });
+        render();
+      })
+      .catch(function(e){
+        comptes = [];
+        updateKpis();
+        tbody.innerHTML = '<tr><td colspan="6" class="muted" style="text-align:center;padding:26px;color:var(--danger)">Impossible de charger les comptes ('+esc(e.message||e)+').<br>Verifiez que le workflow &laquo; Admin &mdash; Comptes &raquo; est actif et que vous etes connecte en administrateur.</td></tr>';
+        countLabel.textContent = 'Erreur de chargement';
+      });
+  }
 
   // ----- Filtres -----
   searchInput.addEventListener('input', function(){ state.q = this.value.trim().toLowerCase(); render(); });
-  modelFilter.addEventListener('change', function(){ state.model = this.value; render(); });
   toggleInactive.addEventListener('change', function(){ state.showInactive = this.checked; render(); });
-  segBtns.forEach(function(btn){
-    btn.addEventListener('click', function(){
-      segBtns.forEach(function(b){ b.classList.remove('active'); });
-      btn.classList.add('active');
-      state.pole = btn.getAttribute('data-pole');
-      render();
-    });
-  });
+  if(btnRefresh){ btnRefresh.onclick = function(){ load().then(function(){ toast('Liste rafraichie.'); }); }; }
 
-  // ----- Modale Ajouter / Editer -----
-  var modal = document.getElementById('users-modal');
-  var modalTitle = document.getElementById('users-modal-title');
-  var modalSub = document.getElementById('users-modal-sub');
-  var fFirst = document.getElementById('users-f-first');
-  var fLast = document.getElementById('users-f-last');
-  var fEmail = document.getElementById('users-f-email');
-  var fRole = document.getElementById('users-f-role');
-  var fPole = document.getElementById('users-f-pole');
-  var fManager = document.getElementById('users-f-manager');
-  var fModel = document.getElementById('users-f-model');
-  var editingId = null;
+  // ----- Modale Ajouter -----
+  var modal   = document.getElementById('users-modal');
+  var fEmail  = document.getElementById('users-f-email');
+  var fProfil = document.getElementById('users-f-profil');
+  var fRole   = document.getElementById('users-f-role');
 
-  function openModal(mode, id){
-    editingId = (mode === 'edit') ? id : null;
-    if(mode === 'edit'){
-      var u = byId(id);
-      modalTitle.textContent = 'Editer ' + u.first + ' ' + u.last;
-      modalSub.textContent = 'Modifier le poste recalcule automatiquement les acces herites.';
-      fFirst.value = u.first; fLast.value = u.last; fEmail.value = u.email;
-      fRole.value = u.role; fPole.value = u.pole; fManager.value = u.manager;
-      fModel.value = u.model;
-    } else {
-      modalTitle.textContent = 'Ajouter un utilisateur';
-      modalSub.textContent = "Les droits d'acces seront herites automatiquement du poste choisi.";
-      fFirst.value=''; fLast.value=''; fEmail.value=''; fRole.value='';
-      fPole.value='Commercial'; fManager.value='Franck RAMOS'; fModel.value='Haiku';
-    }
+  if(fProfil){ fProfil.innerHTML = EMPLOYES.map(function(n){ return '<option>'+esc(n)+'</option>'; }).join(''); }
+
+  function openModal(){
+    if(fEmail) fEmail.value='';
+    if(fProfil) fProfil.selectedIndex=0;
+    if(fRole) fRole.value='user';
     modal.classList.add('show');
+    setTimeout(function(){ if(fEmail) fEmail.focus(); }, 60);
   }
   function closeModal(){ modal.classList.remove('show'); }
 
-  document.getElementById('users-btn-add').onclick = function(){ openModal('add'); };
+  document.getElementById('users-btn-add').onclick = openModal;
   document.getElementById('users-modal-close').onclick = closeModal;
   document.getElementById('users-modal-cancel').onclick = closeModal;
   modal.addEventListener('click', function(e){ if(e.target === modal) closeModal(); });
 
-  document.getElementById('users-modal-save').onclick = function(){
-    var fn = fFirst.value.trim(), ln = fLast.value.trim();
-    if(!fn || !ln){ toast('Renseignez au moins le prenom et le nom.'); return; }
-    if(editingId){
-      var u = byId(editingId);
-      u.first=fn; u.last=ln; u.email=fEmail.value.trim()||u.email; u.role=fRole.value.trim()||u.role;
-      u.pole=fPole.value; u.manager=fManager.value; u.model=fModel.value;
-      u.init = (fn[0]||'').toUpperCase() + (ln[0]||'').toUpperCase();
-      closeModal(); render(); toast('Fiche de ' + fn + ' ' + ln + ' mise a jour. Acces recalcules.');
-    } else {
-      users.push({
-        id:'u'+(users.length+1), first:fn, last:ln,
-        init:(fn[0]||'').toUpperCase()+(ln[0]||'').toUpperCase(),
-        role:fRole.value.trim()||'A definir', pole:fPole.value,
-        email:fEmail.value.trim()||(fn.toLowerCase()+'.'+ln.toLowerCase()+'@qwamplify.com'),
-        manager:fManager.value, model:fModel.value, active:false,
-        last:'Invitation envoyee - aujourd\'hui'
-      });
-      state.showInactive = true; toggleInactive.checked = true;
-      closeModal(); render();
-      toast('Invitation envoyee a ' + fn + ' ' + ln + '. Acces du poste pre-configures.');
-    }
+  var saveBtn = document.getElementById('users-modal-save');
+  saveBtn.onclick = function(){
+    var email = (fEmail.value||'').trim().toLowerCase();
+    if(!email || email.indexOf('@')===-1 || email.indexOf('.')===-1){ toast('Renseignez un email valide.'); fEmail.focus(); return; }
+    if(comptes.some(function(c){ return String(c.email||'').toLowerCase()===email; })){ toast('Un compte existe deja avec cet email.'); return; }
+    var profil = fProfil.value;
+    var role = (fRole.value==='admin') ? 'admin' : 'user';
+    saveBtn.disabled = true; saveBtn.textContent = 'Creation...';
+    window.n8nCall(window.ADMIN_COMPTES_URL, {token:window.authToken(), action:'add', email:email, profil:profil, role:role})
+      .then(function(res){
+        if(!res || res.ok===false){ throw new Error(res && res.error ? res.error : 'Acces refuse'); }
+        closeModal();
+        toast('Compte cree pour '+email+'. La personne definira son mot de passe a sa 1re connexion.');
+        return load();
+      })
+      .catch(function(e){ toast('Echec de la creation : '+(e.message||e)); })
+      .then(function(){ saveBtn.disabled = false; saveBtn.textContent = 'Creer le compte'; });
   };
 
-  // Apercu droits selon pole dans la modale
-  var rightsPreview = document.getElementById('users-rights-preview');
-  var rightsByPole = {
-    'Direction':  ['Gmail pro partage','Drive - acces complet','CRM - vision globale','Console admin'],
-    'IT':         ['Gmail pro partage','Drive - dossiers techniques','Acces logs & deploiements'],
-    'Commercial': ['Gmail pro partage','Drive - dossier Commercial','CRM - portefeuille assigne'],
-    'Studio':     ['Gmail pro partage','Drive - banque creative','CRM - lecture seule']
-  };
-  fPole.addEventListener('change', function(){
-    var list = rightsByPole[fPole.value] || [];
-    rightsPreview.innerHTML = list.map(function(r){ return '<span class="chip">'+esc(r)+'</span>'; }).join('');
-  });
-
-  // ----- Modale Offboarding -----
-  var offb = document.getElementById('users-offb');
+  // ----- Modale Suppression (reutilise users-offb) -----
+  var offb    = document.getElementById('users-offb');
   var offbSub = document.getElementById('users-offb-sub');
-  var offbId = null;
+  var delEmail = null;
 
-  function openOffb(id){
-    offbId = id;
-    var u = byId(id);
-    offbSub.textContent = 'La desactivation de ' + u.first + ' ' + u.last + ' coupe immediatement tous les acces de l\'assistant IA.';
+  function openDel(email){
+    delEmail = email;
+    offbSub.textContent = 'Le compte ' + email + ' ne pourra plus se connecter a l\'assistant.';
     offb.classList.add('show');
   }
   function closeOffb(){ offb.classList.remove('show'); }
 
   document.getElementById('users-offb-cancel').onclick = closeOffb;
   offb.addEventListener('click', function(e){ if(e.target === offb) closeOffb(); });
-  document.getElementById('users-offb-confirm').onclick = function(){
-    var u = byId(offbId);
-    if(u){ u.active = false; u.last = 'Desactive - aujourd\'hui'; }
-    closeOffb(); render();
-    toast('Acces de ' + (u? u.first+' '+u.last : 'l\'utilisateur') + ' coupes (Gmail, Drive, CRM). Audit conserve.');
+  var delBtn = document.getElementById('users-offb-confirm');
+  delBtn.onclick = function(){
+    if(!delEmail){ closeOffb(); return; }
+    delBtn.disabled = true; delBtn.textContent = 'Suppression...';
+    window.n8nCall(window.ADMIN_COMPTES_URL, {token:window.authToken(), action:'delete', email:delEmail})
+      .then(function(res){
+        if(!res || res.ok===false){ throw new Error(res && res.error ? res.error : 'Acces refuse'); }
+        closeOffb();
+        toast('Compte ' + delEmail + ' supprime.');
+        return load();
+      })
+      .catch(function(e){ toast('Echec de la suppression : '+(e.message||e)); })
+      .then(function(){ delBtn.disabled = false; delBtn.textContent = 'Supprimer definitivement'; delEmail = null; });
   };
 
-  // ----- Export -----
+  // ----- Export CSV des comptes reels -----
   document.getElementById('users-btn-export').onclick = function(){
-    toast('Export de l\'annuaire (' + users.length + ' collaborateurs) en cours - format CSV.');
+    if(!comptes.length){ toast('Aucun compte a exporter.'); return; }
+    var lignes = [['email','profil','role','actif','mot_de_passe_defini','cree_le'].join(',')];
+    comptes.forEach(function(c){
+      lignes.push([c.email, c.profil, c.role, (c.actif===false?'non':'oui'), (c.aMotDePasse?'oui':'non'), c.cree_le||''].map(function(x){
+        return '"' + String(x==null?'':x).replace(/"/g,'""') + '"';
+      }).join(','));
+    });
+    var blob = new Blob([lignes.join('\n')], {type:'text/csv;charset=utf-8;'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'comptes-qwamplify.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    toast('Export CSV de ' + comptes.length + ' comptes.');
   };
 
-  // ----- Organigramme : clic noeud -----
+  // ----- Organigramme : clic noeud (illustratif) -----
   panel.querySelectorAll('.users-node[data-name]').forEach(function(node){
     node.style.cursor = 'pointer';
     node.addEventListener('click', function(){
@@ -3575,7 +3515,7 @@ window.init_users = function(){
     });
   });
 
-  render();
+  load();
 };
 
 window.init_security = function(){
