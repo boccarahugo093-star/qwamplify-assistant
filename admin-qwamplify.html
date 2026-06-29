@@ -3490,6 +3490,9 @@ window.init_users = function(){
   var delEmail = null;
 
   function openDel(email){
+    var sess={}; try{ sess=JSON.parse(localStorage.getItem('qw_session')||'{}'); }catch(e){}
+    var row=comptes.find(function(c){ return c.email===email; });
+    if(row && sess.profil && row.profil===sess.profil){ if(window.toast) window.toast('Tu ne peux pas supprimer ton propre compte.'); return; }
     delEmail = email;
     offbSub.textContent = 'Le compte ' + email + ' ne pourra plus se connecter a l\'assistant.';
     offb.classList.add('show');
@@ -3577,14 +3580,14 @@ window.init_security = function(){
     return '<tr class="'+(r.verdict==='ko'?'security-row-ko':'')+'">'
       + '<td><div class="security-route">'
         + '<span class="av">'+initials(r.from)+'</span>'
-        + '<div class="security-route-names"><span class="security-route-from">'+r.from+'</span>'
-        + '<span class="security-route-to">vers '+r.to+'</span></div>'
+        + '<div class="security-route-names"><span class="security-route-from">'+esc2(r.from)+'</span>'
+        + '<span class="security-route-to">vers '+esc2(r.to)+'</span></div>'
         + '<span class="security-route-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>'
       + '</div></td>'
       + '<td>'+chip+'</td>'
       + '<td>'+verdict+'</td>'
-      + '<td><span class="security-reason">'+r.reason+'</span></td>'
-      + '<td><span class="security-date">'+r.date+'</span></td>'
+      + '<td><span class="security-reason">'+esc2(r.reason)+'</span></td>'
+      + '<td><span class="security-date">'+esc2(r.date)+'</span></td>'
       + '</tr>';
   }
 
