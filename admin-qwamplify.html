@@ -873,7 +873,13 @@ table.data tr.memory-inactive{opacity:.55}
   .settings-killswitch{flex-direction:column;text-align:center}
   .settings-ks-toggle{flex-direction:row}
 }
-@media(max-width:900px){#side{position:fixed;left:0;top:0;bottom:0;z-index:40;transform:translateX(-100%)}#side.open{transform:none}}
+#admBurger{display:none}
+#admBackdrop{display:none}
+@media(max-width:900px){#side{position:fixed;left:0;top:0;bottom:0;z-index:40;transform:translateX(-100%);transition:transform .25s ease}#side.open{transform:none}
+  #admBurger{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border:none;border-radius:10px;background:var(--soft,#eef1f8);color:var(--ink,#1a2238);cursor:pointer;margin-right:10px;flex:none}
+  #admBurger svg{width:20px;height:20px}
+  body.side-open #admBackdrop{display:block;position:fixed;inset:0;background:rgba(15,20,40,.42);z-index:35}
+}
 </style>
 </head>
 <body>
@@ -893,7 +899,9 @@ table.data tr.memory-inactive{opacity:.55}
     <div class="side-foot"><span class="av">MD</span><div style="font-size:12.5px"><div style="font-weight:700">Marjorie DIEN</div><div class="muted" style="font-size:11px">Administratrice</div></div></div>
   </aside>
   <div id="main">
+    <div id="admBackdrop"></div>
     <header id="top">
+      <button id="admBurger" type="button" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
       <div class="search"><svg viewBox="0 0 24 24" width="17" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg><input id="globalSearch" placeholder="Rechercher un utilisateur, un acces, un reglage..." /></div>
       <div style="flex:1"></div>
       <div class="top-pill" id="statusPill"><span class="dot"></span>Assistant actif</div>
@@ -4837,7 +4845,13 @@ window.init_settings = function(){
     document.getElementById("content").scrollTop=0;
     if(window.gsap){gsap.fromTo("#panel-"+id,{opacity:0,y:10},{opacity:1,y:0,duration:.35,ease:"power2.out"});}
   }
-  document.querySelectorAll(".nav-item").forEach(function(n){n.addEventListener("click",function(){show(n.dataset.target);});});
+  document.querySelectorAll(".nav-item").forEach(function(n){n.addEventListener("click",function(){show(n.dataset.target); document.body.classList.remove("side-open"); var sd0=document.getElementById("side"); if(sd0) sd0.classList.remove("open");});});
+  (function wireAdmBurger(){
+    var burger=document.getElementById("admBurger"), bg=document.getElementById("admBackdrop"), sd=document.getElementById("side");
+    function closeS(){ document.body.classList.remove("side-open"); if(sd) sd.classList.remove("open"); }
+    if(burger) burger.addEventListener("click",function(){ document.body.classList.toggle("side-open"); if(sd) sd.classList.toggle("open"); });
+    if(bg) bg.addEventListener("click",closeS);
+  })();
   show(ids[0]);
 })();
 </script>

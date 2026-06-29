@@ -61,7 +61,17 @@
   /* ===================== CHAT ===================== */
   #app{position:relative;z-index:1;height:100vh;display:flex;flex-direction:column;background:var(--bg);
     padding-top:30px;margin-left:280px;opacity:0;transition:opacity .7s ease}
-  @media(max-width:760px){ #app{margin-left:0} #sidebar{transform:translateX(-100%);} }
+  #sbToggle{display:none}
+  #sbBackdrop{display:none}
+  @media(max-width:760px){
+    #app{margin-left:0}
+    #sidebar{transform:translateX(-100%);z-index:50;transition:transform .25s ease}
+    body.sb-open #sidebar{transform:none}
+    #sbToggle{display:flex;align-items:center;justify-content:center;position:fixed;top:10px;left:10px;z-index:60;width:42px;height:42px;border:none;border-radius:11px;background:#fff;box-shadow:0 2px 12px rgba(20,30,60,.18);color:var(--ink);cursor:pointer}
+    #sbToggle svg{width:22px;height:22px}
+    #app{padding-top:60px}
+    body.sb-open #sbBackdrop{display:block;position:fixed;inset:0;background:rgba(15,20,40,.42);z-index:45}
+  }
   .scroll{flex:1;overflow-y:auto}
   .scroll::-webkit-scrollbar{width:8px}.scroll::-webkit-scrollbar-thumb{background:#d6ddf0;border-radius:10px}
   .thread{max-width:760px;margin:0 auto;padding:14px 22px 150px}
@@ -843,6 +853,8 @@
 
   <!-- ===================== CHAT ===================== -->
   <div id="app">
+    <button id="sbToggle" type="button" aria-label="Menu" title="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    <div id="sbBackdrop"></div>
     <canvas id="starfield"></canvas>
     <button id="starToggle" title="Étoiles filantes" type="button" aria-pressed="true">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
@@ -1291,20 +1303,27 @@
   }
   function buildProfileMenu(){
     const pm=document.getElementById("pmList"); if(!pm) return; pm.innerHTML="";
-    EMPLOYES.forEach(n=>{
-      const it=document.createElement("div"); it.className="pm-item";
-      it.innerHTML=`<span class="pm-ava">${initials(n)}</span><span>${escapeHtml(n)}</span>`;
-      it.addEventListener("click",()=>{ closeProfileMenu(); openPinModal(n); });
-      pm.appendChild(it);
-    });
-    // Entrée ADMIN — ouvre la console d'administration (démo, sans code pour l'instant)
-    const adminIt=document.createElement("div");
-    adminIt.className="pm-item pm-admin";
-    adminIt.innerHTML='<span class="pm-ava" style="background:linear-gradient(135deg,#5e72f0,#2436a8)"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span>Admin <small style="color:#6b7494;font-weight:500">&middot; console</small></span>';
-    adminIt.addEventListener("click",()=>{ closeProfileMenu(); window.location.href="admin-qwamplify.html"; });
-    pm.appendChild(adminIt);
+    // Identité actuelle — NON modifiable (on ne change de profil qu'à la connexion)
+    const head=document.createElement("div"); head.className="pm-item"; head.style.cursor="default"; head.style.opacity="1";
+    head.innerHTML=`<span class="pm-ava">${profil?initials(profil):"?"}</span><span><b>${profil?escapeHtml(profil):"—"}</b><br><small style="color:#6b7494;font-weight:500">Connecté${window.qwRole==='admin'?' · admin':''}</small></span>`;
+    pm.appendChild(head);
+    const sep=document.createElement("div"); sep.style.cssText="height:1px;background:#eef0f6;margin:6px 4px;"; pm.appendChild(sep);
+    // Console admin — uniquement pour le rôle admin
+    if(window.qwRole==='admin'){
+      const adminIt=document.createElement("div");
+      adminIt.className="pm-item pm-admin";
+      adminIt.innerHTML='<span class="pm-ava" style="background:linear-gradient(135deg,#5e72f0,#2436a8)"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span>Console admin</span>';
+      adminIt.addEventListener("click",()=>{ closeProfileMenu(); window.location.href="admin-qwamplify.html"; });
+      pm.appendChild(adminIt);
+    }
+    // Déconnexion
+    const out=document.createElement("div");
+    out.className="pm-item";
+    out.innerHTML='<span class="pm-ava" style="background:#fde8ec;color:#c0143c;font-size:.8rem">⏻</span><span>Déconnexion</span>';
+    out.addEventListener("click",()=>{ closeProfileMenu(); if(typeof logout==="function") logout(); });
+    pm.appendChild(out);
   }
-  function openProfileMenu(){ const m=document.getElementById("profileMenu"); if(m) m.classList.remove("hidden"); }
+  function openProfileMenu(){ buildProfileMenu(); const m=document.getElementById("profileMenu"); if(m) m.classList.remove("hidden"); }
   function closeProfileMenu(){ const m=document.getElementById("profileMenu"); if(m) m.classList.add("hidden"); }
 
   function setProfile(name){
@@ -2244,6 +2263,15 @@
     const bk=document.getElementById("loginBack"); if(bk) bk.addEventListener("click", function(){ loginStep("who"); });
     const spb=document.getElementById("loginSetBtn"); if(spb) spb.addEventListener("click", doSetPassword);
     const np2=document.getElementById("loginNewPwd2"); if(np2) np2.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); doSetPassword(); } });
+  })();
+
+  /* ---------- barre latérale mobile (hamburger) ---------- */
+  (function wireSidebarMobile(){
+    const t=document.getElementById("sbToggle"), b=document.getElementById("sbBackdrop"), sb=document.getElementById("sidebar");
+    const close=()=>document.body.classList.remove("sb-open");
+    if(t) t.addEventListener("click",()=>document.body.classList.toggle("sb-open"));
+    if(b) b.addEventListener("click",close);
+    if(sb) sb.addEventListener("click",e=>{ if(e.target.closest("#newConv,.hist-item,.sb-notesbtn,#memBtn,#privBtn,#transBtn,#profileBtn,#setBtn")) close(); });
   })();
 
   /* ---------- init ---------- */
