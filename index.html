@@ -1544,7 +1544,7 @@
     if(window._qwSending) return;
     const _sess=loadSession(); if(!sessionValide(_sess)){ showLogin(); return; }
     if(!profil){ openProfileMenu(); return; }
-    const q=input.value.trim();
+    const q=input.value.trim().slice(0,8000);
     if(!q && attached.length===0) return;
     if(!convId) newConv();
     const c=convs.find(x=>x.id===convId); if(!c) return;
@@ -2269,6 +2269,7 @@
   function loginPick(name){
     const a=document.getElementById("loginAvaBig"); if(a) a.textContent=initials(name);
     const g=document.getElementById("loginGreet"); if(g) g.textContent="Bonjour "+String(name).split(" ")[0]+" 👋";
+    window._setEmail=null;
     // réinitialise l'état (au cas où on revient d'une création de mot de passe)
     const sbk=document.getElementById("loginSetBlock"); if(sbk) sbk.style.display="none";
     const lpw=document.getElementById("loginPwd"); if(lpw){ lpw.style.display=""; lpw.value=""; }
