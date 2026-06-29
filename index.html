@@ -1290,8 +1290,10 @@
     attachZone.innerHTML="";
     attached.forEach((a,i)=>{
       const chip=document.createElement("div"); chip.className="att-chip";
-      const thumb = a.mimeType.indexOf("image/")===0 ? `<img src="${a.previewUrl}" alt="">` : `<span class="doc">📄</span>`;
-      chip.innerHTML=`${thumb}<span class="nm">${escapeHtml(a.name)}</span><span class="rm" data-i="${i}" title="Retirer">✕</span>`;
+      if(a.mimeType.indexOf("image/")===0){ const im=document.createElement("img"); im.src=a.previewUrl; im.alt=""; chip.appendChild(im); }
+      else { const d=document.createElement("span"); d.className="doc"; d.textContent="📄"; chip.appendChild(d); }
+      const nm=document.createElement("span"); nm.className="nm"; nm.textContent=a.name; chip.appendChild(nm);
+      const rm=document.createElement("span"); rm.className="rm"; rm.dataset.i=i; rm.title="Retirer"; rm.textContent="✕"; chip.appendChild(rm);
       attachZone.appendChild(chip);
     });
   }
@@ -2144,14 +2146,14 @@
 
     const stars=[];           // comètes Q
     const sparks=[];          // particules de traînée (même technique que les météorites de l'intro)
-    let last=performance.now(), sinceSpawn=0, starsOn=true;
+    let last=performance.now(), sinceSpawn=0, starsOn=true, running=false;
     const MAX=3;
 
     const toggleBtn=document.getElementById("starToggle");
     if(toggleBtn) toggleBtn.addEventListener("click",()=>{
       starsOn=!starsOn;
       toggleBtn.setAttribute("aria-pressed", starsOn?"true":"false");
-      if(!starsOn){ stars.length=0; sparks.length=0; ctx.clearRect(0,0,W,H); }
+      if(!starsOn){ stars.length=0; sparks.length=0; ctx.clearRect(0,0,W,H); } else { start(); }
     });
 
     // palette de la traînée : blanc lumineux / bleu clair / bleu Qwamplify (comme l'intro)
@@ -2235,7 +2237,7 @@
       const dt=Math.min(0.05,(now-last)/1000); last=now;
       sinceSpawn+=dt;
       const appVisible=parseFloat(getComputedStyle(document.getElementById("app")).opacity)>0.05;
-      if(!starsOn){ requestAnimationFrame(loop); return; }
+      if(!starsOn){ running=false; return; }
       if(sinceSpawn>1.2 && appVisible){ sinceSpawn=0; spawn(); }
       ctx.clearRect(0,0,W,H);
       drawSparks(dt);                                      // la traînée d'abord (derrière les Q)
@@ -2245,9 +2247,11 @@
         if(s.y>H+120 || s.x<-200 || s.x>W+200){ stars.splice(i,1); continue; }
         drawQ(s);
       }
-      requestAnimationFrame(loop);
+      if(running) requestAnimationFrame(loop);
     }
-    requestAnimationFrame(loop);
+    function start(){ if(running) return; running=true; last=performance.now(); requestAnimationFrame(loop); }
+    start();
+    document.addEventListener("visibilitychange",()=>{ if(document.hidden){ running=false; } else if(starsOn){ start(); } });
   })();
 
   /* ---------- Connexion par compte (jeton de session) ---------- */
