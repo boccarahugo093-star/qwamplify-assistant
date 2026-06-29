@@ -1226,6 +1226,9 @@
           if(profil){ localStorage.setItem(histKey(profil),JSON.stringify(convs)); localStorage.setItem(foldKey(profil),JSON.stringify(folders)); }
           if(convs.length){ if(!convs.find(c=>c.id===convId)) openConv(convs[0].id); else renderHistList(); } else renderHistList();
         }
+      } else if(d && d.ok && convs.length){
+        // serveur vide mais conversations locales présentes → on les migre vers le serveur
+        scheduleServerSave();
       }
     }catch(e){}
   }
