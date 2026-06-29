@@ -2371,6 +2371,7 @@
     if(b) b.addEventListener("click",close);
     if(sb) sb.addEventListener("click",e=>{ if(e.target.closest("#newConv,.hist-item,.sb-notesbtn,#memBtn,#privBtn,#transBtn,#profileBtn,#setBtn")) close(); });
   })();
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ document.querySelectorAll(".mem-overlay:not(.hidden),.priv-overlay:not(.hidden)").forEach(o=>o.classList.add("hidden")); const pm=document.getElementById("profileMenu"); if(pm) pm.classList.add("hidden"); document.body.classList.remove("sb-open"); } });
 
   /* ---------- init ---------- */
   buildProfileMenu();

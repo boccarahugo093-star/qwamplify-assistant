@@ -4941,6 +4941,7 @@ window.init_settings = function(){
     if(burger) burger.addEventListener("click",function(){ document.body.classList.toggle("side-open"); if(sd) sd.classList.toggle("open"); });
     if(bg) bg.addEventListener("click",closeS);
   })();
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ document.querySelectorAll('.ovl.show').forEach(function(o){ o.classList.remove('show'); }); document.body.classList.remove('side-open'); var sd2=document.getElementById('side'); if(sd2) sd2.classList.remove('open'); } });
   show(ids[0]);
 })();
 </script>
