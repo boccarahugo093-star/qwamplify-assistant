@@ -3439,7 +3439,8 @@ window.init_users = function(){
   }
 
   // ----- Filtres -----
-  searchInput.addEventListener('input', function(){ state.q = this.value.trim().toLowerCase(); render(); });
+  var _usrSearchT=null;
+  searchInput.addEventListener('input', function(){ var v=this.value.trim().toLowerCase(); clearTimeout(_usrSearchT); _usrSearchT=setTimeout(function(){ state.q=v; render(); }, 150); });
   toggleInactive.addEventListener('change', function(){ state.showInactive = this.checked; render(); });
   if(btnRefresh){ btnRefresh.onclick = function(){ load().then(function(){ toast('Liste rafraichie.'); }); }; }
 
