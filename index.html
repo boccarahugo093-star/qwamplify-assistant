@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Owamplify.ai · Assistant IA</title>
+<title>Qwamplify.ai · Assistant IA</title>
 <link rel="icon" href="assets/Favicon_noir.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -12,14 +12,14 @@
 
 <!--
   ===================================================================
-  OAMPLIFY.AI · Assistant IA
+  QWAMPLIFY.AI · Assistant IA
   • INTRO (calque plein écran, fond blanc) : les vraies lettres HTML sont
     invisibles au départ. 3 comètes (faites de petites particules) entrent
     de 3 côtés, font un tour complet de l'écran, puis S'ÉCRASENT (flash +
     onde + étincelles) sur la zone du logo. Les débris s'assemblent en lettres.
-        1) noire  -> "Owamplify"
-        2) bleue  -> la queue du O   (+1,15 s)
-        3) bleue  -> ".ai"           (+2,3 s)   => "Owamplify.ai"
+        1) noire  -> "Qwamplify"
+        2) bleue  -> la queue du Q   (+1,15 s)
+        3) bleue  -> ".ai"           (+2,3 s)   => "Qwamplify.ai"
   • À la fin, le VRAI texte net apparaît, l'intro s'efface et le chat se révèle.
   • Le logo n'existe JAMAIS avant la fin : rien ne se montre d'avance.
   RÉGLAGES (<script>) : WEBHOOK_URL, LOGIN, PASSWORD
@@ -30,7 +30,7 @@
   :root{
     --blue:#354BE7;--blue-2:#5e72f0;--blue-soft:rgba(53,75,231,.14);
     --ink:#0b0e1d;--bg:#ffffff;--soft:#f1f4fb;--soft-2:#e9eefb;
-    --brd:#e3e8f5;--dim:#6b7494;
+    --brd:#e3e8f5;--dim:#5a6385;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
@@ -315,30 +315,6 @@
     display:flex;align-items:center;justify-content:center;padding:20px}
   .mem-overlay.hidden{display:none}
 
-  /* ===================== MODAL PIN ===================== */
-  .pin-overlay{position:fixed;inset:0;z-index:200;background:rgba(11,14,29,.7);backdrop-filter:blur(8px);
-    display:flex;align-items:center;justify-content:center}
-  .pin-overlay.hidden{display:none}
-  .pin-box{background:#fff;border-radius:24px;padding:36px 32px 32px;width:320px;text-align:center;
-    box-shadow:0 40px 100px rgba(11,14,29,.4)}
-  .pin-avatar{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--blue),#27348a);
-    margin:0 auto 16px;display:flex;align-items:center;justify-content:center;
-    font-size:22px;font-weight:700;color:#fff}
-  .pin-title{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:6px}
-  .pin-sub{font-size:13px;color:var(--dim);margin-bottom:24px;min-height:18px}
-  .pin-dots{display:flex;justify-content:center;gap:14px;margin-bottom:28px}
-  .pin-dots span{width:16px;height:16px;border-radius:50%;border:2px solid var(--brd);background:#fff;transition:.15s}
-  .pin-dots span.filled{background:var(--blue);border-color:var(--blue)}
-  .pin-dots span.shake{animation:pin-shake .3s ease}
-  @keyframes pin-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-  .pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-  .pin-key{height:58px;border-radius:14px;border:1.5px solid var(--brd);background:#fff;
-    font-size:20px;font-weight:600;color:var(--ink);cursor:pointer;transition:.12s;user-select:none}
-  .pin-key:hover{background:var(--soft);border-color:var(--blue-2)}
-  .pin-key:active{transform:scale(.93)}
-  .pin-key.del{font-size:18px;color:var(--dim)}
-  .pin-error{font-size:12.5px;color:#e23;margin-top:8px;min-height:18px}
-  .pin-error.hidden{visibility:hidden}
   .mem-card{width:100%;max-width:520px;max-height:86vh;overflow-y:auto;background:#fff;border:1px solid var(--brd);
     border-radius:18px;box-shadow:0 30px 80px rgba(20,30,80,.3);padding:22px}
   .mem-card h2{font-family:"Space Grotesk",inherit;font-size:19px;color:var(--ink);display:flex;align-items:center;gap:9px}
@@ -709,37 +685,10 @@
     <div id="pmList"></div>
   </div>
 
-  <!-- ===================== MODAL PIN ===================== -->
-  <div id="pinModal" class="pin-overlay hidden">
-    <div class="pin-box">
-      <div class="pin-avatar" id="pinAva">?</div>
-      <div class="pin-title" id="pinTitle">Code PIN</div>
-      <div class="pin-sub" id="pinSub">Choisis un code à 4 chiffres</div>
-      <div class="pin-dots" id="pinDots">
-        <span></span><span></span><span></span><span></span>
-      </div>
-      <div class="pin-pad">
-        <button class="pin-key" onclick="pinInput('1')">1</button>
-        <button class="pin-key" onclick="pinInput('2')">2</button>
-        <button class="pin-key" onclick="pinInput('3')">3</button>
-        <button class="pin-key" onclick="pinInput('4')">4</button>
-        <button class="pin-key" onclick="pinInput('5')">5</button>
-        <button class="pin-key" onclick="pinInput('6')">6</button>
-        <button class="pin-key" onclick="pinInput('7')">7</button>
-        <button class="pin-key" onclick="pinInput('8')">8</button>
-        <button class="pin-key" onclick="pinInput('9')">9</button>
-        <button class="pin-key del" onclick="pinDelete()">⌫</button>
-        <button class="pin-key" onclick="pinInput('0')">0</button>
-        <div></div>
-      </div>
-      <div class="pin-error hidden" id="pinError">Code incorrect</div>
-    </div>
-  </div>
-
   <!-- ===================== MODALE MÉMOIRE ===================== -->
   <div id="memModal" class="mem-overlay hidden">
     <div class="mem-card">
-      <span class="mem-close" id="memClose" title="Fermer">✕</span>
+      <span class="mem-close" id="memClose" aria-label="Fermer" title="Fermer">✕</span>
       <h2><svg class="ico ico-h" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="2.5"/><path d="M9 2.5v3M15 2.5v3M9 18.5v3M15 18.5v3M2.5 9h3M2.5 15h3M18.5 9h3M18.5 15h3"/></svg>Mémoire de l'IA</h2>
       <p class="mem-sub">Ajoute une information que l'assistant retiendra durablement. Choisis si elle est privée (ton profil) ou partagée avec toute l'entreprise.</p>
       <div class="mem-scope" id="memScope">
@@ -756,17 +705,17 @@
   <!-- ===================== NOTES DE VACANCES ===================== -->
   <div id="notesModal" class="mem-overlay hidden">
     <div class="mem-card">
-      <span class="mem-close" id="notesClose" title="Fermer">✕</span>
+      <span class="mem-close" id="notesClose" aria-label="Fermer" title="Fermer">✕</span>
       <h2><svg class="ico ico-h" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11l3 3v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z"/><path d="M8.5 9.5h7M8.5 13h7M8.5 16.5h4"/></svg>Notes de vacances</h2>
       <p class="mem-sub">Indique une absence (la tienne ou celle d'un collègue). L'assistant la retient pendant 30 jours : n'importe qui pourra lui demander « qui est en congés ? ».</p>
       <div class="nv-row">
-        <div class="nv-f"><div class="nv-lbl">Qui est absent ?</div><input id="nvWho" class="nv-input" type="text" placeholder="Ex : Léo Singlard" /></div>
+        <div class="nv-f"><div class="nv-lbl">Qui est absent ?</div><input id="nvWho" class="nv-input" type="text" maxlength="80" placeholder="Ex : Léo Singlard" /></div>
       </div>
       <div class="nv-row" style="margin-top:8px">
         <div class="nv-f"><div class="nv-lbl">Du</div><input id="nvStart" class="nv-input" type="date" /></div>
         <div class="nv-f"><div class="nv-lbl">Au</div><input id="nvEnd" class="nv-input" type="date" /></div>
       </div>
-      <textarea id="nvMsg" class="nv-ta" placeholder="Détail (optionnel) : motif, qui contacter en l'absence…"></textarea>
+      <textarea id="nvMsg" class="nv-ta" maxlength="500" placeholder="Détail (optionnel) : motif, qui contacter en l'absence…"></textarea>
       <button id="nvAdd" class="mem-addbtn" type="button"><svg class="btn-ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Enregistrer l'absence</button>
       <div class="mem-divider">Absences en cours et à venir</div>
       <div id="nvList" class="mem-list"></div>
@@ -776,7 +725,7 @@
   <!-- ===================== RÉGLAGES ===================== -->
   <div id="setModal" class="mem-overlay hidden">
     <div class="mem-card">
-      <span class="mem-close" id="setClose" title="Fermer">✕</span>
+      <span class="mem-close" id="setClose" aria-label="Fermer" title="Fermer">✕</span>
       <h2><svg class="ico ico-h" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3.5V6M12 18v2.5M4.6 7l2.1 1.2M17.3 15.8l2.1 1.2M4.6 17l2.1-1.2M17.3 8.2l2.1-1.2M3.5 12H6M18 12h2.5"/></svg>Réglages</h2>
       <p class="mem-sub">Personnalise ton assistant. Ces réglages restent sur cet appareil.</p>
       <div class="set-row">
@@ -811,7 +760,7 @@
   <!-- ===================== MODALE TRANSPARENCE ===================== -->
   <div id="transModal" class="priv-overlay hidden">
     <div class="trans-card">
-      <span class="priv-close" id="transClose" title="Fermer">✕</span>
+      <span class="priv-close" id="transClose" aria-label="Fermer" title="Fermer">✕</span>
       <h2><svg class="ico ico-h" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v5h-5"/><path d="M12 7.8V12l3 1.8"/></svg>Historique de consultation</h2>
       <p class="priv-sub">En toute transparence : retrouve qui s'est appuyé sur ta boîte pour t'aider, accorde ou décline les demandes, et consulte les sujets toujours protégés.</p>
       <div class="trans-tabs">
@@ -828,7 +777,7 @@
   <!-- ===================== MODALE CONFIDENTIALITÉ ===================== -->
   <div id="privModal" class="priv-overlay hidden">
     <div class="priv-card">
-      <span class="priv-close" id="privClose" title="Fermer">✕</span>
+      <span class="priv-close" id="privClose" aria-label="Fermer" title="Fermer">✕</span>
       <h2><svg class="ico ico-h" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v5c0 4.4 3 7.6 7 9 4-1.4 7-4.6 7-9V6l-7-3Z"/><path d="m8.8 12 2.2 2.2L15.4 10"/></svg>Confidentialité de ma boîte</h2>
       <p class="priv-sub">Choisis qui peut accéder à ta boîte mail via l'assistant Qwamplify. Cette règle s'applique quand tes collègues demandent quelque chose dans ta boîte.</p>
       <div class="mode-grid" id="modeGrid">
@@ -899,7 +848,7 @@
         </button>
       </div>
       <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style="display:none" />
-      <div class="hint">Owamplify.ai · Assistant IA — propulsé par Claude</div>
+      <div class="hint">Qwamplify.ai · Assistant IA — propulsé par Claude</div>
     </div>
   </div>
 
@@ -970,7 +919,8 @@
       for(let i=0;i<allTextParticles.length;i++){ allTextParticles[i].update(); allTextParticles[i].draw(); }
       requestAnimationFrame(render);
     }
-    requestAnimationFrame(render);
+    // #68 : on ne démarre pas la boucle de particules de l'intro si l'utilisateur préfère moins d'animations
+    if(!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) requestAnimationFrame(render);
 
     /* ---------- couleurs de comète ---------- */
     function cometColor(base){
@@ -1183,7 +1133,11 @@
         if(introEl){ introEl.style.display=""; introEl.style.opacity="1"; }
         const sk2=document.getElementById("skip"); if(sk2) sk2.style.display="";
         chatRevealed=false;
-        if(window.gsap && window.MotionPathPlugin){
+        // #68 : si l'utilisateur préfère moins d'animations, on affiche directement l'état final
+        const _reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if(_reduceMotion){
+          showLettersInstant(); finishToChat();
+        } else if(window.gsap && window.MotionPathPlugin){
           whenReady(begin);
           setTimeout(()=>{ if(!chatRevealed){ try{revealLogo();}catch(e){ skipIntro(); } } }, 13000); // filet de sécurité
         } else {
@@ -1235,6 +1189,7 @@
         let blob=null; try{ blob=JSON.parse(d.data); }catch(e){ blob=null; }
         if(blob && Array.isArray(blob.convs)){
           convs=blob.convs; folders=Array.isArray(blob.folders)?blob.folders:[];
+          pruneEmptyConvs(); // #73 : nettoie les conversations vides issues du serveur (sauf l'active)
           if(profil){ localStorage.setItem(histKey(profil),JSON.stringify(convs)); localStorage.setItem(foldKey(profil),JSON.stringify(folders)); }
           if(convs.length){ if(!convs.find(c=>c.id===convId)) openConv(convs[0].id); else renderHistList(); } else renderHistList();
         }
@@ -1291,7 +1246,7 @@
       if(a.mimeType.indexOf("image/")===0){ const im=document.createElement("img"); im.src=a.previewUrl; im.alt=""; chip.appendChild(im); }
       else { const d=document.createElement("span"); d.className="doc"; d.textContent="📄"; chip.appendChild(d); }
       const nm=document.createElement("span"); nm.className="nm"; nm.textContent=a.name; chip.appendChild(nm);
-      const rm=document.createElement("span"); rm.className="rm"; rm.dataset.i=i; rm.title="Retirer"; rm.textContent="✕"; chip.appendChild(rm);
+      const rm=document.createElement("span"); rm.className="rm"; rm.dataset.i=i; rm.setAttribute("aria-label","Retirer la pièce jointe"); rm.title="Retirer"; rm.textContent="✕"; chip.appendChild(rm);
       attachZone.appendChild(chip);
     });
   }
@@ -1383,7 +1338,7 @@
     const pm=document.getElementById("pmList"); if(!pm) return; pm.innerHTML="";
     // Identité actuelle — NON modifiable (on ne change de profil qu'à la connexion)
     const head=document.createElement("div"); head.className="pm-item"; head.style.cursor="default"; head.style.opacity="1";
-    head.innerHTML=`<span class="pm-ava">${profil?initials(profil):"?"}</span><span><b>${profil?escapeHtml(profil):"—"}</b><br><small style="color:#6b7494;font-weight:500">Connecté${window.qwRole==='admin'?' · admin':''}</small></span>`;
+    head.innerHTML=`<span class="pm-ava">${profil?initials(profil):"?"}</span><span><b>${profil?escapeHtml(profil):"—"}</b><br><small style="color:#5a6385;font-weight:500">Connecté${window.qwRole==='admin'?' · admin':''}</small></span>`;
     pm.appendChild(head);
     const sep=document.createElement("div"); sep.style.cssText="height:1px;background:#eef0f6;margin:6px 4px;"; pm.appendChild(sep);
     // Console admin — uniquement pour le rôle admin
@@ -1407,6 +1362,7 @@
   async function setProfile(name){
     profil=name; localStorage.setItem("qw_profil",name);
     convs=loadConvs(name); folders=loadFolders(name);
+    convId=null; pruneEmptyConvs(); // #73 : nettoie les conversations vides au chargement du profil
     updateProfileUI(); enableComposer(true); closeProfileMenu();
     // 1) rendu immédiat depuis le cache local (rapide)
     if(convs.length) openConv(convs[0].id); else renderHistList();
@@ -1416,6 +1372,10 @@
     if(!convs.length) newConv();
     if(typeof refreshAccessReminder==="function") refreshAccessReminder();
     if(typeof refreshPendingBadge==="function") refreshPendingBadge();
+  }
+  // #73 : retire les conversations vides (sans message), sauf la conversation active courante
+  function pruneEmptyConvs(){
+    convs = convs.filter(c => (c.msgs && c.msgs.length>0) || c.id===convId);
   }
   function newConv(){
     if(!profil) return;
@@ -1441,7 +1401,7 @@
     it.className="hist-item"+(c.id===convId?" active":"");
     it.draggable=true; it.dataset.cid=c.id;
     it.innerHTML=`<span class="hi-grip">💬</span><span class="hi-t">${escapeHtml(c.title)}</span>`+
-      `<span class="hi-act rename" title="Renommer">✎</span><span class="hi-del" title="Supprimer">✕</span>`;
+      `<span class="hi-act rename" aria-label="Renommer la conversation" title="Renommer">✎</span><span class="hi-del" aria-label="Supprimer la conversation" title="Supprimer">✕</span>`;
     it.addEventListener("click",e=>{
       if(e.target.classList.contains("rename")){ e.stopPropagation(); startRenameConv(c.id, it); return; }
       if(e.target.classList.contains("hi-del")){ e.stopPropagation(); delConv(c.id); return; }
@@ -1455,7 +1415,7 @@
     const list=document.getElementById("histList"); if(!list) return;
     if(!profil){ list.innerHTML='<div class="sb-locked">🔒 Choisis ton profil ci-dessous pour activer l\'historique.</div>'; return; }
     list.innerHTML="";
-    if(!convs.length && !folders.length){ list.innerHTML='<div class="sb-locked">Aucune conversation pour l\'instant.</div>'; }
+    if(!convs.length && !folders.length){ list.innerHTML='<div class="sb-locked">Aucune conversation pour l\'instant.<br><small>Lance-toi : pose ta première question pour démarrer une conversation.</small></div>'; }
     // 1) Dossiers
     folders.forEach(fo=>{
       const wrap=document.createElement("div"); wrap.className="folder";
@@ -1464,8 +1424,8 @@
       const open=fo.open!==false;
       head.innerHTML=`<span class="fh-ico">${open?'▾':'▸'}</span><span class="fh-name">${escapeHtml(fo.name)}</span>`+
         `<span class="fh-count">${inFolder.length}</span>`+
-        `<span class="fh-act rename" title="Renommer le dossier">✎</span>`+
-        `<span class="fh-act del" title="Supprimer le dossier">✕</span>`;
+        `<span class="fh-act rename" aria-label="Renommer le dossier" title="Renommer le dossier">✎</span>`+
+        `<span class="fh-act del" aria-label="Supprimer le dossier" title="Supprimer le dossier">✕</span>`;
       head.addEventListener("click",e=>{
         if(e.target.classList.contains("rename")){ e.stopPropagation(); startRenameFolder(fo.id, head); return; }
         if(e.target.classList.contains("del")){ e.stopPropagation(); delFolder(fo.id); return; }
@@ -1496,8 +1456,9 @@
     const inp=document.createElement("input"); inp.className="hi-edit"; inp.value=c.title;
     t.replaceWith(inp); inp.focus(); inp.select();
     let done=false;
-    const commit=()=>{ if(done) return; done=true; const v=inp.value.trim(); if(v){ c.title=v.slice(0,60); saveConvs(); } renderHistList(); };
-    inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); commit(); } else if(e.key==="Escape"){ done=true; renderHistList(); } });
+    const commit=()=>{ if(done) return; done=true; inp.removeEventListener("blur",commit); const v=inp.value.trim(); if(v){ c.title=v.slice(0,60); saveConvs(); } renderHistList(); };
+    const cancel=()=>{ if(done) return; done=true; inp.removeEventListener("blur",commit); renderHistList(); }; // #109 : Escape ne committe pas (valeur d'origine restaurée)
+    inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); commit(); } else if(e.key==="Escape"){ e.preventDefault(); cancel(); } });
     inp.addEventListener("blur",commit);
     inp.addEventListener("click",e=>e.stopPropagation());
   }
@@ -1507,8 +1468,9 @@
     const inp=document.createElement("input"); inp.className="hi-edit"; inp.value=fo.name;
     t.replaceWith(inp); inp.focus(); inp.select();
     let done=false;
-    const commit=()=>{ if(done) return; done=true; const v=inp.value.trim(); if(v){ fo.name=v.slice(0,40); saveFolders(); } renderHistList(); };
-    inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); commit(); } else if(e.key==="Escape"){ done=true; renderHistList(); } });
+    const commit=()=>{ if(done) return; done=true; inp.removeEventListener("blur",commit); const v=inp.value.trim(); if(v){ fo.name=v.slice(0,40); saveFolders(); } renderHistList(); };
+    const cancel=()=>{ if(done) return; done=true; inp.removeEventListener("blur",commit); renderHistList(); }; // #109 : Escape ne committe pas (valeur d'origine restaurée)
+    inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); commit(); } else if(e.key==="Escape"){ e.preventDefault(); cancel(); } });
     inp.addEventListener("blur",commit);
     inp.addEventListener("click",e=>e.stopPropagation());
   }
@@ -1566,8 +1528,9 @@
       const corps={action:"sendMessage", sessionId:profil+"::"+convId, chatInput:q||"(fichier joint, sans texte)", token:authToken()};
       if(filesPayload.length) corps.files=filesPayload;
       const r=await fetch(WEBHOOK_URL,{method:"POST",headers,body:JSON.stringify(corps)});
-      const data=await r.json(); typing.remove();
-      const rep=data.output||data.text||"(réponse vide)";
+      const data=await r.json().catch(()=>null); typing.remove();
+      if(isAuthFail(r.status, data)){ handleAuthFail(); return; }
+      const rep=(data&&(data.output||data.text))||"(réponse vide)";
       bulle(rep,"bot");
       c.msgs.push({r:"b", t:rep}); saveConvs();
     }catch(err){
@@ -1598,7 +1561,9 @@
       headers:{"Content-Type":"text/plain"},
       body: JSON.stringify(Object.assign({token:authToken()}, payload))
     });
-    return r.json();
+    const data = await r.json().catch(()=>null);
+    if(isAuthFail(r.status, data)){ handleAuthFail(); throw new Error("auth"); }
+    return data;
   }
 
   function renderMemList(memories){
@@ -1613,7 +1578,7 @@
         : '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>';
       it.innerHTML=`<span class="badge ${ent?'ent':'pro'}">${bIco}</span>`+
         `<span class="txt">${escapeHtml(m.contenu)}<span class="who">${ent?'Entreprise':'Profil '+escapeHtml(m.owner||'')} · ajouté par ${escapeHtml(m.auteur||'?')}</span></span>`+
-        `<span class="del" data-id="${escapeHtml(String(m.id))}" title="Supprimer">✕</span>`;
+        `<span class="del" data-id="${escapeHtml(String(m.id))}" aria-label="Supprimer cette mémoire" title="Supprimer">✕</span>`;
       list.appendChild(it);
     });
   }
@@ -1621,11 +1586,13 @@
   async function loadMemories(){
     const list=document.getElementById("memList");
     list.innerHTML='<div class="mem-empty">Chargement…</div>';
+    const _to=setTimeout(()=>{ list.innerHTML='<div class="mem-empty">⚠️ Impossible de charger pour le moment, réessaie.</div>'; },8000);
     try{
       const data = await memCall({action:"list", owner:profil});
+      clearTimeout(_to);
       if(data && data.ok) renderMemList(data.memories||[]);
-      else list.innerHTML='<div class="mem-empty">⚠️ Impossible de charger la mémoire.</div>';
-    }catch(e){ list.innerHTML='<div class="mem-empty">⚠️ Connexion impossible. Le workflow « Mémoire » est-il activé dans n8n ?</div>'; }
+      else list.innerHTML='<div class="mem-empty">⚠️ Impossible de charger la mémoire pour le moment.</div>';
+    }catch(e){ clearTimeout(_to); console.warn("loadMemories:", e); list.innerHTML='<div class="mem-empty">⚠️ Fonction momentanément indisponible, réessaie dans un instant.</div>'; }
   }
 
   async function addMemory(){
@@ -1639,8 +1606,8 @@
         contenu: txt, auteur: profil, cree_le: new Date().toISOString()
       });
       if(data && data.ok){ document.getElementById("memText").value=""; loadMemories(); }
-      else alert("Ajout refusé. Vérifie l'activation du workflow « Mémoire » dans n8n.");
-    }catch(e){ alert("Connexion impossible au service de mémoire."); }
+      else alert("Ajout impossible pour le moment, réessaie dans un instant.");
+    }catch(e){ console.warn("addMemory:", e); alert("Fonction momentanément indisponible, réessaie dans un instant."); }
     finally{ btn.disabled=false; }
   }
 
@@ -1648,8 +1615,8 @@
     try{
       const data = await memCall({action:"delete", id:id});
       if(data && data.ok){ loadMemories(); }
-      else alert("Suppression refusée. Vérifie l'activation du workflow « Mémoire » dans n8n.");
-    }catch(e){ alert("Suppression impossible."); }
+      else alert("Suppression impossible pour le moment, réessaie dans un instant.");
+    }catch(e){ console.warn("deleteMemory:", e); alert("Fonction momentanément indisponible, réessaie dans un instant."); }
   }
 
   document.getElementById("memBtn").addEventListener("click", openMemModal);
@@ -1695,16 +1662,19 @@
   async function loadNotes(){
     const list=document.getElementById("nvList");
     list.innerHTML='<div class="mem-empty">Chargement…</div>';
+    const _to=setTimeout(()=>{ list.innerHTML='<div class="mem-empty">⚠️ Impossible de charger pour le moment, réessaie.</div>'; },8000);
     try{
       const r=await fetch(NOTES_READ_URL,{ method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify({token:authToken()}) });
-      const data=await r.json();
+      const data=await r.json().catch(()=>null);
+      clearTimeout(_to);
+      if(isAuthFail(r.status, data)){ handleAuthFail(); return; }
       renderNotes((data && data.notes) ? data.notes : []);
-    }catch(e){ list.innerHTML='<div class="mem-empty">⚠️ Connexion impossible. Le workflow « Notes de vacances — API UI » est-il activé dans n8n ?</div>'; }
+    }catch(e){ clearTimeout(_to); console.warn("loadNotes:", e); list.innerHTML='<div class="mem-empty">⚠️ Fonction momentanément indisponible, réessaie dans un instant.</div>'; }
   }
 
   async function addNote(){
-    const who=document.getElementById("nvWho").value.trim();
-    const msg=document.getElementById("nvMsg").value.trim();
+    const who=document.getElementById("nvWho").value.trim().slice(0,80);   // #111 : borne nom (80 car.)
+    const msg=document.getElementById("nvMsg").value.trim().slice(0,500);  // #111 : borne message (500 car.)
     const d1=document.getElementById("nvStart").value;
     const d2=document.getElementById("nvEnd").value;
     if(!who){ document.getElementById("nvWho").focus(); return; }
@@ -1712,13 +1682,14 @@
     try{
       const r=await fetch(NOTES_WRITE_URL,{ method:"POST", headers:{"Content-Type":"text/plain"},
         body:JSON.stringify({ token:authToken(), personne:who, message:msg, date_debut:d1, date_fin:d2, auteur:profil }) });
-      const data=await r.json();
+      const data=await r.json().catch(()=>null);
+      if(isAuthFail(r.status, data)){ handleAuthFail(); return; }
       if(data && data.ok){
         document.getElementById("nvWho").value=""; document.getElementById("nvMsg").value="";
         document.getElementById("nvStart").value=""; document.getElementById("nvEnd").value="";
         loadNotes();
-      } else { alert("Enregistrement refusé. Vérifie l'activation du workflow « Notes de vacances » dans n8n."); }
-    }catch(e){ alert("Connexion impossible au service de notes de vacances."); }
+      } else { alert("Enregistrement impossible pour le moment, réessaie dans un instant."); }
+    }catch(e){ console.warn("addNote:", e); alert("Fonction momentanément indisponible, réessaie dans un instant."); }
     finally{ btn.disabled=false; }
   }
 
@@ -1777,60 +1748,6 @@
     deleteMemory(el.dataset.id);
   });
 
-  /* ---------- PIN ---------- */
-  let _pinPending=null, _pinStep=null, _pinBuf='', _pinFirst='';
-
-  function openPinModal(name){
-    _pinPending=name; _pinBuf=''; _pinFirst='';
-    const stored=localStorage.getItem('qw_pin_'+name);
-    _pinStep = stored ? 'verify' : 'create';
-    document.getElementById('pinAva').textContent=initials(name);
-    document.getElementById('pinTitle').textContent=_pinStep==='verify' ? 'Bonjour '+name+' 👋' : 'Crée ton PIN';
-    document.getElementById('pinSub').textContent=_pinStep==='verify' ? 'Entre ton code PIN' : 'Choisis un code à 4 chiffres';
-    document.getElementById('pinError').classList.add('hidden');
-    _updatePinDots();
-    document.getElementById('pinModal').classList.remove('hidden');
-  }
-  function _closePinModal(){ document.getElementById('pinModal').classList.add('hidden'); }
-  function _updatePinDots(){
-    document.querySelectorAll('#pinDots span').forEach((d,i)=>d.classList.toggle('filled',i<_pinBuf.length));
-  }
-  function _pinShake(){
-    const dots=document.getElementById('pinDots');
-    dots.querySelectorAll('span').forEach(s=>{ s.classList.add('shake'); setTimeout(()=>s.classList.remove('shake'),300); });
-  }
-  function _pinShowError(msg){
-    const e=document.getElementById('pinError'); e.textContent=msg; e.classList.remove('hidden');
-    setTimeout(()=>e.classList.add('hidden'),2200);
-  }
-  function pinInput(d){
-    if(_pinBuf.length>=4) return;
-    _pinBuf+=d; _updatePinDots();
-    if(_pinBuf.length===4) setTimeout(_processPinComplete,150);
-  }
-  function pinDelete(){ if(_pinBuf.length>0){ _pinBuf=_pinBuf.slice(0,-1); _updatePinDots(); } }
-  function _processPinComplete(){
-    if(_pinStep==='verify'){
-      const stored=localStorage.getItem('qw_pin_'+_pinPending);
-      if(_pinBuf===stored){ _closePinModal(); setProfile(_pinPending); }
-      else{ _pinShake(); _pinShowError('Code incorrect, réessaie'); _pinBuf=''; _updatePinDots(); }
-    } else if(_pinStep==='create'){
-      _pinFirst=_pinBuf; _pinBuf=''; _pinStep='confirm';
-      document.getElementById('pinSub').textContent='Confirme ton code';
-      _updatePinDots();
-    } else if(_pinStep==='confirm'){
-      if(_pinBuf===_pinFirst){
-        localStorage.setItem('qw_pin_'+_pinPending,_pinBuf);
-        _closePinModal(); setProfile(_pinPending);
-      } else{
-        _pinShake(); _pinShowError('Les codes ne correspondent pas');
-        _pinBuf=''; _pinFirst=''; _pinStep='create';
-        document.getElementById('pinSub').textContent='Choisis un code à 4 chiffres';
-        _updatePinDots();
-      }
-    }
-  }
-
   /* ---------- confidentialité ---------- */
   let privMode = "hierarchie";
   let privAutorises = [];
@@ -1847,7 +1764,9 @@
       headers:{"Content-Type":"text/plain"},
       body: JSON.stringify(Object.assign({token:authToken()}, payload))
     });
-    return r.json();
+    const data = await r.json().catch(()=>null);
+    if(isAuthFail(r.status, data)){ handleAuthFail(); throw new Error("auth"); }
+    return data;
   }
 
   function buildListeCheckboxes(){
@@ -1907,11 +1826,12 @@
         setTimeout(()=>closePrivModal(), 1400);
       } else {
         status.style.color = "#e23";
-        status.textContent = "⚠️ Erreur lors de la sauvegarde.";
+        status.textContent = "⚠️ Sauvegarde impossible pour le moment, réessaie.";
       }
     }catch(e){
+      console.warn("savePrefs:", e);
       status.style.color = "#e23";
-      status.textContent = "⚠️ Connexion impossible au service de préférences.";
+      status.textContent = "⚠️ Fonction momentanément indisponible, réessaie dans un instant.";
     } finally { btn.disabled=false; }
   }
 
@@ -1948,7 +1868,9 @@
       headers:{"Content-Type":"text/plain"},
       body: JSON.stringify(Object.assign({token:authToken()}, payload))
     });
-    return r.json();
+    const data = await r.json().catch(()=>null);
+    if(isAuthFail(r.status, data)){ handleAuthFail(); throw new Error("auth"); }
+    return data;
   }
 
   function nomDepuisCle(cle){
@@ -2007,18 +1929,22 @@
   async function loadPending(){
     const pane=document.getElementById("panerPending");
     pane.innerHTML='<div class="trans-empty">Chargement…</div>';
+    const _to=setTimeout(()=>{ pane.innerHTML='<div class="trans-empty">⚠️ Impossible de charger pour le moment, réessaie.</div>'; },8000);
     try{
       const data=await transCall({action:"pending", cle:toCle(profil)});
+      clearTimeout(_to);
       if(data && data.ok) renderPending(data.pending||[]);
-      else pane.innerHTML='<div class="trans-empty">⚠️ Impossible de charger les demandes.</div>';
-    }catch(e){ pane.innerHTML='<div class="trans-empty">⚠️ Connexion impossible. Le workflow « Transparence » est-il activé dans n8n ?</div>'; }
+      else pane.innerHTML='<div class="trans-empty">⚠️ Impossible de charger les demandes pour le moment.</div>';
+    }catch(e){ clearTimeout(_to); console.warn("loadPending:", e); pane.innerHTML='<div class="trans-empty">⚠️ Fonction momentanément indisponible, réessaie dans un instant.</div>'; }
   }
 
   async function loadHistory(){
     const pane=document.getElementById("panerHistory");
     pane.innerHTML='<div class="trans-empty">Chargement…</div>';
+    const _to=setTimeout(()=>{ pane.innerHTML='<div class="trans-empty">⚠️ Impossible de charger pour le moment, réessaie.</div>'; },8000);
     try{
       const data=await transCall({action:"history", cle:toCle(profil)});
+      clearTimeout(_to);
       if(!data || !data.ok){ pane.innerHTML='<div class="trans-empty">⚠️ Impossible de charger l\'historique.</div>'; return; }
       const hist=data.historique||[];
       if(!hist.length){ pane.innerHTML='<div class="trans-empty">Personne n\'a encore consulté ta boîte.</div>'; return; }
@@ -2038,7 +1964,7 @@
           `</div>`;
         pane.appendChild(row);
       });
-    }catch(e){ pane.innerHTML='<div class="trans-empty">⚠️ Connexion impossible.</div>'; }
+    }catch(e){ clearTimeout(_to); console.warn("loadHistory:", e); pane.innerHTML='<div class="trans-empty">⚠️ Fonction momentanément indisponible, réessaie dans un instant.</div>'; }
   }
 
   function renderThemesInto(pane, introHtml){
@@ -2248,13 +2174,24 @@
       if(running) requestAnimationFrame(loop);
     }
     function start(){ if(running) return; running=true; last=performance.now(); requestAnimationFrame(loop); }
-    start();
+    // #68 : respect de prefers-reduced-motion — on ne démarre pas la boucle d'étoiles
+    const _reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(_reduceMotion){ starsOn=false; if(toggleBtn) toggleBtn.setAttribute("aria-pressed","false"); }
+    else start();
     document.addEventListener("visibilitychange",()=>{ if(document.hidden){ running=false; } else if(starsOn){ start(); } });
   })();
 
   /* ---------- Connexion par compte (jeton de session) ---------- */
   function loadSession(){ try{ return JSON.parse(localStorage.getItem("qw_session")||"null"); }catch(e){ return null; } }
   function sessionValide(s){ return !!(s && s.token && s.profil && s.exp && Date.now() < s.exp); }
+  // #29/#65/#80/#81 : gestion centralisée d'une session expirée / invalide
+  function handleAuthFail(){ try{ localStorage.removeItem("qw_session"); }catch(e){} try{ alert("Ta session a expiré, reconnecte-toi."); }catch(e){} showLogin(); }
+  // détecte un échec d'authentification depuis une réponse fetch (status) ou son JSON ({ok:false, message contenant 'session'})
+  function isAuthFail(status, data){
+    if(status===401 || status===403) return true;
+    if(data && data.ok===false && typeof data.message==="string" && /session/i.test(data.message)) return true;
+    return false;
+  }
   function loginStep(name){
     document.querySelectorAll("#loginOverlay .login-step").forEach(s=>s.classList.toggle("hidden", s.dataset.step!==name));
     const el=document.querySelector('#loginOverlay .login-step[data-step="'+name+'"]');
