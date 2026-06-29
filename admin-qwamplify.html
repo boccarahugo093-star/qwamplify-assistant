@@ -3241,6 +3241,7 @@ window.MEMORY_URL     = window.N8N + "/memoire-qwamplify";
 window.NOTES_READ_URL = window.N8N + "/notes-vacances-lire";
 window.ADMIN_COMPTES_URL = window.N8N + "/admin-comptes";
 window.ADMIN_DATA_URL = window.N8N + "/admin-data";
+window.TRANS_URL = window.N8N + "/transparence";
 window.authToken = function(){ try{ var s=JSON.parse(localStorage.getItem("qw_session")||"null"); return (s&&s.token)?s.token:""; }catch(e){ return ""; } };
 window.n8nCall = function(url, payload){
   return fetch(url, {method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify(payload||{})})
@@ -3253,6 +3254,20 @@ window.init_overview = function () {
   panel.dataset.init = '1';
 
   var toast = function (m) { if (window.toast) window.toast(m); };
+
+  // KPIs REELS (via admin-data)
+  function loadStats(){
+    function setKpi(id,val,label){ var el=document.getElementById(id); if(el){ el.textContent=val; if(label){ var lab=el.parentNode.querySelector('.kpi-label'); if(lab) lab.textContent=label; } } }
+    window.n8nCall(window.ADMIN_DATA_URL, {token:window.authToken(), action:'stats'})
+      .then(function(res){ if(!res||res.ok===false||!res.stats) return; var s=res.stats;
+        setKpi('overview-kpi-users', s.actifs, 'Utilisateurs actifs');
+        setKpi('overview-kpi-req', s.acces_total, 'Acces journalises');
+        setKpi('overview-kpi-cost', '—', 'Cout (suivi a venir)');
+        setKpi('overview-kpi-pending', s.attente, 'Comptes en attente');
+        setKpi('overview-kpi-sec', s.acces_refuses, 'Alertes securite');
+      }).catch(function(){});
+  }
+  loadStats();
 
   // Segmented control : plage de temps
   var seg = document.getElementById('overview-range');
@@ -3276,9 +3291,8 @@ window.init_overview = function () {
         var nv = Math.max(18, Math.min(96, cur + (Math.floor(Math.random() * 21) - 10)));
         bar.style.setProperty('--h', nv + '%');
       });
-      var req = document.getElementById('overview-kpi-req');
-      if (req) req.textContent = '0';
-      toast('Tableau de bord actualisÃ©');
+      loadStats();
+      toast('Tableau de bord actualise');
     });
   }
 
@@ -3979,8 +3993,36 @@ window.init_requests = function(){
     if(empty) empty.hidden = active !== 0;
   }
 
-  // 1. Demandes en attente
+  // 1. Demandes en attente — DONNEES REELLES (acces refuses en attente, via admin-data)
   var pendingList = document.getElementById('requests-pending-list');
+  function reqEsc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function reqInit(s){ s=(s||'').toString().trim(); return (s? s.slice(0,2):'?').toUpperCase(); }
+  function renderPending(){
+    if(!pendingList) return;
+    pendingList.innerHTML='<div class="muted" style="padding:18px">Chargement des demandes...</div>';
+    window.n8nCall(window.ADMIN_DATA_URL, {token:window.authToken(), action:'requests'})
+      .then(function(res){
+        if(!res||res.ok===false){ throw new Error(res&&res.error?res.error:'Acces refuse'); }
+        var d=res.demandes||[];
+        if(!d.length){ pendingList.innerHTML='<div class="muted" style="padding:18px">Aucune demande d\'acces en attente. 🎉</div>'; updatePendingCount(); return; }
+        pendingList.innerHTML=d.map(function(x){
+          return '<article class="requests-req" data-cible="'+reqEsc(x.cible)+'" data-demandeur="'+reqEsc(x.demandeur)+'">'
+            +'<div class="requests-req-top"><div class="av">'+reqEsc(reqInit(x.demandeur))+'</div>'
+            +'<div class="requests-req-id"><div class="requests-req-who">'+reqEsc(x.demandeur)+'</div><div class="muted">a demande l\'acces a la boite de '+reqEsc(x.cible)+'</div></div>'
+            +'<span class="badge warn">En attente</span></div>'
+            +'<div class="requests-req-body">'
+            +'<div class="requests-req-row"><span class="muted">Boite cible</span><strong>'+reqEsc(x.cible)+'</strong></div>'
+            +'<div class="requests-req-row"><span class="muted">Recherche</span><span>'+reqEsc(x.requete||'-')+'</span></div>'
+            +'<div class="requests-req-row"><span class="muted">Motif du refus</span><span>'+reqEsc(x.raison||'-')+'</span></div>'
+            +'<div class="requests-req-row"><span class="muted">Le</span><span>'+reqEsc((x.date||'').toString().replace("T"," ").slice(0,16))+'</span></div>'
+            +'</div>'
+            +'<div class="requests-req-foot"><button class="btn primary sm" data-act="grant" type="button">Autoriser</button><button class="btn danger sm" data-act="deny" type="button">Refuser</button><button class="btn ghost sm" data-act="ignore" type="button">Ignorer</button></div>'
+            +'</article>';
+        }).join('');
+        updatePendingCount();
+      })
+      .catch(function(e){ pendingList.innerHTML='<div class="muted" style="padding:18px;color:#c0143c">Impossible de charger les demandes ('+reqEsc(e.message||e)+'). Workflow Admin-Donnees actif + connecte admin ?</div>'; });
+  }
   if(pendingList){
     pendingList.addEventListener('click', function(e){
       var btn = e.target.closest('button[data-act]');
@@ -3988,14 +4030,18 @@ window.init_requests = function(){
       var card = btn.closest('.requests-req');
       if(!card) return;
       var who = (card.querySelector('.requests-req-who') || {}).textContent || 'la demande';
+      var cible = card.getAttribute('data-cible')||'', dem = card.getAttribute('data-demandeur')||'';
       var act = btn.getAttribute('data-act');
-      if(act === 'grant'){ toast('Acces autorise pour ' + who + '.'); }
-      else if(act === 'deny'){ toast('Demande de ' + who + ' refusee.'); }
-      else if(act === 'ignore'){ toast('Demande de ' + who + ' ignoree.'); }
+      if(act === 'grant' && cible && dem){
+        window.n8nCall(window.TRANS_URL, {token:window.authToken(), action:'approve', cle:cible, beneficiaire:dem}).then(function(){ toast('Acces autorise : '+dem+' peut consulter la boite de '+cible+'.'); }).catch(function(){ toast('Echec de l\'autorisation.'); });
+      } else if(act === 'deny' && cible && dem){
+        window.n8nCall(window.TRANS_URL, {token:window.authToken(), action:'refuse', cle:cible, beneficiaire:dem}).then(function(){ toast('Demande de '+who+' refusee.'); }).catch(function(){ toast('Echec du refus.'); });
+      } else if(act === 'ignore'){ toast('Demande de '+who+' ignoree.'); }
       card.classList.add('requests-done');
       window.setTimeout(updatePendingCount, 40);
     });
   }
+  renderPending();
 
   // Filtre segmente
   var seg = document.getElementById('requests-seg-filter');
