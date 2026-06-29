@@ -1485,7 +1485,7 @@
   function renderConv(c){
     thread.innerHTML="";
     (c.msgs||[]).forEach(m=>{
-      if(m.r==="u") bulleUser(m.t, (m.a||[]).map(nm=>({name:nm, mimeType:"application/octet-stream"})));
+      if(m.r==="u") bulleUser(m.t, (m.a||[]).map(function(x){ return (typeof x==="string") ? {name:x, mimeType:"application/octet-stream"} : {name:x.name, mimeType:x.mimeType||"application/octet-stream", previewUrl:x.prev||x.previewUrl}; }));
       else bulle(m.t,"bot");
     });
     scroll.scrollTop=scroll.scrollHeight;
@@ -1500,7 +1500,8 @@
     const hero=document.getElementById("hero"); if(hero) hero.remove();
     bulleUser(q, attached);
     const attNames=attached.map(a=>a.name);
-    c.msgs.push({r:"u", t:q, a:attNames});
+    const attMeta=attached.map(a=>{ var o={name:a.name, mimeType:a.mimeType}; if(a.mimeType && a.mimeType.indexOf("image/")===0 && a.dataBase64 && a.dataBase64.length<900000){ o.prev="data:"+a.mimeType+";base64,"+a.dataBase64; } return o; });
+    c.msgs.push({r:"u", t:q, a:attMeta});
     if(c.title==="Nouvelle conversation"){ c.title=(q || attNames[0] || "Fichier joint").slice(0,36); }
     const filesPayload=attached.map(f=>({name:f.name, mimeType:f.mimeType, dataBase64:f.dataBase64}));
     clearAttachments();

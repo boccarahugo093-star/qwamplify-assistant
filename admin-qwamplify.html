@@ -4511,6 +4511,13 @@ window.init_usage = function(){
   var kc = document.getElementById('usage-kpi-cost'); if(kc) kc.innerHTML = (REQ*unit).toFixed(2).replace('.',',') + ' <span class="usage-cur">\u20ac</span>';
   var kr = document.getElementById('usage-kpi-req'); if(kr) kr.textContent = REQ.toLocaleString('fr-FR');
   var ku = document.getElementById('usage-kpi-unit'); if(ku) ku.innerHTML = unit.toFixed(3).replace('.',',') + ' <span class="usage-cur">\u20ac</span>';
+  // Indicateur REEL d'activite : nombre d'acces journalises (vrai usage des outils IA)
+  window.n8nCall(window.ADMIN_DATA_URL, {token:window.authToken(), action:'stats'}).then(function(res){
+    if(!res||!res.stats) return; var n=Number(res.stats.acces_total)||0;
+    if(kc) kc.innerHTML=(n*unit).toFixed(2).replace('.',',')+' <span class="usage-cur">\u20ac</span>';
+    if(kr) kr.textContent=n.toLocaleString('fr-FR');
+    var lab=kr?kr.parentNode.querySelector('.kpi-label'):null; if(lab) lab.textContent='Acces journalises (estim. cout)';
+  }).catch(function(){});
   var BUDGETS = [{pole:'Commerce',cap:50},{pole:'IT',cap:30},{pole:'Crea',cap:20}];
   var grid = document.getElementById('usage-budget-grid');
   if(grid){ grid.innerHTML = BUDGETS.map(function(b){
