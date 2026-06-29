@@ -902,6 +902,7 @@
   const NOTES_WRITE_URL = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/notes-vacances-ecrire";
   const CONNEXION_URL   = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/connexion-qwamplify";
   const DEFINIR_URL     = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/definir-mot-de-passe";
+  const CONV_URL        = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/conversations-qwamplify";
   // Authentification : on n'envoie plus de secret en dur, mais le JETON de session (obtenu à la connexion).
   function authToken(){ try{ const s=JSON.parse(localStorage.getItem("qw_session")||"null"); return (s&&s.token)?s.token:""; }catch(e){ return ""; } }
 
@@ -1197,10 +1198,37 @@
 
   function histKey(p){ return "qw_hist_"+p; }
   function loadConvs(p){ try{ return JSON.parse(localStorage.getItem(histKey(p))||"[]"); }catch(e){ return []; } }
-  function saveConvs(){ if(profil) localStorage.setItem(histKey(profil), JSON.stringify(convs)); }
+  function saveConvs(){ if(profil) localStorage.setItem(histKey(profil), JSON.stringify(convs)); scheduleServerSave(); }
   function foldKey(p){ return "qw_folders_"+p; }
   function loadFolders(p){ try{ return JSON.parse(localStorage.getItem(foldKey(p))||"[]"); }catch(e){ return []; } }
-  function saveFolders(){ if(profil) localStorage.setItem(foldKey(profil), JSON.stringify(folders)); }
+  function saveFolders(){ if(profil) localStorage.setItem(foldKey(profil), JSON.stringify(folders)); scheduleServerSave(); }
+  /* ---- Sauvegarde des conversations CÔTÉ SERVEUR (suit l'utilisateur sur tous ses appareils) ---- */
+  let _convSaveTimer=null;
+  function scheduleServerSave(){
+    if(!profil) return;
+    const tok=authToken(); if(!tok) return;
+    clearTimeout(_convSaveTimer);
+    _convSaveTimer=setTimeout(function(){
+      try{
+        fetch(CONV_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({token:authToken(),action:"save",data:JSON.stringify({convs:convs,folders:folders})})}).catch(function(){});
+      }catch(e){}
+    }, 1500);
+  }
+  async function serverSyncConvs(){
+    const tok=authToken(); if(!tok) return;
+    try{
+      const r=await fetch(CONV_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({token:tok,action:"load"})});
+      const d=await r.json();
+      if(d && d.ok && d.data){
+        let blob=null; try{ blob=JSON.parse(d.data); }catch(e){ blob=null; }
+        if(blob && Array.isArray(blob.convs)){
+          convs=blob.convs; folders=Array.isArray(blob.folders)?blob.folders:[];
+          if(profil){ localStorage.setItem(histKey(profil),JSON.stringify(convs)); localStorage.setItem(foldKey(profil),JSON.stringify(folders)); }
+          if(convs.length){ if(!convs.find(c=>c.id===convId)) openConv(convs[0].id); else renderHistList(); } else renderHistList();
+        }
+      }
+    }catch(e){}
+  }
   function initials(n){ return n ? n.trim().slice(0,1).toUpperCase() : "?"; }
 
   input.addEventListener("input",()=>{input.style.height="auto";input.style.height=Math.min(input.scrollHeight,160)+"px";});
@@ -1326,11 +1354,16 @@
   function openProfileMenu(){ buildProfileMenu(); const m=document.getElementById("profileMenu"); if(m) m.classList.remove("hidden"); }
   function closeProfileMenu(){ const m=document.getElementById("profileMenu"); if(m) m.classList.add("hidden"); }
 
-  function setProfile(name){
+  async function setProfile(name){
     profil=name; localStorage.setItem("qw_profil",name);
     convs=loadConvs(name); folders=loadFolders(name);
     updateProfileUI(); enableComposer(true); closeProfileMenu();
-    if(convs.length) openConv(convs[0].id); else newConv();
+    // 1) rendu immédiat depuis le cache local (rapide)
+    if(convs.length) openConv(convs[0].id); else renderHistList();
+    // 2) le serveur est la source de vérité (suit l'utilisateur sur tous ses appareils)
+    await serverSyncConvs();
+    // 3) si vraiment aucune conversation (ni locale ni serveur), en créer une vierge
+    if(!convs.length) newConv();
     if(typeof refreshAccessReminder==="function") refreshAccessReminder();
     if(typeof refreshPendingBadge==="function") refreshPendingBadge();
   }
