@@ -3240,6 +3240,7 @@ window.N8N            = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook";
 window.MEMORY_URL     = window.N8N + "/memoire-qwamplify";
 window.NOTES_READ_URL = window.N8N + "/notes-vacances-lire";
 window.ADMIN_COMPTES_URL = window.N8N + "/admin-comptes";
+window.ADMIN_DATA_URL = window.N8N + "/admin-data";
 window.authToken = function(){ try{ var s=JSON.parse(localStorage.getItem("qw_session")||"null"); return (s&&s.token)?s.token:""; }catch(e){ return ""; } };
 window.n8nCall = function(url, payload){
   return fetch(url, {method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify(payload||{})})
@@ -3537,23 +3538,22 @@ window.init_security = function(){
     return ((p[0]||'')[0]||'') + ((p[p.length-1]||'')[0]||'');
   }
 
-  // Donnees mock du journal d'acces (juin 2026)
-  var rows = [
-    {from:'Hugo BOCCARA', to:'Leo SINGLARD', theme:'T0', verdict:'ko', reason:'Acces ascendant interdit (N+1 financier)', date:'23/06/2026 09:42'},
-    {from:'Patrick GOUGEON', to:'Marjorie DIEN', theme:'T1', verdict:'ko', reason:'Donnees RH hors perimetre commercial', date:'23/06/2026 08:17'},
-    {from:'Sarra DJAOUI', to:'Sarra DJAOUI', theme:'T2', verdict:'ok', reason:'Lecture de sa propre boite pro', date:'23/06/2026 08:05'},
-    {from:'David QUARTINO', to:'Jeremie FLAHAUT', theme:'T3', verdict:'ok', reason:'Acces descendant (lead vers equipe IT)', date:'22/06/2026 18:51'},
-    {from:'Tamsir SENE', to:'Tamsir SENE', theme:'T2', verdict:'ok', reason:'Resume de fil client autorise', date:'22/06/2026 23:38'},
-    {from:'Franck RAMOS', to:'Patrick GOUGEON', theme:'T2', verdict:'ok', reason:'Acces descendant (directeur vers DC)', date:'22/06/2026 16:22'},
-    {from:'Alize TERLAUD', to:'Valentine VERSON', theme:'T1', verdict:'ko', reason:'RH reserve au responsable de pole', date:'22/06/2026 14:09'},
-    {from:'Guillaume PERONA', to:'Guillaume PERONA', theme:'T3', verdict:'ok', reason:'Recherche dans sa boite perso', date:'22/06/2026 11:47'},
-    {from:'Leo SINGLARD', to:'Hugo BOCCARA', theme:'T3', verdict:'ok', reason:'Acces descendant (DC vers stagiaire)', date:'22/06/2026 10:33'},
-    {from:'Marjorie DIEN', to:'Franck RAMOS', theme:'T0', verdict:'ok', reason:'Acces descendant racine vers directeur', date:'21/06/2026 17:58'},
-    {from:'Patrick GOUGEON', to:'Marjorie DIEN', theme:'T1', verdict:'ko', reason:'Tentative RH repetee (3/8)', date:'21/06/2026 15:14'},
-    {from:'Valentine VERSON', to:'Alize TERLAUD', theme:'T4', verdict:'ok', reason:'Acces descendant (studio, theme public)', date:'21/06/2026 09:26'}
-  ];
+  // Donnees REELLES du journal d'acces (table journal_consultations via admin-data)
+  var rows = [];
+  function cap(s){ s=(s||'').toString(); return s?s.charAt(0).toUpperCase()+s.slice(1):s; }
+  function mapJournal(j){
+    var raison=(j.raison||'').toString().toLowerCase();
+    var theme='T4';
+    if(/rgpd|personnel|intim|sant|priv|identit/.test(raison)) theme='T0';
+    else if(/\brh\b|remuner|salaire|paie|contrat|licenci/.test(raison)) theme='T1';
+    else if(/financ|juridiqu|dette|impot|huissier/.test(raison)) theme='T2';
+    else if(/carrier|carrière|evaluation|promotion|entretien/.test(raison)) theme='T3';
+    var d=(j.date||'').toString(), dt=null; try{ dt=new Date(d); }catch(e){}
+    var ds=(dt&&!isNaN(dt.getTime()))?(('0'+dt.getDate()).slice(-2)+'/'+('0'+(dt.getMonth()+1)).slice(-2)+'/'+dt.getFullYear()+' '+('0'+dt.getHours()).slice(-2)+':'+('0'+dt.getMinutes()).slice(-2)):d;
+    return { from:cap(j.demandeur), to:cap(j.cible), theme:theme, verdict:(j.autorise?'ok':'ko'), reason:(j.raison||''), date:ds };
+  }
 
-  var themeLabel = {T0:'T0 Finance',T1:'T1 RH',T2:'T2 Commercial',T3:'T3 Operationnel',T4:'T4 Public'};
+  var themeLabel = {T0:'T0 RGPD/Perso',T1:'T1 RH',T2:'T2 Finances/Juridique',T3:'T3 Carriere',T4:'T4 Public'};
 
   function rowHtml(r){
     var chip = '<span class="chip security-th security-th-'+r.theme+'">'+themeLabel[r.theme]+'</span>';
@@ -3634,7 +3634,7 @@ window.init_security = function(){
   };
 
   var refreshBtn = document.getElementById('security-refresh');
-  if(refreshBtn) refreshBtn.onclick = function(){ render(); toast('Journal rafraichi'); };
+  if(refreshBtn) refreshBtn.onclick = function(){ load(); toast('Journal rafraichi'); };
 
   function doExport(){
     var n = body.querySelectorAll('tr').length;
@@ -3692,7 +3692,19 @@ window.init_security = function(){
   if(mOk) mOk.onclick = closeModal;
   if(ovl) ovl.onclick = function(e){ if(e.target===ovl) closeModal(); };
 
-  render();
+  function load(){
+    if(body) body.innerHTML='<tr><td colspan="5"><span class="muted">Chargement du journal...</span></td></tr>';
+    window.n8nCall(window.ADMIN_DATA_URL, {token:window.authToken(), action:'journal'})
+      .then(function(res){
+        if(!res||res.ok===false){ throw new Error(res&&res.error?res.error:'Acces refuse'); }
+        rows=(res.journal||[]).map(mapJournal);
+        if(fPerson){ var set={}; rows.forEach(function(r){ if(r.from)set[r.from]=1; if(r.to)set[r.to]=1; }); var names=Object.keys(set).sort(); fPerson.innerHTML='<option value="">Toutes les personnes</option>'+names.map(function(n){return '<option>'+esc2(n)+'</option>';}).join(''); }
+        render();
+      })
+      .catch(function(e){ rows=[]; if(body) body.innerHTML='<tr><td colspan="5"><span class="muted" style="color:#c0143c">Impossible de charger le journal ('+(e.message||e)+'). Verifie que le workflow Admin-Donnees est actif et que tu es connecte en admin.</span></td></tr>'; if(countEl) countEl.textContent='Erreur'; });
+  }
+  function esc2(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  load();
 };
 
 window.init_themes = function () {
