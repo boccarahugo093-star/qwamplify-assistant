@@ -852,6 +852,23 @@
     </div>
   </div>
 
+  <!-- ===================== WIDGET FEEDBACK (réclamation / bug / amélioration) ===================== -->
+  <button id="fbBtn" type="button" aria-label="Donner un retour" title="Réclamation, bug ou amélioration" style="position:fixed;right:18px;bottom:18px;z-index:60;align-items:center;gap:7px;display:flex;background:#354BE7;color:#fff;border:none;border-radius:24px;padding:11px 16px;font:600 13px/1 -apple-system,Segoe UI,Roboto,sans-serif;box-shadow:0 8px 24px rgba(53,75,231,.35);cursor:pointer">💬 Un retour ?</button>
+  <div id="fbPanel" role="dialog" aria-label="Donner un retour" style="position:fixed;right:18px;bottom:70px;z-index:61;width:320px;max-width:calc(100vw - 36px);display:none;background:#fff;border:1px solid #e3e8f5;border-radius:16px;box-shadow:0 18px 50px rgba(11,14,29,.18);padding:16px;font:14px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;color:#1a2238">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <strong style="font-size:14px">Un retour à nous faire ?</strong>
+      <button id="fbClose" type="button" aria-label="Fermer" style="background:none;border:none;font-size:20px;color:#6b7280;cursor:pointer;line-height:1">×</button>
+    </div>
+    <label for="fbType" style="font-size:12px;color:#5a6385">Type</label>
+    <select id="fbType" style="width:100%;margin:4px 0 10px;padding:8px;border:1px solid #e3e8f5;border-radius:9px;font:inherit;font-size:13px">
+      <option>Réclamation</option><option>Bug</option><option>Amélioration</option><option>Autre</option>
+    </select>
+    <label for="fbMsg" style="font-size:12px;color:#5a6385">Ton message</label>
+    <textarea id="fbMsg" rows="4" maxlength="4000" placeholder="Décris ton retour, un bug, une idée d'amélioration…" style="width:100%;margin:4px 0 10px;padding:9px;border:1px solid #e3e8f5;border-radius:9px;font:inherit;font-size:13px;resize:vertical;box-sizing:border-box"></textarea>
+    <button id="fbSend" type="button" style="width:100%;background:#354BE7;color:#fff;border:none;border-radius:10px;padding:10px;font:600 13px/1 -apple-system,Segoe UI,Roboto,sans-serif;cursor:pointer">Envoyer</button>
+    <div id="fbStatus" style="font-size:12px;margin-top:8px;text-align:center;min-height:14px"></div>
+  </div>
+
 <script>
   /* ============================ RÉGLAGES ============================ */
   const WEBHOOK_URL = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/17d87543-8aaa-43e8-815f-1b0fd92752f9/chat";
@@ -2313,6 +2330,32 @@
     const s=loadSession();
     if(sessionValide(s)){ enterApp(s.profil, s.role); }
     else { localStorage.removeItem("qw_session"); enableComposer(false); updateProfileUI(); renderHistList(); showLogin(); }
+  })();
+
+  /* ===================== WIDGET FEEDBACK (#E) ===================== */
+  (function(){
+    const FEEDBACK_URL = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook/feedback-qwamplify";
+    const btn=document.getElementById("fbBtn"), panel=document.getElementById("fbPanel"), closeB=document.getElementById("fbClose"), sendB=document.getElementById("fbSend"), typeS=document.getElementById("fbType"), msgT=document.getElementById("fbMsg"), st=document.getElementById("fbStatus");
+    if(!btn||!panel||!sendB) return;
+    function closeP(){ panel.style.display="none"; }
+    function openP(){ panel.style.display="block"; if(st) st.textContent=""; setTimeout(function(){ if(msgT) msgT.focus(); },50); }
+    btn.addEventListener("click", function(){ if(panel.style.display==="block") closeP(); else openP(); });
+    if(closeB) closeB.addEventListener("click", closeP);
+    document.addEventListener("keydown", function(e){ if(e.key==="Escape" && panel.style.display==="block") closeP(); });
+    sendB.addEventListener("click", async function(){
+      const message=(msgT.value||"").trim();
+      if(message.length<3){ st.style.color="#c0143c"; st.textContent="Écris au moins quelques mots."; return; }
+      let token="";
+      try{ const s=(typeof loadSession==="function")?loadSession():null; token=(s&&s.token)?s.token:((typeof authToken==="function")?authToken():""); }catch(e){}
+      sendB.disabled=true; sendB.textContent="Envoi…"; st.style.color="#5a6385"; st.textContent="";
+      try{
+        const r=await fetch(FEEDBACK_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({token:token,type:typeS.value,message:message})});
+        const d=await r.json().catch(function(){return {};});
+        if(d&&d.ok){ st.style.color="#2e7d6b"; st.textContent="Merci, ton retour a bien été envoyé ! 🙌"; msgT.value=""; setTimeout(closeP,1600); }
+        else { st.style.color="#c0143c"; st.textContent=(d&&d.message)||"Envoi impossible, réessaie."; }
+      }catch(e){ console.warn("feedback:",e); st.style.color="#c0143c"; st.textContent="Connexion impossible, réessaie."; }
+      finally{ sendB.disabled=false; sendB.textContent="Envoyer"; }
+    });
   })();
 </script>
 </body>
