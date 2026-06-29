@@ -2273,6 +2273,7 @@
         enterApp(data.profil, data.role||"user");
       } else if(data && data.needSet){
         window._setEmail = data.email || email;
+        window._setCode = pwd; // code d'accès partagé saisi à la connexion (revérifié côté serveur)
         const lp=document.getElementById("loginPwd"); if(lp) lp.style.display="none";
         const pl=document.getElementById("loginPwdLab"); if(pl) pl.style.display="none";
         const lb=document.getElementById("loginBtn"); if(lb) lb.style.display="none";
@@ -2294,7 +2295,7 @@
     if(p1!==p2){ errEl.textContent="Les deux mots de passe ne correspondent pas."; return; }
     const btn=document.getElementById("loginSetBtn"); btn.disabled=true; btn.textContent="Création…";
     try{
-      const r=await fetch(DEFINIR_URL,{ method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify({email:window._setEmail, password:p1}) });
+      const r=await fetch(DEFINIR_URL,{ method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify({email:window._setEmail, password:p1, code:window._setCode||""}) });
       const data=await r.json();
       if(data && data.ok && data.token){
         const exp=Date.now()+11*60*60*1000;
