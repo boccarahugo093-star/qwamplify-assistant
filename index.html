@@ -242,6 +242,7 @@
   body.qw-txt-grand .msg .body,body.qw-txt-grand #input{font-size:16px}
   body.qw-no-anim *{animation:none!important;transition:none!important}
   body.qw-no-anim #fx{display:none}
+  @media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important} #fx,#starfield{display:none} }
   /* --- page de connexion (Qui es-tu ?) --- */
   .login-ovl{position:fixed;inset:0;z-index:10001;display:flex;align-items:center;justify-content:center;overflow:hidden;
     background:radial-gradient(1200px 700px at 50% -15%, #5e72f0 0%, #354BE7 38%, #1b2a8a 100%);padding:22px}
@@ -657,7 +658,7 @@
   <!-- ===================== BARRE LATÉRALE ===================== -->
   <aside id="sidebar">
     <div class="sb-head">
-      <img src="assets/Qwamplify.svg" alt="Owamplify" />
+      <img src="assets/Qwamplify.svg" alt="Qwamplify" />
       <span class="sb-ai">.ai</span>
     </div>
     <button id="newConv" class="sb-newbtn" type="button">
@@ -875,7 +876,7 @@
       </svg>
     </button>
     <div class="scroll" id="scroll">
-      <div class="thread" id="thread">
+      <div class="thread" id="thread" role="log" aria-live="polite" aria-relevant="additions">
         <div class="hero" id="hero">
           <h1>Bonjour 👋 Comment puis-je vous aider ?</h1>
           <p>Je suis l'assistant intelligent de Qwamplify, propulsé par Claude. Posez-moi vos questions.</p>
