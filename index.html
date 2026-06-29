@@ -1268,7 +1268,7 @@
   const attachZone = document.getElementById("attachments");
   const MAX_BYTES = 5 * 1024 * 1024;   // 5 Mo par fichier (limite Claude)
 
-  function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));}
+  function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
 
   attachBtn.addEventListener("click",()=>fileInput.click());
   fileInput.addEventListener("change",()=>{
@@ -1418,6 +1418,9 @@
   }
   function newConv(){
     if(!profil) return;
+    // éviter d'empiler des conversations vides : réutiliser une vide existante
+    const vide=convs.find(x=>!x.msgs || x.msgs.length===0);
+    if(vide){ convId=vide.id; renderHistList(); showHero(); if(!input.disabled) input.focus(); return; }
     const c={ id:"c"+Math.random().toString(36).slice(2)+Date.now(), title:"Nouvelle conversation", ts:Date.now(), msgs:[] };
     convs.unshift(c); convId=c.id; saveConvs();
     renderHistList(); showHero(); if(!input.disabled) input.focus();
@@ -1538,6 +1541,8 @@
   }
 
   async function envoyer(){
+    if(window._qwSending) return;
+    const _sess=loadSession(); if(!sessionValide(_sess)){ showLogin(); return; }
     if(!profil){ openProfileMenu(); return; }
     const q=input.value.trim();
     if(!q && attached.length===0) return;
@@ -1553,6 +1558,7 @@
     clearAttachments();
     input.value=""; input.style.height="auto"; sendBtn.disabled=true;
     saveConvs(); renderHistList();
+    window._qwSending=true;
     const typing=bulleTyping();
     try{
       const headers={"Content-Type":"application/json"};
@@ -1565,8 +1571,8 @@
       c.msgs.push({r:"b", t:rep}); saveConvs();
     }catch(err){
       typing.remove();
-      bulle("⚠️ Connexion au bot impossible. Vérifie l'URL du webhook, le CORS et le mot de passe dans n8n.","bot");
-    }finally{ sendBtn.disabled=false; if(!input.disabled) input.focus(); }
+      bulle("⚠️ Je n'arrive pas à joindre l'assistant pour le moment. Réessaie dans un instant.","bot");
+    }finally{ window._qwSending=false; sendBtn.disabled=false; if(!input.disabled) input.focus(); }
   }
 
   /* ---------- mémoire de l'IA ---------- */
@@ -1875,7 +1881,7 @@
     try{
       const data = await prefCall({action:"get", cle});
       privMode = (data.mode||"hierarchie").toLowerCase();
-      privAutorises = (data.autorises||"").split(/[ ,;]+/).filter(Boolean);
+      privAutorises = (Array.isArray(data.autorises)?data.autorises:String(data.autorises||"").split(/[ ,;]+/)).filter(Boolean);
     }catch(e){ privMode="hierarchie"; privAutorises=[]; }
     document.querySelectorAll("#modeGrid .mode-card").forEach(c=>{
       c.classList.toggle("active", c.dataset.mode===privMode);
@@ -2324,7 +2330,7 @@
     const p1=document.getElementById("loginNewPwd").value||"";
     const p2=document.getElementById("loginNewPwd2").value||"";
     const errEl=document.getElementById("loginErr"); errEl.textContent="";
-    if(p1.length<6){ errEl.textContent="Mot de passe trop court (min. 6 caractères)."; return; }
+    if(p1.length<8 || !/[A-Za-z]/.test(p1) || !/[0-9]/.test(p1)){ errEl.textContent="Mot de passe trop faible (min. 8 caractères, avec lettres ET chiffres)."; return; }
     if(p1!==p2){ errEl.textContent="Les deux mots de passe ne correspondent pas."; return; }
     const btn=document.getElementById("loginSetBtn"); btn.disabled=true; btn.textContent="Création…";
     try{
