@@ -3241,6 +3241,7 @@ window.MEMORY_URL     = window.N8N + "/memoire-qwamplify";
 window.NOTES_READ_URL = window.N8N + "/notes-vacances-lire";
 window.ADMIN_COMPTES_URL = window.N8N + "/admin-comptes";
 window.ADMIN_DATA_URL = window.N8N + "/admin-data";
+window.ADMIN_PARAMS_URL = window.N8N + "/admin-parametres";
 window.TRANS_URL = window.N8N + "/transparence";
 window.qwSession = function(){ try{ return JSON.parse(localStorage.getItem("qw_session")||"null"); }catch(e){ return null; } };
 window.qwSessionExpired = function(s){ if(s===undefined) s=window.qwSession(); if(!s||!s.token) return true; if(s.exp && (new Date(s.exp).getTime() < Date.now())) return true; return false; };
@@ -4802,7 +4803,21 @@ window.init_settings = function(){
         kpiTrend.className = 'kpi-trend ' + (on ? 'up' : 'down');
       }
       toast(on ? 'Assistant reactive pour toute l\'entreprise.' : 'Assistant mis en pause pour toute l\'entreprise.');
+      if(window.n8nCall && window.ADMIN_PARAMS_URL){ window.n8nCall(window.ADMIN_PARAMS_URL, {token:window.authToken(), action:'set', valeur: on?'on':'off'}).then(function(d){ if(!d||!d.ok){ toast('Echec de l\'enregistrement cote serveur.'); } }).catch(function(){ toast('Echec de l\'enregistrement cote serveur.'); }); }
     });
+  }
+  // Kill-Switch : refleter l'etat REEL depuis le serveur (table parametres)
+  if(ksInput && window.n8nCall && window.ADMIN_PARAMS_URL){
+    window.n8nCall(window.ADMIN_PARAMS_URL, {token:window.authToken(), action:'get'}).then(function(d){
+      if(d && d.assistant_actif){
+        var on = d.assistant_actif !== 'off';
+        ksInput.checked = on;
+        if(ksWrap) ksWrap.classList.toggle('off', !on);
+        if(ksState) ksState.textContent = on ? 'ON' : 'OFF';
+        if(ksBadge){ ksBadge.textContent = on ? 'EN LIGNE' : 'EN PAUSE'; ksBadge.className = 'badge ' + (on ? 'ok' : 'danger'); }
+        if(kpiStat) kpiStat.textContent = on ? 'Actif' : 'En pause';
+      }
+    }).catch(function(){});
   }
 
   // POLITIQUE D'ACCES (segmented control)
