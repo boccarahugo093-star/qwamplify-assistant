@@ -4820,6 +4820,25 @@ window.init_settings = function(){
   var btnReload = document.getElementById('settings-btn-reload');
   if(btnReload) btnReload.addEventListener('click', function(){ toast('Parametres recharges depuis le serveur.'); });
 
+  // --- PERSISTANCE des reglages (conserves d'une session a l'autre) ---
+  (function persistSettings(){
+    var SKEY='qw_adm_settings';
+    function loadS(){ try{ return JSON.parse(localStorage.getItem(SKEY)||'{}'); }catch(e){ return {}; } }
+    function saveS(p){ var s=loadS(); Object.assign(s,p); localStorage.setItem(SKEY,JSON.stringify(s)); }
+    var S=loadS();
+    // Restauration (sans toast)
+    if(color && S.color){ color.value=S.color; if(colorHex) colorHex.textContent=String(S.color).toUpperCase(); if(logoPrev) logoPrev.style.background='linear-gradient(135deg,'+S.color+','+S.color+')'; }
+    if(companyInput && S.company){ companyInput.value=S.company; if(logoPrev) logoPrev.textContent=(String(S.company).trim()[0]||'Q').toUpperCase(); }
+    if(seg && S.accesspol){ var bb=seg.querySelector('button[data-pol="'+S.accesspol+'"]'); if(bb){ seg.querySelectorAll('button').forEach(function(x){x.classList.remove('active');}); bb.classList.add('active'); panel.querySelectorAll('.settings-access-pol').forEach(function(p){ p.hidden=(p.getAttribute('data-for')!==S.accesspol); }); } }
+    if(ksInput && S.killswitch===false){ ksInput.checked=false; if(ksWrap)ksWrap.classList.add('off'); if(ksState)ksState.textContent='OFF'; if(ksBadge){ksBadge.textContent='EN PAUSE';ksBadge.className='badge danger';} if(kpiStat)kpiStat.textContent='En pause'; }
+    // Sauvegarde au changement
+    if(color) color.addEventListener('input', function(){ saveS({color:color.value}); });
+    if(companyInput) companyInput.addEventListener('input', function(){ saveS({company:companyInput.value}); });
+    if(seg) seg.addEventListener('click', function(e){ var b=e.target.closest('button[data-pol]'); if(b) saveS({accesspol:b.getAttribute('data-pol')}); });
+    if(ksInput) ksInput.addEventListener('change', function(){ saveS({killswitch:ksInput.checked}); });
+    if(btnSave) btnSave.addEventListener('click', function(){ saveS({color:color?color.value:'',company:companyInput?companyInput.value:'',killswitch:ksInput?ksInput.checked:true}); });
+  })();
+
   // ADMINS â€” modale d'ajout
   var btnAddAdmin = document.getElementById('settings-btn-add-admin');
   if(btnAddAdmin) btnAddAdmin.addEventListener('click', function(){ open('settings-ovl-admin'); });
