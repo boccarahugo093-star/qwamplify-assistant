@@ -3727,6 +3727,7 @@ window.init_security = function(){
 window.init_themes = function () {
   var root = document.getElementById('panel-themes');
   if (!root) return;
+  if(!root.querySelector('.demo-ref-banner')){ var _b=document.createElement('div'); _b.className='demo-ref-banner'; _b.style.cssText='margin:0 0 14px;padding:10px 14px;border-radius:10px;background:#eef1fb;border:1px solid #d7defa;color:#3a4566;font-size:13px'; _b.innerHTML='ℹ️ <b>Référence</b> — ces paliers de confidentialité (T0→T4) sont appliqués automatiquement par l\'IA à chaque accès aux boîtes. L\'édition en direct arrivera plus tard.'; var _h=root.querySelector('.sec-head'); if(_h&&_h.parentNode){ _h.parentNode.insertBefore(_b,_h.nextSibling); } else { root.insertBefore(_b,root.firstChild); } }
 
   // ---- DONNEES MOCK ----
   var PALIERS = [
@@ -4155,6 +4156,7 @@ window.init_tools = function(){
   var root = document.getElementById('panel-tools');
   if(!root) return;
   var toast = window.toast || function(m){ console.log('[toast]', m); };
+  if(!root.querySelector('.demo-ref-banner')){ var _b2=document.createElement('div'); _b2.className='demo-ref-banner'; _b2.style.cssText='margin:0 0 14px;padding:10px 14px;border-radius:10px;background:#eef1fb;border:1px solid #d7defa;color:#3a4566;font-size:13px'; _b2.innerHTML='ℹ️ <b>État des connecteurs</b> — vue indicative. La connexion réelle (identifiants) se gère dans n8n, de façon sécurisée.'; var _h2=root.querySelector('.sec-head'); if(_h2&&_h2.parentNode){ _h2.parentNode.insertBefore(_b2,_h2.nextSibling); } else { root.insertBefore(_b2,root.firstChild); } }
 
   /* ---------- Icones SVG (chaines reutilisables) ---------- */
   var ICONS = {
