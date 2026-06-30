@@ -2246,14 +2246,15 @@
     setTimeout(function(){ const ov=document.getElementById("loginOverlay"); if(ov && !ov.classList.contains("hidden")) loginStep("who"); }, 2200);
   }
   function hideLogin(){ const o=document.getElementById("loginOverlay"); if(o) o.classList.add("hidden"); }
-  function logout(){ localStorage.removeItem("qw_session"); location.reload(); }
+  function logout(){ localStorage.removeItem("qw_session"); try{ sessionStorage.removeItem("qw_intro_seen"); }catch(e){} location.reload(); }
   function enterApp(prof, role){
     window.qwRole = role || "user";
     hideLogin();
     setProfile(prof);   // entre dans l'app (déjà authentifié) — l'app reste masquée
-    // #100 : l'intro complète ne joue qu'à la 1re fois ; ensuite révélation instantanée
-    var introSeen=false; try{ introSeen=localStorage.getItem("qw_intro_seen")==="1"; }catch(e){}
-    if(!introSeen && typeof window.qwPlayIntro==="function"){ try{localStorage.setItem("qw_intro_seen","1");}catch(e){} window.qwPlayIntro(); }
+    // L'intro joue une fois par SESSION de navigateur (au 1er accès), pas à chaque rechargement ;
+    // un logout la ré-arme. (Avant : une seule fois "à vie" via localStorage — d'où "elle ne s'affiche plus".)
+    var introSeen=false; try{ introSeen=sessionStorage.getItem("qw_intro_seen")==="1"; }catch(e){}
+    if(!introSeen && typeof window.qwPlayIntro==="function"){ try{sessionStorage.setItem("qw_intro_seen","1");}catch(e){} window.qwPlayIntro(); }
     else { const app=document.getElementById("app"); if(app) app.style.opacity="1"; const intro=document.getElementById("intro"); if(intro) intro.style.display="none"; }
   }
   async function doLogin(){
