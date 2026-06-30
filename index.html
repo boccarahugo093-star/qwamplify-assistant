@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Qwamplify.ai · Assistant IA</title>
-<link rel="icon" href="assets/Favicon_noir.png" />
+<link rel="icon" href="../02_Qwamplify/Favicon_noir.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -591,7 +591,7 @@
     <div class="login-stage">
       <!-- étape 1 : accueil animé -->
       <div class="login-step" data-step="hello">
-        <div class="login-logo"><img src="assets/Qwamplify.svg" alt="Qwamplify" /><span class="login-ai">.ai</span></div>
+        <div class="login-logo"><img src="../02_Qwamplify/01_Logos vectoriels/Qwamplify.svg" alt="Qwamplify" /><span class="login-ai">.ai</span></div>
         <h1 class="login-hello" id="loginHello">Bienvenue</h1>
         <p class="login-hello-sub">Votre assistant intelligent Qwamplify</p>
       </div>
@@ -632,7 +632,7 @@
   <!-- ===================== BARRE LATÉRALE ===================== -->
   <aside id="sidebar">
     <div class="sb-head">
-      <img src="assets/Qwamplify.svg" alt="Qwamplify" />
+      <img src="../02_Qwamplify/01_Logos vectoriels/Qwamplify.svg" alt="Qwamplify" />
       <span class="sb-ai">.ai</span>
     </div>
     <button id="newConv" class="sb-newbtn" type="button">
@@ -1358,8 +1358,8 @@
     head.innerHTML=`<span class="pm-ava">${profil?initials(profil):"?"}</span><span><b>${profil?escapeHtml(profil):"—"}</b><br><small style="color:#5a6385;font-weight:500">Connecté${window.qwRole==='admin'?' · admin':''}</small></span>`;
     pm.appendChild(head);
     const sep=document.createElement("div"); sep.style.cssText="height:1px;background:#eef0f6;margin:6px 4px;"; pm.appendChild(sep);
-    // Console admin — uniquement pour le rôle admin
-    if(window.qwRole==='admin'){
+    // Console admin — accessible à tous : la porte de la console vérifie le code d'accès (les admins entrent directement)
+    {
       const adminIt=document.createElement("div");
       adminIt.className="pm-item pm-admin";
       adminIt.innerHTML='<span class="pm-ava" style="background:linear-gradient(135deg,#5e72f0,#2436a8)"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span>Console admin</span>';
