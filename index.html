@@ -612,15 +612,18 @@
           <label class="login-lab" for="loginEmail">Email</label>
           <input id="loginEmail" class="login-input" type="email" autocomplete="username" placeholder="prenom@qwamplify.com" />
           <label class="login-lab" id="loginPwdLab" for="loginPwd">Mot de passe</label>
-          <input id="loginPwd" class="login-input" type="password" autocomplete="current-password" placeholder="••••••••" />
+          <div class="pw-wrap" id="loginPwdWrap" style="position:relative">
+            <input id="loginPwd" class="login-input" type="password" autocomplete="current-password" placeholder="••••••••" style="padding-right:42px" />
+            <button type="button" class="pw-eye" tabindex="-1" aria-label="Afficher le mot de passe" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#8a93ad;padding:4px;display:flex;align-items:center"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
           <div id="loginErr" class="login-err"></div>
           <button id="loginBtn" class="login-btn" type="button">Se connecter</button>
           <div id="loginSetBlock" style="display:none">
             <div class="login-q-sub" style="margin:8px 0 12px">🔐 Première connexion — crée ton mot de passe</div>
             <label class="login-lab" for="loginNewPwd">Nouveau mot de passe</label>
-            <input id="loginNewPwd" class="login-input" type="password" autocomplete="new-password" placeholder="Choisis un mot de passe (min. 6 caractères)" />
+            <div class="pw-wrap" style="position:relative"><input id="loginNewPwd" class="login-input" type="password" autocomplete="new-password" placeholder="Choisis un mot de passe (min. 6 caractères)" style="padding-right:42px" /><button type="button" class="pw-eye" tabindex="-1" aria-label="Afficher le mot de passe" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#8a93ad;padding:4px;display:flex;align-items:center"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
             <label class="login-lab" for="loginNewPwd2">Confirme</label>
-            <input id="loginNewPwd2" class="login-input" type="password" autocomplete="new-password" placeholder="Retape ton mot de passe" />
+            <div class="pw-wrap" style="position:relative"><input id="loginNewPwd2" class="login-input" type="password" autocomplete="new-password" placeholder="Retape ton mot de passe" style="padding-right:42px" /><button type="button" class="pw-eye" tabindex="-1" aria-label="Afficher le mot de passe" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#8a93ad;padding:4px;display:flex;align-items:center"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
             <button id="loginSetBtn" class="login-btn" type="button">Créer mon mot de passe</button>
           </div>
         </div>
@@ -1914,6 +1917,15 @@
     document.getElementById("panerThemes").classList.toggle("active", name==="themes");
   }
 
+  function prettyRequete(q){
+    q=String(q||"").trim();
+    if(!q) return "une information (non précisée)";
+    if(/^to:/i.test(q)) return "les emails envoyés à "+q.replace(/^to:/i,"").trim();
+    if(/^from:/i.test(q)) return "les emails reçus de "+q.replace(/^from:/i,"").trim();
+    if(/^subject:/i.test(q)) return "les emails au sujet de « "+q.replace(/^subject:/i,"").trim()+" »";
+    if(/[a-z]+:/i.test(q)) return "des emails (recherche : "+q+")";
+    return "des informations à propos de « "+q+" »";
+  }
   function renderPending(list){
     const pane=document.getElementById("panerPending");
     const cnt=document.getElementById("pendCount");
@@ -1932,8 +1944,8 @@
       const it=document.createElement("div"); it.className="pend-item";
       it.innerHTML=
         `<div class="pend-who"><svg class="pend-ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>${escapeHtml(nom)}</div>`+
-        `<div class="pend-req">a demandé : <b>${escapeHtml(d.requete||"(sans détail)")}</b></div>`+
-        `<div class="pend-reason">Refusé automatiquement — ${escapeHtml(d.raison||"")}</div>`+
+        `<div class="pend-req">a recherché <b>${escapeHtml(prettyRequete(d.requete))}</b> dans ta boîte</div>`+
+        `<div class="pend-reason">Pourquoi c'était bloqué : ${escapeHtml(d.raison||"règle de confidentialité")}</div>`+
         `<div class="pend-actions">`+
           `<button class="pend-btn yes" data-cle="${escapeHtml(d.demandeur)}">✓ Autoriser</button>`+
           `<button class="pend-btn refuse" data-cle="${escapeHtml(d.demandeur)}">✕ Refuser</button>`+
@@ -2229,7 +2241,7 @@
     window._setEmail=null;
     // réinitialise l'état (au cas où on revient d'une création de mot de passe)
     const sbk=document.getElementById("loginSetBlock"); if(sbk) sbk.style.display="none";
-    const lpw=document.getElementById("loginPwd"); if(lpw){ lpw.style.display=""; lpw.value=""; }
+    const lpwW=document.getElementById("loginPwdWrap"); if(lpwW) lpwW.style.display=""; const lpw=document.getElementById("loginPwd"); if(lpw){ lpw.value=""; }
     const lpl=document.getElementById("loginPwdLab"); if(lpl) lpl.style.display="";
     const lbt=document.getElementById("loginBtn"); if(lbt) lbt.style.display="";
     loginStep("cred");
@@ -2275,7 +2287,7 @@
       } else if(data && data.needSet){
         window._setEmail = data.email || email;
         window._setCode = pwd; // code d'accès partagé saisi à la connexion (revérifié côté serveur)
-        const lp=document.getElementById("loginPwd"); if(lp) lp.style.display="none";
+        const lp=document.getElementById("loginPwdWrap"); if(lp) lp.style.display="none";
         const pl=document.getElementById("loginPwdLab"); if(pl) pl.style.display="none";
         const lb=document.getElementById("loginBtn"); if(lb) lb.style.display="none";
         const sb=document.getElementById("loginSetBlock"); if(sb) sb.style.display="block";
@@ -2307,6 +2319,9 @@
     finally{ btn.disabled=false; btn.textContent="Créer mon mot de passe"; }
   }
   (function wireLogin(){
+    var EYE_ON='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>';
+    var EYE_OFF='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>';
+    document.addEventListener("click",function(e){ var b=e.target.closest&&e.target.closest(".pw-eye"); if(!b)return; e.preventDefault(); var inp=b.parentNode.querySelector("input"); if(!inp)return; var show=inp.type==="password"; inp.type=show?"text":"password"; b.innerHTML=show?EYE_OFF:EYE_ON; b.setAttribute("aria-label", show?"Masquer le mot de passe":"Afficher le mot de passe"); });
     const b=document.getElementById("loginBtn"); if(b) b.addEventListener("click", doLogin);
     const p=document.getElementById("loginPwd"); if(p) p.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); doLogin(); } });
     const em=document.getElementById("loginEmail"); if(em) em.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); document.getElementById("loginPwd").focus(); } });
