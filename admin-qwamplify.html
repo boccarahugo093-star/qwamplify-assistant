@@ -9,9 +9,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   QWAMPLIFY — Console d'administration (v2)
-   Design system : rail sombre navy + canvas clair, Sora,
-   bleu #354BE7 dégradé, coins 18px, ombres douces.
+   QWAMPLIFY — Console d'administration (riche & 100% fonctionnelle)
+   Rail navy + canvas clair · Sora · bleu #354BE7 · coins 18px.
    Signature : "Pouls de l'assistant" (statut IA live + Kill-Switch).
    ============================================================ */
 :root{
@@ -24,339 +23,258 @@
   --ok:#16a34a; --ok-soft:#e7f6ed;
   --warn:#c77b00; --warn-soft:#fbf0db;
   --danger:#e11d48; --danger-soft:#fdecf1;
+  --purple:#7c3aed; --purple-soft:#f1ebfe; --teal:#0d9488; --teal-soft:#e0f5f2;
   --side:linear-gradient(180deg,#0b1030 0%,#141a3d 52%,#1b2256 100%);
   --r:18px; --r-sm:12px; --r-xs:9px;
   --sh:0 1px 2px rgba(16,24,64,.05), 0 10px 28px rgba(16,24,64,.07);
   --sh-lg:0 28px 70px rgba(11,16,48,.20);
-  --side-w:264px;
+  --side-w:266px;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
-body{
-  font-family:"Sora",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  color:var(--ink); background:var(--bg);
-  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
-  font-size:14.5px; line-height:1.55;
-}
-a{color:inherit}
+body{font-family:"Sora",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;font-size:14.5px;line-height:1.55}
 button{font-family:inherit}
 ::selection{background:rgba(53,75,231,.18)}
 .muted{color:var(--dim)}
-.mono{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.mono{font-variant-numeric:tabular-nums}
+.cell-mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.8rem;color:var(--dim)}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:#d3dbef;border-radius:8px;border:2px solid var(--bg)}::-webkit-scrollbar-thumb:hover{background:#bcc7e8}
 
-/* ---------- PORTE D'ACCÈS (code) ---------- */
-#gate{
-  position:fixed; inset:0; z-index:200; display:none;
-  align-items:center; justify-content:center; padding:24px;
-  background:var(--side);
-}
+/* ---------- PORTE D'ACCÈS ---------- */
+#gate{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:24px;background:var(--side)}
 #gate.show{display:flex}
-#gate::before{
-  content:""; position:absolute; inset:0;
-  background:
-    radial-gradient(60% 50% at 18% 12%, rgba(94,114,240,.34), transparent 60%),
-    radial-gradient(50% 45% at 86% 88%, rgba(53,75,231,.32), transparent 60%);
-  pointer-events:none;
-}
-.gate-card{
-  position:relative; width:100%; max-width:420px;
-  background:rgba(255,255,255,.06); backdrop-filter:blur(14px);
-  border:1px solid rgba(255,255,255,.16); border-radius:24px;
-  padding:38px 34px 34px; color:#fff; text-align:center;
-  box-shadow:0 40px 90px rgba(0,0,0,.4);
-  animation:gateIn .5s cubic-bezier(.2,.8,.2,1) both;
-}
+#gate::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 50% at 18% 12%,rgba(94,114,240,.34),transparent 60%),radial-gradient(50% 45% at 86% 88%,rgba(53,75,231,.32),transparent 60%);pointer-events:none}
+.gate-card{position:relative;width:100%;max-width:420px;background:rgba(255,255,255,.06);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.16);border-radius:24px;padding:38px 34px 34px;color:#fff;text-align:center;box-shadow:0 40px 90px rgba(0,0,0,.4);animation:gateIn .5s cubic-bezier(.2,.8,.2,1) both}
 @keyframes gateIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
-.gate-logo{
-  width:62px;height:62px;border-radius:18px;margin:0 auto 18px;
-  background:var(--grad); display:grid;place-items:center;
-  font-weight:800;font-size:30px;color:#fff;
-  box-shadow:0 14px 34px rgba(53,75,231,.5);
-}
-.gate-card h1{font-size:1.32rem;margin:0 0 6px;font-weight:700;letter-spacing:-.01em}
-.gate-card p{margin:0 0 24px;color:rgba(255,255,255,.66);font-size:.92rem;line-height:1.5}
+.gate-logo{width:62px;height:62px;border-radius:18px;margin:0 auto 18px;background:var(--grad);display:grid;place-items:center;font-weight:800;font-size:30px;color:#fff;box-shadow:0 14px 34px rgba(53,75,231,.5)}
+.gate-card h1{font-size:1.32rem;margin:0 0 6px;font-weight:700}
+.gate-card p{margin:0 0 24px;color:rgba(255,255,255,.66);font-size:.92rem}
 .gate-inputs{display:flex;gap:11px;justify-content:center;margin-bottom:8px}
-.gate-inputs input{
-  width:56px;height:66px;border-radius:15px;border:1.5px solid rgba(255,255,255,.2);
-  background:rgba(255,255,255,.08); color:#fff; text-align:center;
-  font-size:1.7rem; font-weight:700; outline:none; transition:.18s; font-family:inherit;
-}
+.gate-inputs input{width:56px;height:66px;border-radius:15px;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;text-align:center;font-size:1.7rem;font-weight:700;outline:none;transition:.18s;font-family:inherit}
 .gate-inputs input:focus{border-color:#fff;background:rgba(255,255,255,.16);box-shadow:0 0 0 4px rgba(255,255,255,.12)}
 #gate.err .gate-inputs{animation:shake .42s}
 @keyframes shake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-8px)}40%,60%{transform:translateX(8px)}}
 .gate-err{min-height:20px;color:#ffd0da;font-size:.86rem;font-weight:500;margin:6px 0 16px}
-.gate-btn{
-  width:100%;padding:14px;border:none;border-radius:14px;cursor:pointer;
-  background:#fff;color:var(--blue-3);font-weight:700;font-size:1rem;transition:.18s;font-family:inherit;
-}
+.gate-btn{width:100%;padding:14px;border:none;border-radius:14px;cursor:pointer;background:#fff;color:var(--blue-3);font-weight:700;font-size:1rem;transition:.18s;font-family:inherit}
 .gate-btn:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(0,0,0,.28)}
 .gate-foot{margin-top:18px;font-size:.78rem;color:rgba(255,255,255,.45)}
 .gate-back{display:inline-block;margin-top:14px;color:rgba(255,255,255,.7);font-size:.84rem;text-decoration:none;border-bottom:1px solid transparent}
 .gate-back:hover{border-color:rgba(255,255,255,.5)}
 
-/* ---------- COQUE APP ---------- */
-.app{display:none; min-height:100vh}
+/* ---------- COQUE ---------- */
+.app{display:none;min-height:100vh}
 .app.ready{display:flex}
-
-/* RAIL */
-.sidebar{
-  width:var(--side-w); flex:0 0 var(--side-w); position:sticky; top:0; height:100vh;
-  background:var(--side); color:#fff; display:flex; flex-direction:column;
-  padding:22px 16px 16px; overflow:hidden;
-}
+.sidebar{width:var(--side-w);flex:0 0 var(--side-w);position:sticky;top:0;height:100vh;background:var(--side);color:#fff;display:flex;flex-direction:column;padding:22px 14px 14px;overflow:hidden}
 .sidebar::after{content:"";position:absolute;inset:0;background:radial-gradient(70% 30% at 30% 0%,rgba(94,114,240,.22),transparent 60%);pointer-events:none}
-.sb-brand{display:flex;align-items:center;gap:12px;padding:4px 8px 22px;position:relative;z-index:1}
+.sb-brand{display:flex;align-items:center;gap:12px;padding:4px 8px 18px;position:relative;z-index:1}
 .sb-logo{width:42px;height:42px;border-radius:13px;background:var(--grad);display:grid;place-items:center;font-weight:800;font-size:21px;box-shadow:0 10px 24px rgba(53,75,231,.45)}
-.sb-brand b{font-size:1.06rem;font-weight:700;letter-spacing:-.01em;display:block;line-height:1.15}
+.sb-brand b{font-size:1.06rem;font-weight:700;display:block;line-height:1.15}
 .sb-brand small{color:rgba(255,255,255,.5);font-size:.72rem;font-weight:500}
-.sb-nav{display:flex;flex-direction:column;gap:3px;position:relative;z-index:1;overflow-y:auto;flex:1;margin:0 -4px;padding:0 4px}
+.sb-nav{display:flex;flex-direction:column;gap:2px;position:relative;z-index:1;overflow-y:auto;flex:1;margin:0 -2px;padding:0 2px}
 .sb-nav::-webkit-scrollbar{width:0}
-.nav-sec{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.36);font-weight:600;padding:14px 12px 6px}
-.nav-item{
-  display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;
-  color:rgba(255,255,255,.74);cursor:pointer;font-size:.9rem;font-weight:500;
-  border:none;background:none;width:100%;text-align:left;transition:.16s;position:relative;
-}
-.nav-item svg{width:18px;height:18px;flex:0 0 18px;opacity:.85}
+.nav-sec{font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.34);font-weight:600;padding:13px 12px 5px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:11px;color:rgba(255,255,255,.72);cursor:pointer;font-size:.875rem;font-weight:500;border:none;background:none;width:100%;text-align:left;transition:.16s;position:relative}
+.nav-item svg{width:17px;height:17px;flex:0 0 17px;opacity:.85}
 .nav-item:hover{background:rgba(255,255,255,.07);color:#fff}
 .nav-item.active{background:rgba(255,255,255,.12);color:#fff;font-weight:600}
-.nav-item.active::before{content:"";position:absolute;left:-4px;top:50%;transform:translateY(-50%);width:4px;height:22px;border-radius:0 4px 4px 0;background:linear-gradient(180deg,#7e92ff,#5e72f0);box-shadow:0 0 14px rgba(126,146,255,.8)}
-.nav-badge{margin-left:auto;background:var(--blue);color:#fff;font-size:.66rem;font-weight:700;min-width:19px;height:19px;border-radius:10px;display:none;align-items:center;justify-content:center;padding:0 5px}
+.nav-item.active::before{content:"";position:absolute;left:-2px;top:50%;transform:translateY(-50%);width:3px;height:20px;border-radius:0 4px 4px 0;background:linear-gradient(180deg,#7e92ff,#5e72f0);box-shadow:0 0 12px rgba(126,146,255,.8)}
+.nav-badge{margin-left:auto;background:var(--blue);color:#fff;font-size:.64rem;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:none;align-items:center;justify-content:center;padding:0 5px}
 .nav-badge.show{display:inline-flex}
-.sb-foot{position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.1);padding-top:12px;margin-top:8px}
-.sb-user{display:flex;align-items:center;gap:11px;padding:8px 10px;border-radius:12px}
-.sb-user .av{width:36px;height:36px;border-radius:11px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-weight:700;font-size:.86rem;flex:0 0 36px}
+.sb-foot{position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.1);padding-top:10px;margin-top:6px}
+.sb-user{display:flex;align-items:center;gap:11px;padding:7px 10px;border-radius:12px}
+.sb-user .av{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-weight:700;font-size:.82rem;flex:0 0 34px;color:#fff}
 .sb-user-meta{min-width:0;flex:1}
-.sb-user-meta b{font-size:.84rem;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sb-user-meta small{color:rgba(255,255,255,.5);font-size:.72rem}
-.sb-out{margin-top:6px;display:flex;align-items:center;gap:9px;width:100%;padding:9px 12px;border-radius:11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.78);cursor:pointer;font-size:.82rem;font-weight:500;transition:.15s}
+.sb-user-meta b{font-size:.82rem;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-user-meta small{color:rgba(255,255,255,.5);font-size:.7rem}
+.sb-out{margin-top:6px;display:flex;align-items:center;gap:9px;width:100%;padding:9px 12px;border-radius:11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.78);cursor:pointer;font-size:.8rem;font-weight:500;transition:.15s}
 .sb-out:hover{background:rgba(225,29,72,.18);border-color:rgba(225,29,72,.4);color:#fff}
 .sb-out svg{width:15px;height:15px}
 
-/* MAIN */
 .main{flex:1;min-width:0;display:flex;flex-direction:column}
-.topbar{
-  position:sticky;top:0;z-index:40;background:rgba(255,255,255,.82);backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--brd);padding:15px 30px;display:flex;align-items:center;gap:20px;
-}
+.topbar{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);padding:14px 28px;display:flex;align-items:center;gap:18px}
 .tb-titles{flex:1;min-width:0}
-.tb-titles h1{margin:0;font-size:1.26rem;font-weight:700;letter-spacing:-.015em}
-.tb-titles p{margin:1px 0 0;color:var(--dim);font-size:.84rem;font-weight:400}
+.tb-titles h1{margin:0;font-size:1.24rem;font-weight:700;letter-spacing:-.015em}
+.tb-titles p{margin:1px 0 0;color:var(--dim);font-size:.83rem}
 .tb-actions{display:flex;align-items:center;gap:10px}
-
-/* SIGNATURE — Pouls de l'assistant */
-.pulse{
-  display:flex;align-items:center;gap:11px;padding:8px 15px 8px 13px;border-radius:14px;cursor:pointer;
-  background:var(--ok-soft);border:1px solid #bfe6cd;transition:.2s;user-select:none;
-}
+.pulse{display:flex;align-items:center;gap:11px;padding:8px 15px 8px 13px;border-radius:14px;cursor:pointer;background:var(--ok-soft);border:1px solid #bfe6cd;transition:.2s;user-select:none}
 .pulse:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(22,163,74,.18)}
 .pulse-dot{position:relative;width:11px;height:11px;border-radius:50%;background:var(--ok);flex:0 0 11px}
 .pulse-dot::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid var(--ok);opacity:.5;animation:ping 1.8s cubic-bezier(0,0,.2,1) infinite}
 @keyframes ping{0%{transform:scale(.6);opacity:.7}80%,100%{transform:scale(1.9);opacity:0}}
 .pulse-txt b{display:block;font-size:.82rem;font-weight:700;color:#157a3c;line-height:1.1}
 .pulse-txt small{font-size:.68rem;color:#3f9c63;font-weight:500}
-/* État OFF : bandeau d'alerte rouge sur tout le topbar */
 .app.ai-off .topbar{background:linear-gradient(90deg,#fff5f7,#fde7ec);border-bottom-color:#f6c6d2}
 .app.ai-off .pulse{background:#fff;border-color:#f3b9c7}
 .app.ai-off .pulse-dot{background:var(--danger);animation:none}
 .app.ai-off .pulse-dot::after{border-color:var(--danger);animation:none;opacity:0}
-.app.ai-off .pulse-txt b{color:var(--danger)}
-.app.ai-off .pulse-txt small{color:#c44}
+.app.ai-off .pulse-txt b{color:var(--danger)}.app.ai-off .pulse-txt small{color:#c44}
 .pulse.loading{opacity:.55;pointer-events:none}
 
-/* boutons */
-.btn{
-  display:inline-flex;align-items:center;gap:8px;justify-content:center;
-  padding:10px 16px;border-radius:12px;border:1px solid var(--brd);background:var(--surface);
-  color:var(--ink);font-weight:600;font-size:.86rem;cursor:pointer;transition:.16s;white-space:nowrap;
-}
-.btn svg{width:16px;height:16px}
+.btn{display:inline-flex;align-items:center;gap:8px;justify-content:center;padding:9px 15px;border-radius:11px;border:1px solid var(--brd);background:var(--surface);color:var(--ink);font-weight:600;font-size:.84rem;cursor:pointer;transition:.16s;white-space:nowrap}
+.btn svg{width:15px;height:15px}
 .btn:hover{border-color:#cdd6f0;background:var(--soft)}
 .btn.primary{background:var(--grad);border:none;color:#fff;box-shadow:0 8px 20px rgba(53,75,231,.28)}
 .btn.primary:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(53,75,231,.36)}
-.btn.danger{background:var(--danger);border:none;color:#fff}
-.btn.danger:hover{background:#c20e3c}
-.btn.ghost{background:transparent;border-color:transparent;color:var(--dim)}
-.btn.ghost:hover{background:var(--soft);color:var(--ink)}
-.btn.sm{padding:7px 12px;font-size:.8rem;border-radius:10px}
-.btn.icon{padding:8px;width:36px;height:36px}
+.btn.danger{background:var(--danger);border:none;color:#fff}.btn.danger:hover{background:#c20e3c}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--dim)}.btn.ghost:hover{background:var(--soft);color:var(--ink)}
+.btn.sm{padding:6px 11px;font-size:.78rem;border-radius:9px}
+.btn.xs{padding:4px 9px;font-size:.74rem;border-radius:8px}
+.btn.icon{padding:7px;width:34px;height:34px}
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 .btn.full{width:100%}
 
-/* CONTENU */
-.content{padding:26px 30px 60px;max-width:1240px;width:100%}
+.content{padding:24px 28px 70px;max-width:1320px;width:100%}
 .panel{display:none;animation:fade .3s ease both}
 .panel.active{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-
 .card{background:var(--surface);border:1px solid var(--brd);border-radius:var(--r);box-shadow:var(--sh)}
-.card.pad{padding:22px}
-.sec-title{display:flex;align-items:center;gap:10px;margin:0 0 4px;font-size:1.04rem;font-weight:700}
-.sec-sub{color:var(--dim);font-size:.84rem;margin:0 0 16px}
-.row-between{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.grid{display:grid;gap:16px}
-.section-gap{margin-top:22px}
+.card.pad{padding:20px}
+.sec-title{display:flex;align-items:center;gap:9px;margin:0 0 3px;font-size:1.02rem;font-weight:700}
+.sec-title svg{width:18px;height:18px}
+.sec-sub{color:var(--dim);font-size:.83rem;margin:0 0 14px}
+.row-between{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.grid{display:grid;gap:15px}
+.section-gap{margin-top:20px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}.g-2-1{grid-template-columns:1.7fr 1fr}.g-1-2{grid-template-columns:1fr 1.7fr}
+@media(max-width:900px){.g2,.g3,.g-2-1,.g-1-2{grid-template-columns:1fr}}
 
-/* KPI */
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(176px,1fr));gap:14px}
-.kpi{position:relative;background:var(--surface);border:1px solid var(--brd);border-radius:var(--r);padding:18px 18px 16px;box-shadow:var(--sh);overflow:hidden}
-.kpi-ico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;margin-bottom:13px;background:var(--soft-2);color:var(--blue)}
-.kpi-ico svg{width:20px;height:20px}
-.kpi-val{font-size:2rem;font-weight:800;letter-spacing:-.02em;line-height:1}
-.kpi-lab{color:var(--dim);font-size:.8rem;font-weight:500;margin-top:5px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:13px}
+.kpi{position:relative;background:var(--surface);border:1px solid var(--brd);border-radius:var(--r);padding:16px 16px 14px;box-shadow:var(--sh);overflow:hidden}
+.kpi-ico{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;margin-bottom:11px;background:var(--soft-2);color:var(--blue)}
+.kpi-ico svg{width:19px;height:19px}
+.kpi-val{font-size:1.85rem;font-weight:800;letter-spacing:-.02em;line-height:1}
+.kpi-lab{color:var(--dim);font-size:.78rem;font-weight:500;margin-top:4px}
+.kpi-sub{font-size:.72rem;color:var(--dim-2);margin-top:3px}
 .kpi.accent{background:linear-gradient(150deg,#3a4fe6,#2a3bb8);border:none;color:#fff}
-.kpi.accent .kpi-ico{background:rgba(255,255,255,.16);color:#fff}
-.kpi.accent .kpi-lab{color:rgba(255,255,255,.78)}
+.kpi.accent .kpi-ico{background:rgba(255,255,255,.16);color:#fff}.kpi.accent .kpi-lab,.kpi.accent .kpi-sub{color:rgba(255,255,255,.82)}
 .kpi.warn .kpi-ico{background:var(--warn-soft);color:var(--warn)}
 .kpi.danger .kpi-ico{background:var(--danger-soft);color:var(--danger)}
 .kpi.ok .kpi-ico{background:var(--ok-soft);color:var(--ok)}
+.kpi.purple .kpi-ico{background:var(--purple-soft);color:var(--purple)}
+.kpi.teal .kpi-ico{background:var(--teal-soft);color:var(--teal)}
 
-/* badges */
-.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600;background:var(--soft);color:var(--dim);border:1px solid var(--brd)}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:.71rem;font-weight:600;background:var(--soft);color:var(--dim);border:1px solid var(--brd)}
 .badge.ok{background:var(--ok-soft);color:#157a3c;border-color:#bfe6cd}
 .badge.warn{background:var(--warn-soft);color:var(--warn);border-color:#f0dcae}
 .badge.danger{background:var(--danger-soft);color:var(--danger);border-color:#f4c3d0}
 .badge.info{background:var(--soft-2);color:var(--blue);border-color:#cdd8f7}
+.badge.purple{background:var(--purple-soft);color:var(--purple);border-color:#ddd0fa}
 
-/* avatar */
-.av{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-weight:700;font-size:.8rem;color:#fff;flex:0 0 auto}
+.av{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:700;font-size:.78rem;color:#fff;flex:0 0 auto}
 
-/* table */
 .tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--brd);background:var(--surface)}
-table.tbl{width:100%;border-collapse:collapse;font-size:.86rem}
-.tbl thead th{text-align:left;padding:13px 16px;color:var(--dim);font-weight:600;font-size:.74rem;letter-spacing:.04em;text-transform:uppercase;border-bottom:1px solid var(--brd);background:var(--soft);white-space:nowrap}
-.tbl tbody td{padding:13px 16px;border-bottom:1px solid var(--brd-2);vertical-align:middle}
+table.tbl{width:100%;border-collapse:collapse;font-size:.85rem}
+.tbl thead th{text-align:left;padding:11px 15px;color:var(--dim);font-weight:600;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;border-bottom:1px solid var(--brd);background:var(--soft);white-space:nowrap}
+.tbl tbody td{padding:11px 15px;border-bottom:1px solid var(--brd-2);vertical-align:middle}
 .tbl tbody tr:last-child td{border-bottom:none}
 .tbl tbody tr:hover{background:var(--soft)}
-.tbl .u-cell{display:flex;align-items:center;gap:11px}
+.tbl .u-cell{display:flex;align-items:center;gap:10px}
 .tbl .u-cell b{font-weight:600}
-.cell-mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.8rem;color:var(--dim)}
+.tbl-click tbody tr{cursor:pointer}
 
-/* inputs */
-.inp{width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--brd);background:var(--surface);font-family:inherit;font-size:.88rem;color:var(--ink);outline:none;transition:.15s}
+.inp{width:100%;padding:10px 13px;border-radius:11px;border:1px solid var(--brd);background:var(--surface);font-family:inherit;font-size:.87rem;color:var(--ink);outline:none;transition:.15s}
 .inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(53,75,231,.13)}
 select.inp{cursor:pointer}
-.field{margin-bottom:14px}
-.field label{display:block;font-size:.8rem;font-weight:600;margin-bottom:6px;color:var(--ink-2)}
-.field .hint{font-size:.75rem;color:var(--dim);margin-top:5px}
+textarea.inp{resize:vertical}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:.79rem;font-weight:600;margin-bottom:5px;color:var(--ink-2)}
+.field .hint{font-size:.74rem;color:var(--dim);margin-top:5px}
 .search{position:relative}
-.search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--dim-2)}
-.search .inp{padding-left:38px}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--dim-2)}
+.search .inp{padding-left:36px}
 
-/* segmented */
-.seg{display:inline-flex;background:var(--soft);border:1px solid var(--brd);border-radius:11px;padding:3px;gap:2px}
-.seg button{border:none;background:none;padding:7px 14px;border-radius:8px;font-size:.8rem;font-weight:600;color:var(--dim);cursor:pointer;font-family:inherit;transition:.14s}
+.seg{display:inline-flex;background:var(--soft);border:1px solid var(--brd);border-radius:11px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:none;background:none;padding:6px 13px;border-radius:8px;font-size:.79rem;font-weight:600;color:var(--dim);cursor:pointer;font-family:inherit;transition:.14s}
 .seg button.active{background:var(--surface);color:var(--blue);box-shadow:0 2px 6px rgba(16,24,64,.08)}
 
-/* switch */
 .sw{position:relative;width:48px;height:28px;flex:0 0 48px;display:inline-block}
 .sw input{opacity:0;width:0;height:0}
 .sw .slider{position:absolute;inset:0;border-radius:20px;background:#cdd4e6;transition:.22s;cursor:pointer}
 .sw .slider::before{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.22s;box-shadow:0 2px 5px rgba(0,0,0,.2)}
-.sw input:checked + .slider{background:var(--ok)}
-.sw input:checked + .slider::before{transform:translateX(20px)}
-
-/* toggle (filter) */
-.tog{display:inline-flex;align-items:center;gap:8px;font-size:.82rem;color:var(--dim);cursor:pointer;font-weight:500}
+.sw input:checked + .slider{background:var(--ok)}.sw input:checked + .slider::before{transform:translateX(20px)}
+.tog{display:inline-flex;align-items:center;gap:8px;font-size:.81rem;color:var(--dim);cursor:pointer;font-weight:500}
 .tog input{width:16px;height:16px;accent-color:var(--blue);cursor:pointer}
 
-/* skeleton */
 .sk{background:linear-gradient(90deg,#eef1f8 25%,#e4e9f5 37%,#eef1f8 63%);background-size:400% 100%;animation:sh 1.3s infinite;border-radius:8px}
 @keyframes sh{0%{background-position:100% 0}100%{background-position:-100% 0}}
-
-/* empty/error states */
-.state{text-align:center;padding:42px 20px;color:var(--dim)}
-.state svg{width:38px;height:38px;color:var(--dim-2);margin-bottom:12px}
+.state{text-align:center;padding:38px 20px;color:var(--dim)}
+.state svg{width:34px;height:34px;color:var(--dim-2);margin-bottom:10px}
 .state b{display:block;color:var(--ink);font-weight:600;margin-bottom:4px}
-.state.err{color:var(--danger)}
-.state.err svg{color:var(--danger)}
+.state.err{color:var(--danger)}.state.err svg{color:var(--danger)}
 
-/* list item (activity / requests / memory cards) */
 .lst{display:flex;flex-direction:column}
-.lst-item{display:flex;align-items:center;gap:13px;padding:13px 4px;border-bottom:1px solid var(--brd-2)}
+.lst-item{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid var(--brd-2)}
 .lst-item:last-child{border-bottom:none}
 .lst-meta{flex:1;min-width:0}
-.lst-meta b{font-weight:600;font-size:.88rem}
-.lst-meta small{display:block;color:var(--dim);font-size:.78rem}
-.lst-time{color:var(--dim-2);font-size:.76rem;white-space:nowrap}
+.lst-meta b{font-weight:600;font-size:.87rem}
+.lst-meta small{display:block;color:var(--dim);font-size:.77rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lst-time{color:var(--dim-2);font-size:.75rem;white-space:nowrap}
 
-/* request card */
-.req{border:1px solid var(--brd);border-radius:var(--r-sm);padding:16px;margin-bottom:12px;background:var(--surface);transition:.2s}
-.req.done{opacity:.45}
-.req-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.req-top .lst-meta b{font-size:.92rem}
-.req-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px 22px;margin-bottom:14px;font-size:.83rem}
-.req-grid .k{color:var(--dim);font-size:.74rem;text-transform:uppercase;letter-spacing:.03em}
-.req-foot{display:flex;gap:8px;flex-wrap:wrap}
-
-/* memory card */
-.mcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.mcard{border:1px solid var(--brd);border-radius:var(--r-sm);padding:16px;background:var(--surface);display:flex;flex-direction:column;gap:10px}
-.mcard p{margin:0;font-size:.9rem;line-height:1.5}
-.mcard-foot{display:flex;align-items:center;gap:9px;margin-top:auto;padding-top:6px;border-top:1px solid var(--brd-2)}
-.mcard-foot .lst-meta{font-size:.78rem}
-
-/* chart (bars) */
-.chart{display:flex;align-items:flex-end;gap:6px;height:160px;padding-top:10px}
-.chart .bar{flex:1;min-width:6px;background:var(--grad);border-radius:6px 6px 3px 3px;position:relative;transition:height .5s cubic-bezier(.2,.8,.2,1);min-height:4px}
-.chart .bar:hover{filter:brightness(1.08)}
-.chart .bar .tip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:6px;background:var(--ink);color:#fff;font-size:.7rem;padding:3px 7px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:.15s}
-.chart .bar:hover .tip{opacity:1}
-.chart-x{display:flex;gap:6px;margin-top:8px}
-.chart-x span{flex:1;text-align:center;font-size:.68rem;color:var(--dim-2);min-width:6px}
-
-/* meter */
-.meter{height:9px;border-radius:6px;background:var(--soft);overflow:hidden}
+.meter{height:8px;border-radius:6px;background:var(--soft);overflow:hidden}
 .meter > i{display:block;height:100%;border-radius:6px;background:var(--grad)}
+.rk{margin:9px 0}
+.rk .rk-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;gap:8px}
+.rk .rk-name{display:flex;align-items:center;gap:8px;font-size:.83rem;font-weight:500;min-width:0}
+.rk .rk-name span.t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rk .rk-val{color:var(--dim);font-size:.78rem;white-space:nowrap}
 
-/* modal */
+.chart{display:flex;align-items:flex-end;gap:5px;height:150px;padding-top:10px}
+.chart .bar{flex:1;min-width:5px;background:var(--grad);border-radius:5px 5px 2px 2px;position:relative;transition:height .5s cubic-bezier(.2,.8,.2,1);min-height:4px}
+.chart .bar:hover{filter:brightness(1.08)}
+.chart .bar .tip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:6px;background:var(--ink);color:#fff;font-size:.7rem;padding:3px 7px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:.15s;z-index:2}
+.chart .bar:hover .tip{opacity:1}
+.chart-x{display:flex;gap:5px;margin-top:8px}
+.chart-x span{flex:1;text-align:center;font-size:.66rem;color:var(--dim-2);min-width:5px}
+
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:20px;background:var(--soft);border:1px solid var(--brd);font-size:.78rem;font-weight:500}
+.chip b{color:var(--blue);font-weight:700}
+
 .modal{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(11,16,48,.5);backdrop-filter:blur(4px)}
 .modal.show{display:flex;animation:fade .2s}
 .modal-box{background:var(--surface);border-radius:22px;width:100%;max-width:480px;box-shadow:var(--sh-lg);animation:gateIn .3s both;overflow:hidden}
 .modal-head{padding:22px 24px 0}
-.modal-head h3{margin:0;font-size:1.12rem;font-weight:700}
+.modal-head h3{margin:0;font-size:1.1rem;font-weight:700}
 .modal-head p{margin:5px 0 0;color:var(--dim);font-size:.85rem}
-.modal-body{padding:20px 24px}
-.modal-foot{padding:0 24px 22px;display:flex;gap:10px;justify-content:flex-end}
+.modal-body{padding:18px 24px}
+.modal-foot{padding:0 24px 22px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
 
-/* toast */
+/* drawer (fiche détaillée) */
+.drawer{position:fixed;inset:0;z-index:130;display:none}
+.drawer.show{display:block}
+.drawer-bg{position:absolute;inset:0;background:rgba(11,16,48,.45);backdrop-filter:blur(3px)}
+.drawer-panel{position:absolute;right:0;top:0;height:100%;width:480px;max-width:94vw;background:var(--bg);box-shadow:var(--sh-lg);overflow-y:auto;transform:translateX(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.drawer.show .drawer-panel{transform:none}
+.drawer-head{position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--brd);padding:18px 22px;display:flex;align-items:center;gap:14px;z-index:1}
+.drawer-body{padding:20px 22px 50px}
+
 #toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:13px 20px;border-radius:14px;font-size:.86rem;font-weight:500;box-shadow:var(--sh-lg);opacity:0;pointer-events:none;transition:.28s;z-index:300;max-width:90vw}
 #toast.show{opacity:1;transform:translate(-50%,0)}
+.dz{border:1px solid #f4c3d0;border-radius:var(--r);background:linear-gradient(180deg,#fff,#fff8fa);padding:18px}
 
-/* danger zone */
-.dz{border:1px solid #f4c3d0;border-radius:var(--r);background:linear-gradient(180deg,#fff,#fff8fa);padding:20px}
-
-/* mobile */
 .sb-toggle{display:none}
 @media (max-width:980px){
   .sidebar{position:fixed;left:0;top:0;transform:translateX(-100%);transition:.25s;z-index:90;box-shadow:var(--sh-lg)}
   .app.nav-open .sidebar{transform:none}
   .app.nav-open::after{content:"";position:fixed;inset:0;background:rgba(11,16,48,.4);z-index:80}
-  .sb-toggle{display:inline-flex}
-  .content{padding:20px 16px 50px}
-  .topbar{padding:13px 16px}
-  .pulse-txt{display:none}
-}
-@media (max-width:560px){
-  .kpi-val{font-size:1.7rem}
-  .tb-titles h1{font-size:1.1rem}
+  .sb-toggle{display:inline-flex}.content{padding:18px 14px 50px}.topbar{padding:12px 14px}.pulse-txt{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
 </style>
 </head>
 <body>
 
-<!-- ============ PORTE D'ACCÈS ============ -->
+<!-- PORTE -->
 <div id="gate">
   <div class="gate-card">
     <div class="gate-logo">Q</div>
     <h1>Console d'administration</h1>
-    <p>Espace réservé. Saisis le code d'accès à&nbsp;4&nbsp;chiffres pour continuer.</p>
+    <p>Espace réservé. Saisis le code d'accès à&nbsp;4&nbsp;chiffres.</p>
     <div class="gate-inputs">
-      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="Chiffre 1">
-      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="Chiffre 2">
-      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="Chiffre 3">
-      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="Chiffre 4">
+      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="1">
+      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="2">
+      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="3">
+      <input type="text" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="4">
     </div>
     <div class="gate-err" id="gateErr"></div>
     <button class="gate-btn" id="gateBtn">Entrer</button>
@@ -365,875 +283,616 @@ select.inp{cursor:pointer}
   </div>
 </div>
 
-<!-- ============ APP ============ -->
+<!-- APP -->
 <div class="app" id="app">
-
-  <!-- RAIL -->
   <aside class="sidebar" id="sidebar">
-    <div class="sb-brand">
-      <div class="sb-logo">Q</div>
-      <div><b>Qwamplify</b><small>Administration</small></div>
-    </div>
-    <nav class="sb-nav" id="nav">
-      <div class="nav-sec">Pilotage</div>
-      <button class="nav-item active" data-target="overview">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
-        Vue d'ensemble
-      </button>
-      <button class="nav-item" data-target="usage">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
-        Usage &amp; activité
-      </button>
-      <div class="nav-sec">Personnes</div>
-      <button class="nav-item" data-target="users">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        Utilisateurs
-      </button>
-      <button class="nav-item" data-target="requests">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>
-        Demandes d'accès
-        <span class="nav-badge" id="badge-requests">0</span>
-      </button>
-      <div class="nav-sec">Confiance</div>
-      <button class="nav-item" data-target="security">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Sécurité &amp; journal
-      </button>
-      <button class="nav-item" data-target="memory">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-2.5-2.5"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 2.5-2.5"/><path d="M5 7h2M5 11h2M17 7h2M17 11h2"/></svg>
-        Mémoire entreprise
-      </button>
-      <div class="nav-sec">Système</div>
-      <button class="nav-item" data-target="settings">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        Réglages &amp; Kill-Switch
-      </button>
-    </nav>
+    <div class="sb-brand"><div class="sb-logo">Q</div><div><b>Qwamplify</b><small>Administration</small></div></div>
+    <nav class="sb-nav" id="nav"></nav>
     <div class="sb-foot">
-      <div class="sb-user">
-        <div class="av" id="sbAv">?</div>
-        <div class="sb-user-meta"><b id="sbName">—</b><small id="sbRole">Administration</small></div>
-      </div>
+      <div class="sb-user"><div class="av" id="sbAv">?</div><div class="sb-user-meta"><b id="sbName">—</b><small id="sbRole">Administration</small></div></div>
       <button class="sb-out" id="btnLogout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>Quitter la console</button>
     </div>
   </aside>
 
-  <!-- MAIN -->
   <div class="main">
     <header class="topbar">
       <button class="btn icon ghost sb-toggle" id="sbToggle" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
       <div class="tb-titles"><h1 id="pageTitle">Vue d'ensemble</h1><p id="pageSub">Pilotage de l'assistant Qwamplify</p></div>
       <div class="tb-actions">
-        <div class="pulse loading" id="pulse" title="État de l'assistant — cliquer pour basculer">
-          <span class="pulse-dot"></span>
-          <span class="pulse-txt"><b id="pulseTxt">Vérification…</b><small id="pulseSub">Pouls de l'assistant</small></span>
-        </div>
+        <div class="pulse loading" id="pulse" title="État de l'assistant — cliquer pour basculer"><span class="pulse-dot"></span><span class="pulse-txt"><b id="pulseTxt">Vérification…</b><small id="pulseSub">Pouls de l'assistant</small></span></div>
       </div>
     </header>
-
-    <div class="content">
-
-      <!-- ===== VUE D'ENSEMBLE ===== -->
-      <section class="panel active" id="panel-overview">
-        <div class="kpis" id="ov-kpis">
-          <div class="kpi accent"><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="kpi-val" id="ov-users">—</div><div class="kpi-lab">Utilisateurs actifs</div></div>
-          <div class="kpi ok"><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg></div><div class="kpi-val" id="ov-access">—</div><div class="kpi-lab">Accès journalisés</div></div>
-          <div class="kpi warn"><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div class="kpi-val" id="ov-pending">—</div><div class="kpi-lab">Comptes en attente</div></div>
-          <div class="kpi danger"><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg></div><div class="kpi-val" id="ov-refused">—</div><div class="kpi-lab">Accès refusés</div></div>
-        </div>
-
-        <div class="grid section-gap" style="grid-template-columns:1.6fr 1fr">
-          <div class="card pad">
-            <div class="row-between"><h3 class="sec-title">Activité récente</h3><button class="btn sm ghost" data-go="security">Tout voir</button></div>
-            <p class="sec-sub">Derniers accès aux boîtes, traités par la garde de confidentialité.</p>
-            <div class="lst" id="ov-activity"><div class="state"><div class="sk" style="height:54px"></div></div></div>
-          </div>
-          <div class="grid" style="align-content:start">
-            <div class="card pad">
-              <h3 class="sec-title">État de l'assistant</h3>
-              <p class="sec-sub" id="ov-ks-sub">Chargement…</p>
-              <div id="ov-ks-box"></div>
-            </div>
-            <div class="card pad">
-              <h3 class="sec-title">Actions rapides</h3>
-              <div class="grid" style="gap:9px;margin-top:10px">
-                <button class="btn full" data-go="users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>Ajouter une personne</button>
-                <button class="btn full" data-go="requests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>Traiter les demandes</button>
-                <button class="btn full" data-go="memory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Enrichir la mémoire</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===== USAGE ===== -->
-      <section class="panel" id="panel-usage">
-        <div class="row-between" style="margin-bottom:18px">
-          <div><h3 class="sec-title">Usage &amp; activité</h3><p class="sec-sub" style="margin:0">Mesuré à partir du journal des accès réels (garde de confidentialité).</p></div>
-          <button class="btn sm" id="ug-refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Actualiser</button>
-        </div>
-        <div class="kpis">
-          <div class="kpi"><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></div><div class="kpi-val" id="ug-total">—</div><div class="kpi-lab">Accès (14 derniers jours)</div></div>
-          <div class="kpi ok"><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div class="kpi-val" id="ug-ok">—</div><div class="kpi-lab">Accès autorisés</div></div>
-          <div class="kpi danger"><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></div><div class="kpi-val" id="ug-ko">—</div><div class="kpi-lab">Accès refusés</div></div>
-          <div class="kpi"><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg></div><div class="kpi-val" id="ug-people">—</div><div class="kpi-lab">Personnes actives</div></div>
-        </div>
-        <div class="card pad section-gap">
-          <h3 class="sec-title">Volume d'accès par jour</h3>
-          <p class="sec-sub">Sur les 14 derniers jours.</p>
-          <div class="chart" id="ug-chart"></div>
-          <div class="chart-x" id="ug-chartx"></div>
-        </div>
-        <div class="grid section-gap" style="grid-template-columns:1fr 1fr">
-          <div class="card pad">
-            <h3 class="sec-title">Personnes les plus actives</h3>
-            <p class="sec-sub">Nombre d'accès demandés sur la période.</p>
-            <div id="ug-top"><div class="sk" style="height:120px"></div></div>
-          </div>
-          <div class="card pad">
-            <h3 class="sec-title">Boîtes les plus consultées</h3>
-            <p class="sec-sub">Cibles les plus fréquentes des accès.</p>
-            <div id="ug-boxes"><div class="sk" style="height:120px"></div></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===== UTILISATEURS ===== -->
-      <section class="panel" id="panel-users">
-        <div class="kpis" style="margin-bottom:18px">
-          <div class="kpi"><div class="kpi-val" id="us-total">—</div><div class="kpi-lab">Comptes</div></div>
-          <div class="kpi ok"><div class="kpi-val" id="us-actifs">—</div><div class="kpi-lab">Actifs</div></div>
-          <div class="kpi warn"><div class="kpi-val" id="us-attente">—</div><div class="kpi-lab">En attente (1re connexion)</div></div>
-          <div class="kpi"><div class="kpi-val" id="us-admins">—</div><div class="kpi-lab">Administrateurs</div></div>
-        </div>
-        <div class="card">
-          <div class="row-between" style="padding:16px 18px;border-bottom:1px solid var(--brd);gap:12px">
-            <div class="search" style="flex:1;max-width:320px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="inp" id="us-search" placeholder="Rechercher un nom, un email…"></div>
-            <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-              <label class="tog"><input type="checkbox" id="us-inactive">Voir les désactivés</label>
-              <button class="btn sm" id="us-export"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Export CSV</button>
-              <button class="btn primary sm" id="us-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>Ajouter une personne</button>
-            </div>
-          </div>
-          <div class="tbl-wrap" style="border:none;border-radius:0">
-            <table class="tbl"><thead><tr><th>Personne</th><th>Email</th><th>Rôle</th><th>Statut</th><th>Créé le</th><th></th></tr></thead><tbody id="us-tbody"></tbody></table>
-          </div>
-          <div style="padding:12px 18px;border-top:1px solid var(--brd);color:var(--dim);font-size:.8rem" id="us-count">—</div>
-        </div>
-      </section>
-
-      <!-- ===== DEMANDES D'ACCÈS ===== -->
-      <section class="panel" id="panel-requests">
-        <div class="row-between" style="margin-bottom:18px">
-          <div><h3 class="sec-title">Demandes d'accès en attente</h3><p class="sec-sub" style="margin:0">Quand l'assistant refuse un accès à une boîte, la demande arrive ici pour arbitrage.</p></div>
-          <button class="btn sm" id="rq-refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Actualiser</button>
-        </div>
-        <div id="rq-list"></div>
-      </section>
-
-      <!-- ===== SÉCURITÉ & JOURNAL ===== -->
-      <section class="panel" id="panel-security">
-        <div class="row-between" style="margin-bottom:18px">
-          <div><h3 class="sec-title">Journal des accès</h3><p class="sec-sub" style="margin:0">Métadonnées uniquement — le contenu des emails n'est jamais lu ni stocké.</p></div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="btn sm" id="se-export"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Export CSV</button>
-            <button class="btn sm" id="se-refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Actualiser</button>
-          </div>
-        </div>
-        <div class="card" style="padding:14px 16px;margin-bottom:16px"><div class="row-between" style="gap:12px">
-          <select class="inp" id="se-person" style="max-width:230px"><option value="">Toutes les personnes</option></select>
-          <select class="inp" id="se-verdict" style="max-width:180px"><option value="">Tous les verdicts</option><option value="ok">Autorisés</option><option value="ko">Refusés</option></select>
-          <div style="flex:1"></div>
-          <span class="badge" id="se-count">—</span>
-        </div></div>
-        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Demandeur</th><th>Boîte cible</th><th>Verdict</th><th>Motif</th><th>Date</th></tr></thead><tbody id="se-tbody"></tbody></table></div>
-      </section>
-
-      <!-- ===== MÉMOIRE ENTREPRISE ===== -->
-      <section class="panel" id="panel-memory">
-        <div class="row-between" style="margin-bottom:18px">
-          <div><h3 class="sec-title">Mémoire entreprise</h3><p class="sec-sub" style="margin:0">Connaissances partagées que l'assistant utilise pour tout le monde (fournisseurs, procédures, annuaire…).</p></div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="inp" id="me-search" placeholder="Rechercher…" style="max-width:230px"></div>
-            <button class="btn primary sm" id="me-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Ajouter une info</button>
-          </div>
-        </div>
-        <div id="me-wrap"></div>
-      </section>
-
-      <!-- ===== RÉGLAGES & KILL-SWITCH ===== -->
-      <section class="panel" id="panel-settings">
-        <div class="card pad" id="st-ks-card" style="margin-bottom:18px">
-          <div class="row-between" style="align-items:flex-start">
-            <div style="max-width:560px">
-              <h3 class="sec-title"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--blue)"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><path d="M12 2v10"/></svg>Kill-Switch de l'assistant</h3>
-              <p class="sec-sub" id="st-ks-desc">Coupe instantanément l'assistant pour toute l'entreprise. Utile en cas d'incident, de fuite suspectée ou de maintenance.</p>
-              <div id="st-ks-state"></div>
-            </div>
-            <label class="sw" style="margin-top:4px"><input type="checkbox" id="st-ks"><span class="slider"></span></label>
-          </div>
-        </div>
-
-        <div class="grid" style="grid-template-columns:1fr 1fr">
-          <div class="card pad">
-            <h3 class="sec-title">Session administrateur</h3>
-            <p class="sec-sub">Informations de la session en cours.</p>
-            <div class="lst">
-              <div class="lst-item"><div class="lst-meta"><b>Profil</b></div><span id="st-prof" class="lst-time">—</span></div>
-              <div class="lst-item"><div class="lst-meta"><b>Rôle</b></div><span id="st-role" class="lst-time">—</span></div>
-              <div class="lst-item"><div class="lst-meta"><b>Mode d'accès</b></div><span id="st-access" class="lst-time">—</span></div>
-              <div class="lst-item"><div class="lst-meta"><b>Session expire</b></div><span id="st-exp" class="lst-time">—</span></div>
-            </div>
-          </div>
-          <div class="card pad">
-            <h3 class="sec-title">Connexion aux services</h3>
-            <p class="sec-sub">État des webhooks de la console.</p>
-            <div class="lst" id="st-svc"></div>
-            <button class="btn sm full" id="st-ping" style="margin-top:12px">Tester la connexion</button>
-          </div>
-        </div>
-
-        <div class="dz" style="margin-top:18px">
-          <h3 class="sec-title" style="color:var(--danger)"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>Zone sensible</h3>
-          <p class="sec-sub">Ces actions affectent toute l'entreprise. Procède avec précaution.</p>
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="btn danger sm" id="st-killnow">Mettre l'assistant en pause maintenant</button>
-            <button class="btn sm" id="st-logout">Fermer la session admin</button>
-          </div>
-        </div>
-        <p class="muted" style="text-align:center;font-size:.76rem;margin-top:26px">Qwamplify · Console d'administration v2 · accès journalisé</p>
-      </section>
-
-    </div>
+    <div class="content" id="content"></div>
   </div>
 </div>
 
-<!-- MODALE : ajouter une personne -->
-<div class="modal" id="modal-user">
-  <div class="modal-box">
-    <div class="modal-head"><h3>Ajouter une personne</h3><p>La personne définira son mot de passe à sa première connexion (avec le code d'accès partagé).</p></div>
-    <div class="modal-body">
-      <div class="field"><label>Adresse email professionnelle</label><input class="inp" id="mu-email" type="email" placeholder="prenom.nom@qwamplify.com"></div>
-      <div class="field"><label>Profil (identité dans l'assistant)</label><select class="inp" id="mu-profil"></select></div>
-      <div class="field"><label>Rôle</label><select class="inp" id="mu-role"><option value="user">Utilisateur</option><option value="admin">Administrateur</option></select><div class="hint">Un administrateur peut accéder à cette console.</div></div>
-    </div>
-    <div class="modal-foot"><button class="btn ghost" data-close="modal-user">Annuler</button><button class="btn primary" id="mu-save">Créer le compte</button></div>
+<!-- modales génériques -->
+<div class="modal" id="modal-user"><div class="modal-box">
+  <div class="modal-head"><h3>Ajouter une personne</h3><p>La personne définira son mot de passe à sa 1re connexion (code partagé).</p></div>
+  <div class="modal-body">
+    <div class="field"><label>Adresse email professionnelle</label><input class="inp" id="mu-email" type="email" placeholder="prenom.nom@qwamplify.com"></div>
+    <div class="field"><label>Profil (identité dans l'assistant)</label><select class="inp" id="mu-profil"></select></div>
+    <div class="field"><label>Rôle</label><select class="inp" id="mu-role"><option value="user">Utilisateur</option><option value="admin">Administrateur</option></select><div class="hint">Un administrateur peut accéder à cette console.</div></div>
   </div>
-</div>
+  <div class="modal-foot"><button class="btn ghost" data-close="modal-user">Annuler</button><button class="btn primary" id="mu-save">Créer le compte</button></div>
+</div></div>
 
-<!-- MODALE : suppression -->
-<div class="modal" id="modal-del">
-  <div class="modal-box">
-    <div class="modal-head"><h3>Supprimer ce compte ?</h3><p id="md-sub">Cette personne ne pourra plus se connecter à l'assistant.</p></div>
-    <div class="modal-foot"><button class="btn ghost" data-close="modal-del">Annuler</button><button class="btn danger" id="md-confirm">Supprimer définitivement</button></div>
-  </div>
-</div>
+<div class="modal" id="modal-confirm"><div class="modal-box">
+  <div class="modal-head"><h3 id="mc-title">Confirmer</h3><p id="mc-sub"></p></div>
+  <div class="modal-foot"><button class="btn ghost" data-close="modal-confirm">Annuler</button><button class="btn danger" id="mc-ok">Confirmer</button></div>
+</div></div>
 
-<!-- MODALE : mémoire -->
-<div class="modal" id="modal-mem">
-  <div class="modal-box">
-    <div class="modal-head"><h3 id="mm-title">Ajouter une info</h3><p>Cette information sera utilisée par l'assistant pour tous les collaborateurs.</p></div>
-    <div class="modal-body">
-      <div class="field"><label>Information à mémoriser</label><textarea class="inp" id="mm-content" rows="3" placeholder="Ex. Le fournisseur d'impression est Imprim'Vite, contact Julie…"></textarea></div>
-      <div class="field"><label>Renseignée par</label><input class="inp" id="mm-author" placeholder="Ton nom"></div>
-    </div>
-    <div class="modal-foot"><button class="btn ghost" data-close="modal-mem">Annuler</button><button class="btn primary" id="mm-save">Enregistrer</button></div>
+<div class="modal" id="modal-mem"><div class="modal-box">
+  <div class="modal-head"><h3 id="mm-title">Ajouter une info</h3><p>Utilisée par l'assistant pour tous les collaborateurs.</p></div>
+  <div class="modal-body">
+    <div class="field"><label>Information à mémoriser</label><textarea class="inp" id="mm-content" rows="3" placeholder="Ex. Le fournisseur d'impression est…"></textarea></div>
+    <div class="field"><label>Renseignée par</label><input class="inp" id="mm-author" placeholder="Ton nom"></div>
   </div>
-</div>
+  <div class="modal-foot"><button class="btn ghost" data-close="modal-mem">Annuler</button><button class="btn primary" id="mm-save">Enregistrer</button></div>
+</div></div>
 
-<!-- MODALE : confirmer Kill-Switch -->
-<div class="modal" id="modal-ks">
-  <div class="modal-box">
-    <div class="modal-head"><h3 id="mk-title">Mettre l'assistant en pause ?</h3><p id="mk-sub">L'assistant répondra « en pause » à tous les collaborateurs jusqu'à réactivation.</p></div>
-    <div class="modal-foot"><button class="btn ghost" data-close="modal-ks">Annuler</button><button class="btn danger" id="mk-confirm">Confirmer</button></div>
+<div class="modal" id="modal-grant"><div class="modal-box">
+  <div class="modal-head"><h3>Accorder un accès à une boîte</h3><p>Autorise une personne à consulter la boîte d'une autre.</p></div>
+  <div class="modal-body">
+    <div class="field"><label>Bénéficiaire (qui obtient l'accès)</label><select class="inp" id="mg-benef"></select></div>
+    <div class="field"><label>Boîte cible (propriétaire)</label><select class="inp" id="mg-owner"></select></div>
   </div>
-</div>
+  <div class="modal-foot"><button class="btn ghost" data-close="modal-grant">Annuler</button><button class="btn primary" id="mg-ok">Accorder l'accès</button></div>
+</div></div>
+
+<div class="modal" id="modal-ks"><div class="modal-box">
+  <div class="modal-head"><h3 id="mk-title">Mettre l'assistant en pause ?</h3><p id="mk-sub"></p></div>
+  <div class="modal-foot"><button class="btn ghost" data-close="modal-ks">Annuler</button><button class="btn danger" id="mk-confirm">Confirmer</button></div>
+</div></div>
+
+<!-- drawer fiche -->
+<div class="drawer" id="drawer"><div class="drawer-bg" data-close-drawer></div><div class="drawer-panel">
+  <div class="drawer-head"><div class="av" id="dr-av" style="width:44px;height:44px;border-radius:13px;font-size:1rem">?</div><div style="flex:1"><div id="dr-title" style="font-weight:700;font-size:1.05rem"></div><div id="dr-sub" class="muted" style="font-size:.82rem"></div></div><button class="btn icon ghost" data-close-drawer><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+  <div class="drawer-body" id="dr-body"></div>
+</div></div>
 
 <div id="toast"></div>
 
 <script>
-/* ============================================================
-   CŒUR — config, session, code d'accès, n8nCall, porte, nav
-   ============================================================ */
 (function(){
 "use strict";
+/* ============ CONFIG ============ */
+var N8N="https://n8n-d69l.srv1749270.hstgr.cloud/webhook";
+var URLS={comptes:N8N+"/admin-comptes",data:N8N+"/admin-data",params:N8N+"/admin-parametres",trans:N8N+"/transparence",memory:N8N+"/memoire-qwamplify",hub:N8N+"/admin-hub",compteMaj:N8N+"/admin-compte-maj"};
+var ADMIN_CODE="2581";
+var EMPLOYES=["Hugo","Leo","Marjorie","Marie","Guillaume","Jeremie","David","Tamsir","Valentine","Alize","Frank","Alexis","Sarah","Patrick"];
 
-var N8N = "https://n8n-d69l.srv1749270.hstgr.cloud/webhook";
-var URLS = {
-  comptes: N8N + "/admin-comptes",
-  data:    N8N + "/admin-data",
-  params:  N8N + "/admin-parametres",
-  trans:   N8N + "/transparence",
-  memory:  N8N + "/memoire-qwamplify"
-};
-var ADMIN_CODE = "2581";
-
-/* ---- utilitaires ---- */
-var $ = function(id){ return document.getElementById(id); };
-function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
-function toast(m){ var t=$("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(window._tt); window._tt=setTimeout(function(){t.classList.remove("show");},2800); }
-window.toast = toast;
-function initials(name){ name=String(name||"").trim(); if(!name) return "?"; var p=name.split(/[\s._@\-]+/).filter(Boolean); return ((p[0]||"")[0]||""+ (p[1]?p[1][0]:"")).toUpperCase().slice(0,2) || name[0].toUpperCase(); }
-function initials2(name){ name=String(name||"").trim(); if(!name) return "?"; var p=name.split(/[\s._@\-]+/).filter(Boolean); var a=(p[0]||"")[0]||""; var b=(p[1]||"")[0]||""; return ((a+b)||name[0]).toUpperCase(); }
-var PALETTE=["#354be7","#5e72f0","#7c4dff","#0ea5a3","#e6772e","#c0398a","#2e8b57","#d2691e"];
-function colorFor(s){ s=String(s||""); var h=0; for(var i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0; return PALETTE[h%PALETTE.length]; }
-function fmtDateShort(s){ s=String(s||""); if(s.length<10) return s||"—"; var p=s.slice(0,10).split("-"); var m=["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."]; var d=parseInt(p[2],10),mo=parseInt(p[1],10); if(!d||!mo) return s; return d+" "+(m[mo-1]||"")+" "+p[0]; }
-function fmtDateTime(s){ s=String(s||""); if(!s) return "—"; return s.replace("T"," ").slice(0,16); }
-
-/* ---- session (partagée avec le chat via localStorage qw_session) ---- */
-function qwSession(){ try{ return JSON.parse(localStorage.getItem("qw_session")||"null"); }catch(e){ return null; } }
-function sessionExpired(s){ if(s===undefined) s=qwSession(); if(!s||!s.token) return true; if(s.exp && (new Date(s.exp).getTime() < Date.now())) return true; return false; }
-function authToken(){ var s=qwSession(); return (s && !sessionExpired(s)) ? s.token : ""; }
-function isRoleAdmin(){ var s=qwSession(); return !!(s && !sessionExpired(s) && s.role==="admin"); }
-
-/* ---- code d'accès admin (sessionStorage) ---- */
-function getAdminCode(){ try{ return sessionStorage.getItem("qw_admin_code")||""; }catch(e){ return ""; } }
-function setAdminCode(c){ try{ sessionStorage.setItem("qw_admin_code", c); }catch(e){} }
-function hasAccess(){ return isRoleAdmin() || getAdminCode()===ADMIN_CODE; }
-
-/* ---- appel n8n (injecte token + code automatiquement) ---- */
-function n8nCall(url, payload){
-  var body = {};
-  for(var k in (payload||{})) body[k]=payload[k];
-  body.token = authToken();
-  body.code  = getAdminCode();
-  return fetch(url, {method:"POST", headers:{"Content-Type":"text/plain"}, body:JSON.stringify(body)})
-    .then(function(r){
-      if(r.status===401 || r.status===403){ showDenied(); throw new Error("Accès refusé"); }
-      if(!r.ok) throw new Error("HTTP "+r.status);
-      return r.json();
-    });
+/* ============ HELPERS ============ */
+var $=function(id){return document.getElementById(id);};
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function toast(m){var t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(window._tt);window._tt=setTimeout(function(){t.classList.remove("show");},2800);}
+window.toast=toast;
+function initials(n){n=String(n||"").trim();if(!n)return"?";var p=n.split(/[\s._@\-]+/).filter(Boolean);var a=(p[0]||"")[0]||"";var b=(p[1]||"")[0]||"";return ((a+b)||n[0]).toUpperCase();}
+var PAL=["#354be7","#5e72f0","#7c3aed","#0d9488","#e6772e","#c0398a","#2e8b57","#d2691e","#0ea5a3","#9333ea"];
+function colorFor(s){s=String(s||"");var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return PAL[h%PAL.length];}
+function dshort(s){s=String(s||"");if(s.length<10)return s||"—";var p=s.slice(0,10).split("-");var m=["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."];var d=parseInt(p[2],10),mo=parseInt(p[1],10);if(!d||!mo)return s;return d+" "+(m[mo-1]||"")+" "+p[0];}
+function dtime(s){s=String(s||"");if(!s)return"—";return s.replace("T"," ").slice(0,16);}
+function num(v){var n=Number(v);return isFinite(n)?n:0;}
+function money(n){return num(n).toLocaleString("fr-FR")+" €";}
+function bign(n){n=num(n);if(n>=1e6)return (n/1e6).toFixed(n>=1e7?0:1)+" M";if(n>=1e3)return (n/1e3).toFixed(n>=1e4?0:1)+" k";return String(n);}
+function av(name,sz){sz=sz||34;return '<span class="av" style="width:'+sz+'px;height:'+sz+'px;font-size:'+(sz*0.4)+'px;background:'+colorFor(name)+'">'+esc(initials(name))+'</span>';}
+function badge(t,v){return '<span class="badge'+(v?" "+v:"")+'">'+esc(t)+'</span>';}
+function skel(h){return '<div class="sk" style="height:'+(h||120)+'px"></div>';}
+function errState(msg){return '<div class="state err"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><b>'+esc(msg||"Erreur")+'</b>Service injoignable ou accès refusé.</div>';}
+function emptyState(t,s){return '<div class="state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><b>'+esc(t||"Rien à afficher")+'</b>'+esc(s||"")+'</div>';}
+function tbl(cols,rows,opts){opts=opts||{};
+  var head='<thead><tr>'+cols.map(function(c){return '<th'+(c.thcls?' class="'+c.thcls+'"':'')+'>'+esc(c.l)+'</th>';}).join("")+'</tr></thead>';
+  var body;
+  if(!rows.length){ body='<tbody><tr><td colspan="'+cols.length+'"><div class="state"><b>'+esc(opts.empty||"Aucune donnée")+'</b></div></td></tr></tbody>'; }
+  else body='<tbody>'+rows.map(function(r,i){return '<tr'+(opts.rowAttr?(" "+opts.rowAttr(r,i)):"")+'>'+cols.map(function(c){var v=c.f?c.f(r[c.k],r,i):esc(r[c.k]==null?"":r[c.k]);return '<td'+(c.cls?' class="'+c.cls+'"':"")+'>'+v+'</td>';}).join("")+'</tr>';}).join("")+'</tbody>';
+  return '<div class="tbl-wrap"><table class="tbl'+(opts.click?" tbl-click":"")+'">'+head+body+'</table></div>';
 }
-window.n8nAdmin = n8nCall; // expo debug
+function rankBars(pairs,unit,maxN){ // pairs:[ [name,val], ... ] OR object
+  if(!Array.isArray(pairs)) pairs=Object.keys(pairs||{}).map(function(k){return [k,pairs[k]];});
+  pairs=pairs.slice().sort(function(a,b){return b[1]-a[1];}).slice(0,maxN||7);
+  if(!pairs.length) return emptyState("Rien à afficher","");
+  var max=pairs[0][1]||1;
+  return pairs.map(function(p){return '<div class="rk"><div class="rk-top"><span class="rk-name">'+av(p[0],24)+'<span class="t">'+esc(p[0])+'</span></span><span class="rk-val">'+esc(String(p[1]))+(unit?(" "+unit):"")+'</span></div><div class="meter"><i style="width:'+Math.round(p[1]/max*100)+'%"></i></div></div>';}).join("");
+}
+function barChart(cid,xid,labels,values){
+  var max=Math.max(1,Math.max.apply(null,values));
+  $(cid).innerHTML=values.map(function(v,i){return '<div class="bar" style="height:'+Math.max(4,Math.round(v/max*100))+'%"><span class="tip">'+v+' · '+esc(labels[i])+'</span></div>';}).join("");
+  if(xid)$(xid).innerHTML=labels.map(function(l,i){return '<span>'+((i%2===0)?esc(l):"")+'</span>';}).join("");
+}
+function chips(pairs,maxN){ if(!Array.isArray(pairs))pairs=Object.keys(pairs||{}).map(function(k){return [k,pairs[k]];}); pairs=pairs.slice().sort(function(a,b){return b[1]-a[1];}).slice(0,maxN||12); if(!pairs.length)return '<span class="muted" style="font-size:.82rem">Aucune donnée</span>'; return '<div class="chips">'+pairs.map(function(p){return '<span class="chip">'+esc(p[0])+' <b>'+esc(String(p[1]))+'</b></span>';}).join("")+'</div>'; }
+function dlCsv(text,name){var b=new Blob([text],{type:"text/csv;charset=utf-8;"});var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);}
+function toCsv(cols,rows){var lines=[cols.join(",")];rows.forEach(function(r){lines.push(r.map(function(x){return '"'+String(x==null?"":x).replace(/"/g,'""')+'"';}).join(","));});return lines.join("\n");}
 
-function showDenied(){
-  try{ sessionStorage.removeItem("qw_admin_code"); }catch(e){}
-  toast("Accès refusé par le serveur. Vérifie ton code / ta session.");
-  setTimeout(function(){ $("app").classList.remove("ready"); openGate("Session ou code invalide. Recommence."); }, 600);
-}
+/* ============ SESSION + CODE ============ */
+function qwSession(){try{return JSON.parse(localStorage.getItem("qw_session")||"null");}catch(e){return null;}}
+function sessExpired(s){if(s===undefined)s=qwSession();if(!s||!s.token)return true;if(s.exp&&(new Date(s.exp).getTime()<Date.now()))return true;return false;}
+function authToken(){var s=qwSession();return (s&&!sessExpired(s))?s.token:"";}
+function isRoleAdmin(){var s=qwSession();return !!(s&&!sessExpired(s)&&s.role==="admin");}
+function getCode(){try{return sessionStorage.getItem("qw_admin_code")||"";}catch(e){return"";}}
+function setCode(c){try{sessionStorage.setItem("qw_admin_code",c);}catch(e){}}
+function hasAccess(){return isRoleAdmin()||getCode()===ADMIN_CODE;}
 
-/* ============================================================
-   PORTE D'ACCÈS
-   ============================================================ */
-var gateInputs = [];
-function openGate(msg){
-  $("gate").classList.add("show");
-  $("gateErr").textContent = msg||"";
-  gateInputs.forEach(function(i){ i.value=""; });
-  setTimeout(function(){ if(gateInputs[0]) gateInputs[0].focus(); }, 80);
-}
-function closeGate(){ $("gate").classList.remove("show"); }
-function readGate(){ return gateInputs.map(function(i){ return (i.value||"").replace(/\D/g,""); }).join(""); }
-function submitGate(){
-  var code = readGate();
-  if(code.length<4){ $("gateErr").textContent="Saisis les 4 chiffres."; return; }
-  if(code===ADMIN_CODE){
-    setAdminCode(code);
-    $("gate").classList.remove("err");
-    closeGate();
-    boot();
-  } else {
-    $("gateErr").textContent="Code incorrect. Réessaie.";
-    $("gate").classList.remove("err"); void $("gate").offsetWidth; $("gate").classList.add("err");
-    gateInputs.forEach(function(i){ i.value=""; });
-    if(gateInputs[0]) gateInputs[0].focus();
-  }
-}
-function wireGate(){
-  gateInputs = Array.prototype.slice.call(document.querySelectorAll(".gate-inputs input"));
-  gateInputs.forEach(function(inp, idx){
-    inp.addEventListener("input", function(){
-      this.value = this.value.replace(/\D/g,"").slice(0,1);
-      if(this.value && idx<gateInputs.length-1) gateInputs[idx+1].focus();
-      if(idx===gateInputs.length-1 && readGate().length===4) submitGate();
-    });
-    inp.addEventListener("keydown", function(e){
-      if(e.key==="Backspace" && !this.value && idx>0) gateInputs[idx-1].focus();
-      if(e.key==="Enter") submitGate();
-    });
-    inp.addEventListener("paste", function(e){
-      e.preventDefault();
-      var t=(e.clipboardData||window.clipboardData).getData("text").replace(/\D/g,"").slice(0,4);
-      for(var i=0;i<4;i++){ gateInputs[i].value = t[i]||""; }
-      if(t.length===4) submitGate(); else if(gateInputs[t.length]) gateInputs[t.length].focus();
-    });
+function call(url,payload){
+  var b={};for(var k in (payload||{}))b[k]=payload[k];b.token=authToken();b.code=getCode();
+  return fetch(url,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(b)}).then(function(r){
+    if(r.status===401||r.status===403){denied();throw new Error("Accès refusé");}
+    if(!r.ok)throw new Error("HTTP "+r.status);return r.json();
   });
-  $("gateBtn").addEventListener("click", submitGate);
 }
+function hub(dataset){return call(URLS.hub,{dataset:dataset});}
+window.qwAdminCall=call;
+function denied(){try{sessionStorage.removeItem("qw_admin_code");}catch(e){}toast("Accès refusé par le serveur.");setTimeout(function(){$("app").classList.remove("ready");openGate("Session ou code invalide.");},700);}
 
-/* ============================================================
-   NAVIGATION
-   ============================================================ */
-var PAGES = {
-  overview:{t:"Vue d'ensemble", s:"Pilotage de l'assistant Qwamplify", init:initOverview},
-  usage:{t:"Usage & activité", s:"Mesuré à partir des accès réels", init:initUsage},
-  users:{t:"Utilisateurs", s:"Gestion des comptes et des accès", init:initUsers},
-  requests:{t:"Demandes d'accès", s:"Arbitrage des accès aux boîtes", init:initRequests},
-  security:{t:"Sécurité & journal", s:"Traçabilité des accès (métadonnées)", init:initSecurity},
-  memory:{t:"Mémoire entreprise", s:"Connaissances partagées de l'assistant", init:initMemory},
-  settings:{t:"Réglages & Kill-Switch", s:"Contrôle et sécurité de l'assistant", init:initSettings}
-};
-var inited = {};
-function goto(target){
-  if(!PAGES[target]) target="overview";
-  document.querySelectorAll(".nav-item").forEach(function(b){ b.classList.toggle("active", b.dataset.target===target); });
-  document.querySelectorAll(".panel").forEach(function(p){ p.classList.toggle("active", p.id==="panel-"+target); });
-  $("pageTitle").textContent = PAGES[target].t;
-  $("pageSub").textContent = PAGES[target].s;
+/* cache des datasets pour éviter de recharger */
+var CACHE={};
+function getDS(ds,force){ if(!force&&CACHE[ds])return Promise.resolve(CACHE[ds]); return hub(ds).then(function(d){CACHE[ds]=d;return d;}); }
+
+/* ============ PORTE ============ */
+var gI=[];
+function openGate(msg){$("gate").classList.add("show");$("gateErr").textContent=msg||"";gI.forEach(function(i){i.value="";});setTimeout(function(){if(gI[0])gI[0].focus();},80);}
+function closeGate(){$("gate").classList.remove("show");}
+function readGate(){return gI.map(function(i){return (i.value||"").replace(/\D/g,"");}).join("");}
+function submitGate(){var c=readGate();if(c.length<4){$("gateErr").textContent="Saisis les 4 chiffres.";return;}if(c===ADMIN_CODE){setCode(c);$("gate").classList.remove("err");closeGate();boot();}else{$("gateErr").textContent="Code incorrect.";$("gate").classList.remove("err");void $("gate").offsetWidth;$("gate").classList.add("err");gI.forEach(function(i){i.value="";});if(gI[0])gI[0].focus();}}
+function wireGate(){gI=Array.prototype.slice.call(document.querySelectorAll(".gate-inputs input"));gI.forEach(function(inp,idx){inp.addEventListener("input",function(){this.value=this.value.replace(/\D/g,"").slice(0,1);if(this.value&&idx<gI.length-1)gI[idx+1].focus();if(idx===gI.length-1&&readGate().length===4)submitGate();});inp.addEventListener("keydown",function(e){if(e.key==="Backspace"&&!this.value&&idx>0)gI[idx-1].focus();if(e.key==="Enter")submitGate();});inp.addEventListener("paste",function(e){e.preventDefault();var t=(e.clipboardData||window.clipboardData).getData("text").replace(/\D/g,"").slice(0,4);for(var i=0;i<4;i++)gI[i].value=t[i]||"";if(t.length===4)submitGate();});});$("gateBtn").addEventListener("click",submitGate);}
+
+/* ============ NAV ============ */
+var NAV=[
+  {sec:"Pilotage"},
+  {t:"overview",l:"Vue d'ensemble",sub:"Pilotage de l'assistant Qwamplify",ic:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',init:initOverview},
+  {t:"usage",l:"Usage & activité",sub:"Mesuré sur les accès réels",ic:'<path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/>',init:initUsage},
+  {sec:"Personnes"},
+  {t:"users",l:"Utilisateurs",sub:"Comptes, rôles et accès",ic:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',init:initUsers},
+  {t:"sessions",l:"Sessions actives",sub:"Qui est connecté en ce moment",ic:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',init:initSessions},
+  {t:"org",l:"Organigramme",sub:"Hiérarchie de l'entreprise",ic:'<rect x="9" y="2" width="6" height="5" rx="1"/><rect x="2" y="16" width="6" height="5" rx="1"/><rect x="16" y="16" width="6" height="5" rx="1"/><path d="M12 7v5M5 16v-2h14v2"/>',init:initOrg},
+  {sec:"Confiance & accès"},
+  {t:"security",l:"Sécurité & journal",sub:"Traçabilité des accès",ic:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',init:initSecurity},
+  {t:"boxes",l:"Accès aux boîtes",sub:"Autorisations entre collaborateurs",ic:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',init:initBoxes},
+  {t:"requests",l:"Demandes d'accès",sub:"Arbitrage des demandes",ic:'<path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/>',badge:"requests",init:initRequests},
+  {sec:"Données métier"},
+  {t:"crm",l:"CRM",sub:"Pipeline, sociétés, contacts",ic:'<path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/>',init:initCrm},
+  {t:"drive",l:"Drive",sub:"Catalogue des documents",ic:'<path d="M22 12.6V19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6l2 3h8a2 2 0 0 1 2 2z"/>',init:initDrive},
+  {t:"memory",l:"Mémoire",sub:"Connaissances de l'assistant",ic:'<path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-2.5-2.5"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 2.5-2.5"/><path d="M5 7h2M5 11h2M17 7h2M17 11h2"/>',init:initMemory},
+  {t:"notes",l:"Notes & absences",sub:"Notes de vacances partagées",ic:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/>',init:initNotes},
+  {t:"conversations",l:"Conversations",sub:"Activité du chat par personne",ic:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',init:initConvs},
+  {sec:"Système"},
+  {t:"settings",l:"Réglages & Kill-Switch",sub:"Contrôle et sécurité",ic:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',init:initSettings}
+];
+var PAGES={},inited={};
+function buildNav(){
+  NAV.forEach(function(n){if(n.t)PAGES[n.t]=n;});
+  $("nav").innerHTML=NAV.map(function(n){
+    if(n.sec)return '<div class="nav-sec">'+esc(n.sec)+'</div>';
+    return '<button class="nav-item" data-target="'+n.t+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+n.ic+'</svg>'+esc(n.l)+(n.badge?'<span class="nav-badge" id="badge-'+n.badge+'">0</span>':'')+'</button>';
+  }).join("");
+  document.querySelectorAll(".nav-item").forEach(function(b){b.addEventListener("click",function(){goto(b.dataset.target);});});
+}
+function goto(t){
+  if(!PAGES[t])t="overview";
+  document.querySelectorAll(".nav-item").forEach(function(b){b.classList.toggle("active",b.dataset.target===t);});
+  $("pageTitle").textContent=PAGES[t].l;$("pageSub").textContent=PAGES[t].sub;
   $("app").classList.remove("nav-open");
-  if(!inited[target]){ inited[target]=true; try{ PAGES[target].init(); }catch(e){ console.error(e); } }
+  document.querySelectorAll(".panel").forEach(function(p){p.classList.remove("active");});
+  var pid="panel-"+t, pan=$(pid);
+  if(!pan){pan=document.createElement("section");pan.className="panel";pan.id=pid;$("content").appendChild(pan);}
+  pan.classList.add("active");
+  if(!inited[t]){inited[t]=true;pan.innerHTML=skel(220);try{PAGES[t].init(pan);}catch(e){console.error(e);pan.innerHTML=errState("Erreur du module");}}
   window.scrollTo(0,0);
 }
-function wireNav(){
-  document.querySelectorAll(".nav-item").forEach(function(b){ b.addEventListener("click", function(){ goto(b.dataset.target); }); });
-  document.querySelectorAll("[data-go]").forEach(function(b){ b.addEventListener("click", function(){ goto(b.getAttribute("data-go")); }); });
-  $("sbToggle").addEventListener("click", function(){ $("app").classList.toggle("nav-open"); });
-  $("btnLogout").addEventListener("click", quit);
-  $("st-logout") && $("st-logout").addEventListener("click", quit);
-}
-function assistantUrl(){ return (location.protocol==="file:") ? "assistant-qwamplify.html" : "index.html"; }
-function quit(){ try{ sessionStorage.removeItem("qw_admin_code"); }catch(e){} window.location.href=assistantUrl(); }
+function quit(){try{sessionStorage.removeItem("qw_admin_code");}catch(e){}window.location.href=assistantUrl();}
+function assistantUrl(){return (location.protocol==="file:")?"assistant-qwamplify.html":"index.html";}
 
-/* modales génériques */
+/* modales */
 function wireModals(){
-  document.querySelectorAll("[data-close]").forEach(function(b){ b.addEventListener("click", function(){ var m=$(b.getAttribute("data-close")); if(m) m.classList.remove("show"); }); });
-  document.querySelectorAll(".modal").forEach(function(m){ m.addEventListener("click", function(e){ if(e.target===m) m.classList.remove("show"); }); });
-  document.addEventListener("keydown", function(e){ if(e.key==="Escape"){ document.querySelectorAll(".modal.show").forEach(function(m){ m.classList.remove("show"); }); } });
+  document.querySelectorAll("[data-close]").forEach(function(b){b.addEventListener("click",function(){var m=$(b.getAttribute("data-close"));if(m)m.classList.remove("show");});});
+  document.querySelectorAll(".modal").forEach(function(m){m.addEventListener("click",function(e){if(e.target===m)m.classList.remove("show");});});
+  document.querySelectorAll("[data-close-drawer]").forEach(function(b){b.addEventListener("click",closeDrawer);});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"){document.querySelectorAll(".modal.show").forEach(function(m){m.classList.remove("show");});closeDrawer();}});
 }
-function openModal(id){ var m=$(id); if(m) m.classList.add("show"); }
-function closeModal(id){ var m=$(id); if(m) m.classList.remove("show"); }
+function openM(id){$(id).classList.add("show");}
+function closeM(id){$(id).classList.remove("show");}
+var confirmCb=null;
+function confirmAsk(title,sub,okLabel,danger,cb){$("mc-title").textContent=title;$("mc-sub").textContent=sub||"";$("mc-ok").textContent=okLabel||"Confirmer";$("mc-ok").className="btn "+(danger===false?"primary":"danger");confirmCb=cb;openM("modal-confirm");}
+function openDrawer(){$("drawer").classList.add("show");}
+function closeDrawer(){$("drawer").classList.remove("show");}
 
-/* ============================================================
-   SIGNATURE — Pouls de l'assistant (Kill-Switch live)
-   ============================================================ */
-var aiState = null; // 'on' | 'off' | null
-function applyAiState(v){
-  aiState = v;
-  var off = (v==="off");
-  $("app").classList.toggle("ai-off", off);
-  var p=$("pulse"); p.classList.remove("loading");
-  if(v===null){ $("pulseTxt").textContent="Indisponible"; $("pulseSub").textContent="État inconnu"; p.classList.add("loading"); return; }
-  $("pulseTxt").textContent = off ? "Assistant en pause" : "Assistant en ligne";
-  $("pulseSub").textContent = off ? "Cliquer pour réactiver" : "Pouls actif";
-  // reflète dans Réglages si déjà initialisé
-  var sw=$("st-ks"); if(sw) sw.checked = !off;
-  var stState=$("st-ks-state"); if(stState) stState.innerHTML = ksStateHtml(off);
-  var ovSub=$("ov-ks-sub"); if(ovSub) ovSub.textContent = off ? "L'assistant est actuellement en pause." : "L'assistant répond normalement.";
-  var ovBox=$("ov-ks-box"); if(ovBox) ovBox.innerHTML = ovKsHtml(off);
-}
-function ksStateHtml(off){
-  return off
-    ? '<span class="badge danger" style="margin-top:10px">● En pause — indisponible pour tous</span>'
-    : '<span class="badge ok" style="margin-top:10px">● En ligne — disponible pour tous</span>';
-}
-function ovKsHtml(off){
-  return '<div style="margin-top:8px">'+(off
-    ? '<span class="badge danger">● En pause</span><button class="btn primary sm full" id="ov-ks-btn" style="margin-top:12px">Réactiver l\'assistant</button>'
-    : '<span class="badge ok">● En ligne</span><button class="btn sm full" id="ov-ks-btn" style="margin-top:12px">Mettre en pause</button>')+'</div>';
-}
-function loadAiState(){
-  return n8nCall(URLS.params, {action:"get"})
-    .then(function(d){ applyAiState((d && (d.valeur==="off")) ? "off" : "on"); })
-    .catch(function(){ applyAiState(null); });
-}
-function setAiState(on){
-  var p=$("pulse"); p.classList.add("loading");
-  return n8nCall(URLS.params, {action:"set", valeur: on?"on":"off"})
-    .then(function(d){ if(d && d.ok!==false){ applyAiState(on?"on":"off"); toast(on?"Assistant réactivé ✓":"Assistant mis en pause."); } else { applyAiState(on?"off":"on"); toast("Échec de l'enregistrement."); } })
-    .catch(function(){ p.classList.remove("loading"); toast("Échec de l'enregistrement côté serveur."); });
-}
-var pendingKs = null;
-function confirmToggle(targetOn){
-  pendingKs = targetOn;
-  $("mk-title").textContent = targetOn ? "Réactiver l'assistant ?" : "Mettre l'assistant en pause ?";
-  $("mk-sub").textContent = targetOn ? "Les collaborateurs pourront de nouveau l'utiliser." : "L'assistant répondra « en pause » à tous les collaborateurs jusqu'à réactivation.";
-  $("mk-confirm").className = targetOn ? "btn primary" : "btn danger";
-  $("mk-confirm").textContent = targetOn ? "Réactiver" : "Mettre en pause";
-  openModal("modal-ks");
-}
-function wirePulse(){
-  $("pulse").addEventListener("click", function(){ if(aiState===null){ loadAiState(); return; } confirmToggle(aiState==="off"); });
-  $("mk-confirm").addEventListener("click", function(){ closeModal("modal-ks"); setAiState(!!pendingKs); });
-  // délégué pour boutons KS dynamiques (overview)
-  document.addEventListener("click", function(e){
-    var b=e.target.closest && e.target.closest("#ov-ks-btn"); if(b){ confirmToggle(aiState==="off"); }
-    var k=e.target.closest && e.target.closest("#st-killnow"); if(k){ confirmToggle(false); }
-  });
-}
+/* ============ PULSE / KILL-SWITCH ============ */
+var aiState=null;
+function applyAi(v){aiState=v;var off=(v==="off");$("app").classList.toggle("ai-off",off);var p=$("pulse");p.classList.remove("loading");if(v===null){$("pulseTxt").textContent="Indisponible";$("pulseSub").textContent="État inconnu";p.classList.add("loading");return;}$("pulseTxt").textContent=off?"Assistant en pause":"Assistant en ligne";$("pulseSub").textContent=off?"Cliquer pour réactiver":"Pouls actif";var sw=$("st-ks");if(sw)sw.checked=!off;var b=$("st-ks-state");if(b)b.innerHTML=off?badge("● En pause — indisponible pour tous","danger"):badge("● En ligne — disponible pour tous","ok");}
+function loadAi(){return call(URLS.params,{action:"get"}).then(function(d){applyAi((d&&d.assistant_actif==="off")?"off":"on");}).catch(function(){applyAi(null);});}
+function setAi(on){var p=$("pulse");p.classList.add("loading");return call(URLS.params,{action:"set",valeur:on?"on":"off"}).then(function(d){if(d&&d.ok!==false){applyAi(on?"on":"off");toast(on?"Assistant réactivé ✓":"Assistant mis en pause.");}else{applyAi(on?"off":"on");toast("Échec.");}}).catch(function(){p.classList.remove("loading");toast("Échec côté serveur.");});}
+var pendKs=null;
+function confirmToggle(on){pendKs=on;$("mk-title").textContent=on?"Réactiver l'assistant ?":"Mettre l'assistant en pause ?";$("mk-sub").textContent=on?"Les collaborateurs pourront de nouveau l'utiliser.":"L'assistant répondra « en pause » à tous jusqu'à réactivation.";$("mk-confirm").className=on?"btn primary":"btn danger";$("mk-confirm").textContent=on?"Réactiver":"Mettre en pause";openM("modal-ks");}
+function wirePulse(){$("pulse").addEventListener("click",function(){if(aiState===null){loadAi();return;}confirmToggle(aiState==="off");});$("mk-confirm").addEventListener("click",function(){closeM("modal-ks");setAi(!!pendKs);});}
 
-/* ============================================================
-   MODULE — VUE D'ENSEMBLE
-   ============================================================ */
-function initOverview(){
-  n8nCall(URLS.data, {action:"stats"}).then(function(res){
-    if(!res||res.ok===false||!res.stats) return;
-    var s=res.stats;
-    $("ov-users").textContent = s.actifs!=null?s.actifs:"—";
-    $("ov-access").textContent = s.acces_total!=null?s.acces_total:"—";
-    $("ov-pending").textContent = s.attente!=null?s.attente:"—";
-    $("ov-refused").textContent = s.acces_refuses!=null?s.acces_refuses:"—";
-  }).catch(function(){});
-  // activité récente depuis le journal
-  n8nCall(URLS.data, {action:"journal"}).then(function(res){
-    var j=(res&&res.journal)||[];
-    var wrap=$("ov-activity");
-    if(!j.length){ wrap.innerHTML='<div class="state"><b>Aucune activité</b>Le journal des accès est vide pour le moment.</div>'; return; }
-    j = j.slice().sort(function(a,b){ return String(b.date||"").localeCompare(String(a.date||"")); }).slice(0,7);
-    wrap.innerHTML = j.map(function(r){
-      var who=r.demandeur||"?", to=r.cible||"?", ok=!!r.autorise;
-      return '<div class="lst-item"><div class="av" style="background:'+colorFor(who)+'">'+esc(initials2(who))+'</div>'
-        +'<div class="lst-meta"><b>'+esc(who)+'</b><small>a consulté la boîte de '+esc(to)+'</small></div>'
-        +'<span class="badge '+(ok?"ok":"danger")+'">'+(ok?"Autorisé":"Refusé")+'</span>'
-        +'<span class="lst-time" style="margin-left:8px">'+esc(fmtDateTime(r.date))+'</span></div>';
-    }).join("");
-  }).catch(function(){ $("ov-activity").innerHTML='<div class="state err"><b>Journal injoignable</b>Vérifie que le workflow « Admin — Données » est actif.</div>'; });
-  loadAiState();
-}
+/* ============================================================ MODULES ============================================================ */
 
-/* ============================================================
-   MODULE — USAGE & ACTIVITÉ (calculé sur le journal réel)
-   ============================================================ */
-function initUsage(){ loadUsage(); $("ug-refresh").addEventListener("click", function(){ loadUsage(); toast("Statistiques actualisées."); }); }
-function loadUsage(){
-  n8nCall(URLS.data, {action:"journal"}).then(function(res){
-    var j=(res&&res.journal)||[];
-    renderUsage(j);
-  }).catch(function(){
-    $("ug-chart").innerHTML=""; $("ug-top").innerHTML='<div class="state err"><b>Journal injoignable</b>Workflow « Admin — Données » actif ?</div>'; $("ug-boxes").innerHTML="";
-  });
+/* ---- VUE D'ENSEMBLE ---- */
+function initOverview(p){
+  p.innerHTML=''
+  +'<div class="kpis" id="ov-kpis">'+[
+    kpiHtml("accent","ov-users","Utilisateurs actifs",'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>'),
+    kpiHtml("teal","ov-sessions","Sessions actives",'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/>'),
+    kpiHtml("ok","ov-access","Accès journalisés",'<path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/>'),
+    kpiHtml("warn","ov-pending","Comptes en attente",'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
+    kpiHtml("danger","ov-refused","Accès refusés",'<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/>'),
+    kpiHtml("purple","ov-mem","Infos mémorisées",'<path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15M14.5 2A2.5 2.5 0 0 0 12 4.5v15"/>')
+  ].join("")+'</div>'
+  +'<div class="grid g-2-1 section-gap">'
+    +'<div class="card pad"><div class="row-between"><h3 class="sec-title">Activité récente</h3><button class="btn sm ghost" data-go="security">Tout voir</button></div><p class="sec-sub">Derniers accès aux boîtes traités par la garde de confidentialité.</p><div class="lst" id="ov-activity">'+skel(54)+'</div></div>'
+    +'<div class="grid" style="align-content:start">'
+      +'<div class="card pad"><h3 class="sec-title">État de l\'assistant</h3><p class="sec-sub" id="ov-ks-sub">Chargement…</p><div id="ov-ks-box"></div></div>'
+      +'<div class="card pad"><h3 class="sec-title">Sessions ouvertes</h3><p class="sec-sub">Personnes connectées en ce moment.</p><div id="ov-sess">'+skel(60)+'</div></div>'
+    +'</div>'
+  +'</div>'
+  +'<div class="grid g3 section-gap">'
+    +'<div class="card pad"><h3 class="sec-title">CRM</h3><div id="ov-crm">'+skel(70)+'</div></div>'
+    +'<div class="card pad"><h3 class="sec-title">Drive</h3><div id="ov-drive">'+skel(70)+'</div></div>'
+    +'<div class="card pad"><h3 class="sec-title">Actions rapides</h3><div class="grid" style="gap:8px;margin-top:8px">'
+      +'<button class="btn full" data-go="users">Ajouter une personne</button>'
+      +'<button class="btn full" data-go="boxes">Gérer les accès aux boîtes</button>'
+      +'<button class="btn full" data-go="memory">Enrichir la mémoire</button>'
+      +'<button class="btn full" data-go="settings">Réglages & Kill-Switch</button>'
+    +'</div></div>'
+  +'</div>';
+  wireGo(p);
+  call(URLS.data,{action:"stats"}).then(function(res){if(!res||!res.stats)return;var s=res.stats;setVal("ov-users",s.actifs);setVal("ov-access",s.acces_total);setVal("ov-pending",s.attente);setVal("ov-refused",s.acces_refuses);setVal("ov-mem",s.memoires);}).catch(function(){});
+  call(URLS.data,{action:"journal"}).then(function(res){
+    var j=(res&&res.journal)||[];j=j.slice().sort(function(a,b){return String(b.date||"").localeCompare(String(a.date||""));}).slice(0,7);
+    $("ov-activity").innerHTML=j.length?j.map(function(r){var who=r.demandeur||"?";return '<div class="lst-item">'+av(who)+'<div class="lst-meta"><b>'+esc(who)+'</b><small>a consulté la boîte de '+esc(r.cible||"?")+'</small></div>'+badge(r.autorise?"Autorisé":"Refusé",r.autorise?"ok":"danger")+'<span class="lst-time" style="margin-left:8px">'+esc(dtime(r.date))+'</span></div>';}).join(""):emptyState("Aucune activité","");
+  }).catch(function(){$("ov-activity").innerHTML=errState("Journal injoignable");});
+  getDS("sessions").then(function(d){
+    var now=Date.now();var live=(d.rows||[]).filter(function(r){return r.expire_le&&new Date(r.expire_le.replace(" ","T")).getTime()>now;});
+    setVal("ov-sessions",live.length);
+    $("ov-sess").innerHTML=live.length?live.slice(0,5).map(function(r){return '<div class="lst-item">'+av(r.profil)+'<div class="lst-meta"><b>'+esc(r.profil||r.email)+'</b><small>'+esc(r.email)+'</small></div>'+badge(r.role==="admin"?"Admin":"Utilisateur",r.role==="admin"?"info":"")+'</div>';}).join(""):emptyState("Personne de connecté","");
+  }).catch(function(){$("ov-sess").innerHTML=errState("Indisponible");setVal("ov-sessions","—");});
+  getDS("crm_deals").then(function(d){var s=d.summary||{};$("ov-crm").innerHTML='<div class="kpi-val" style="font-size:1.5rem">'+money(s.valeur_open)+'</div><div class="kpi-lab">en cours sur '+(s.open||0)+' affaires ouvertes</div><div style="margin-top:10px">'+badge((s.won||0)+" gagnées","ok")+' '+badge((s.lost||0)+" perdues","danger")+'</div><button class="btn sm full" data-go="crm" style="margin-top:12px">Ouvrir le CRM</button>';wireGo($("ov-crm"));}).catch(function(){$("ov-crm").innerHTML=errState("CRM indisponible");});
+  getDS("drive").then(function(d){var s=d.summary||{};var types=Object.keys(s.par_type||{}).length;$("ov-drive").innerHTML='<div class="kpi-val" style="font-size:1.5rem">'+bign(d.count)+'</div><div class="kpi-lab">documents catalogués · '+types+' types</div><button class="btn sm full" data-go="drive" style="margin-top:12px">Ouvrir le Drive</button>';wireGo($("ov-drive"));}).catch(function(){$("ov-drive").innerHTML=errState("Drive indisponible");});
+  loadAi().then(function(){var off=aiState==="off";$("ov-ks-sub").textContent=off?"L'assistant est actuellement en pause.":"L'assistant répond normalement.";$("ov-ks-box").innerHTML=(off?badge("● En pause","danger"):badge("● En ligne","ok"))+'<button class="btn '+(off?"primary":"")+' sm full" id="ov-ks-btn" style="margin-top:12px">'+(off?"Réactiver l'assistant":"Mettre en pause")+'</button>';$("ov-ks-btn").addEventListener("click",function(){confirmToggle(aiState==="off");});});
 }
+function kpiHtml(variant,id,label,ic){return '<div class="kpi '+variant+'"><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+ic+'</svg></div><div class="kpi-val" id="'+id+'">—</div><div class="kpi-lab">'+esc(label)+'</div></div>';}
+function setVal(id,v){var e=$(id);if(e)e.textContent=(v==null?"—":v);}
+function wireGo(scope){(scope||document).querySelectorAll("[data-go]").forEach(function(b){b.addEventListener("click",function(){goto(b.getAttribute("data-go"));});});}
+
+/* ---- USAGE ---- */
+function initUsage(p){
+  p.innerHTML=''
+  +'<div class="row-between" style="margin-bottom:16px"><div><h3 class="sec-title">Usage & activité</h3><p class="sec-sub" style="margin:0">Calculé à partir du journal des accès réels.</p></div><button class="btn sm" id="ug-refresh">Actualiser</button></div>'
+  +'<div class="kpis">'+[kpiHtml("","ug-total","Accès (14 j)",'<path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/>'),kpiHtml("ok","ug-ok","Autorisés",'<path d="M20 6 9 17l-5-5"/>'),kpiHtml("danger","ug-ko","Refusés",'<path d="M18 6 6 18M6 6l12 12"/>'),kpiHtml("teal","ug-people","Personnes actives",'<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/>')].join("")+'</div>'
+  +'<div class="card pad section-gap"><h3 class="sec-title">Volume d\'accès par jour</h3><p class="sec-sub">14 derniers jours.</p><div class="chart" id="ug-chart"></div><div class="chart-x" id="ug-chartx"></div></div>'
+  +'<div class="grid g2 section-gap"><div class="card pad"><h3 class="sec-title">Personnes les plus actives</h3><div id="ug-top" style="margin-top:8px">'+skel(120)+'</div></div><div class="card pad"><h3 class="sec-title">Boîtes les plus consultées</h3><div id="ug-boxes" style="margin-top:8px">'+skel(120)+'</div></div></div>';
+  $("ug-refresh").addEventListener("click",function(){loadUsage();toast("Actualisé.");});
+  loadUsage();
+}
+function loadUsage(){call(URLS.data,{action:"journal"}).then(function(res){renderUsage((res&&res.journal)||[]);}).catch(function(){$("ug-top").innerHTML=errState("Journal injoignable");$("ug-boxes").innerHTML="";});}
 function renderUsage(j){
-  var now=new Date(); var days=[]; var map={};
-  for(var i=13;i>=0;i--){ var d=new Date(now.getTime()-i*86400000); var key=d.toISOString().slice(0,10); days.push(key); map[key]=0; }
-  var total=0, ok=0, ko=0; var people={}, boxes={};
-  j.forEach(function(r){
-    var key=String(r.date||"").slice(0,10);
-    if(key in map){ map[key]++; }
-    // période 14j pour les compteurs
-    var inRange = (key in map);
-    if(inRange){
-      total++;
-      if(r.autorise) ok++; else ko++;
-      var who=r.demandeur||"?"; people[who]=(people[who]||0)+1;
-      var to=r.cible||"?"; boxes[to]=(boxes[to]||0)+1;
-    }
-  });
-  $("ug-total").textContent=total; $("ug-ok").textContent=ok; $("ug-ko").textContent=ko; $("ug-people").textContent=Object.keys(people).length;
-  // chart
-  var max=Math.max(1, Math.max.apply(null, days.map(function(k){return map[k];})));
-  $("ug-chart").innerHTML = days.map(function(k){ var v=map[k]; var h=Math.round(v/max*100); return '<div class="bar" style="height:'+Math.max(4,h)+'%"><span class="tip">'+v+' le '+fmtDateShort(k)+'</span></div>'; }).join("");
-  $("ug-chartx").innerHTML = days.map(function(k,i){ return '<span>'+((i%2===0)?(k.slice(8,10)+"/"+k.slice(5,7)):"")+'</span>'; }).join("");
-  // tops
-  $("ug-top").innerHTML = rankHtml(people, "accès");
-  $("ug-boxes").innerHTML = rankHtml(boxes, "consultations");
-}
-function rankHtml(obj, unit){
-  var arr=Object.keys(obj).map(function(k){return [k,obj[k]];}).sort(function(a,b){return b[1]-a[1];}).slice(0,6);
-  if(!arr.length) return '<div class="state"><b>Rien à afficher</b>Pas encore de données sur la période.</div>';
-  var max=arr[0][1]||1;
-  return arr.map(function(x){ return '<div style="margin:11px 0"><div class="row-between" style="margin-bottom:5px"><span style="display:flex;align-items:center;gap:9px"><span class="av" style="width:26px;height:26px;border-radius:8px;font-size:.7rem;background:'+colorFor(x[0])+'">'+esc(initials2(x[0]))+'</span><b style="font-size:.85rem">'+esc(x[0])+'</b></span><span class="muted" style="font-size:.8rem">'+x[1]+' '+unit+'</span></div><div class="meter"><i style="width:'+Math.round(x[1]/max*100)+'%"></i></div></div>'; }).join("");
+  var now=new Date(),days=[],map={};for(var i=13;i>=0;i--){var d=new Date(now.getTime()-i*86400000);var k=d.toISOString().slice(0,10);days.push(k);map[k]=0;}
+  var tot=0,ok=0,ko=0,people={},boxes={};
+  j.forEach(function(r){var k=String(r.date||"").slice(0,10);if(k in map){map[k]++;tot++;if(r.autorise)ok++;else ko++;var w=r.demandeur||"?";people[w]=(people[w]||0)+1;var b=r.cible||"?";boxes[b]=(boxes[b]||0)+1;}});
+  setVal("ug-total",tot);setVal("ug-ok",ok);setVal("ug-ko",ko);setVal("ug-people",Object.keys(people).length);
+  barChart("ug-chart","ug-chartx",days.map(function(k){return k.slice(8,10)+"/"+k.slice(5,7);}),days.map(function(k){return map[k];}));
+  $("ug-top").innerHTML=rankBars(people,"accès");$("ug-boxes").innerHTML=rankBars(boxes,"consult.");
 }
 
-/* ============================================================
-   MODULE — UTILISATEURS
-   ============================================================ */
-var EMPLOYES=["Hugo","Leo","Marjorie","Marie","Guillaume","Jeremie","David","Tamsir","Valentine","Alize","Frank","Alexis","Sarah","Patrick"];
-var usComptes=[], usState={q:"",showInactive:false}, usDel=null;
-function initUsers(){
-  $("mu-profil").innerHTML = EMPLOYES.map(function(n){return '<option>'+esc(n)+'</option>';}).join("");
-  var st=null;
-  $("us-search").addEventListener("input", function(){ var v=this.value.trim().toLowerCase(); clearTimeout(st); st=setTimeout(function(){ usState.q=v; renderUsers(); },150); });
-  $("us-inactive").addEventListener("change", function(){ usState.showInactive=this.checked; renderUsers(); });
-  $("us-add").addEventListener("click", function(){ $("mu-email").value=""; $("mu-profil").selectedIndex=0; $("mu-role").value="user"; openModal("modal-user"); setTimeout(function(){$("mu-email").focus();},60); });
-  $("mu-save").addEventListener("click", saveUser);
-  $("md-confirm").addEventListener("click", doDelUser);
-  $("us-export").addEventListener("click", exportUsers);
+/* ---- UTILISATEURS ---- */
+var usData=[],usState={q:"",inactive:false};
+function initUsers(p){
+  p.innerHTML=''
+  +'<div class="kpis" style="margin-bottom:16px">'+[kpiHtml("","us-total","Comptes",'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>'),kpiHtml("ok","us-actifs","Actifs",'<path d="M20 6 9 17l-5-5"/>'),kpiHtml("warn","us-attente","En attente",'<circle cx="12" cy="12" r="9"/><path d="M12 7v5"/>'),kpiHtml("purple","us-admins","Administrateurs",'<path d="M12 2 4 5v6c0 5 8 11 8 11s8-6 8-11V5z"/>')].join("")+'</div>'
+  +'<div class="card"><div class="row-between" style="padding:15px 17px;border-bottom:1px solid var(--brd);gap:12px">'
+    +'<div class="search" style="flex:1;max-width:320px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="inp" id="us-search" placeholder="Rechercher un nom, un email…"></div>'
+    +'<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><label class="tog"><input type="checkbox" id="us-inactive">Voir les désactivés</label><button class="btn sm" id="us-export">Export CSV</button><button class="btn primary sm" id="us-add">Ajouter une personne</button></div>'
+  +'</div><div id="us-table">'+skel(180)+'</div><div style="padding:11px 17px;border-top:1px solid var(--brd);color:var(--dim);font-size:.8rem" id="us-count">—</div></div>';
+  $("mu-profil").innerHTML=EMPLOYES.map(function(n){return '<option>'+esc(n)+'</option>';}).join("");
+  var t=null;$("us-search").addEventListener("input",function(){var v=this.value.trim().toLowerCase();clearTimeout(t);t=setTimeout(function(){usState.q=v;renderUsers();},150);});
+  $("us-inactive").addEventListener("change",function(){usState.inactive=this.checked;renderUsers();});
+  $("us-add").addEventListener("click",function(){$("mu-email").value="";$("mu-profil").selectedIndex=0;$("mu-role").value="user";openM("modal-user");setTimeout(function(){$("mu-email").focus();},60);});
+  $("mu-save").onclick=saveUser;$("us-export").addEventListener("click",exportUsers);
   loadUsers();
 }
-function loadUsers(){
-  $("us-count").textContent="Chargement…";
-  $("us-tbody").innerHTML='<tr><td colspan="6"><div class="sk" style="height:48px;margin:6px 0"></div></td></tr>';
-  return n8nCall(URLS.comptes, {action:"list"}).then(function(res){
-    if(!res||res.ok===false) throw new Error(res&&res.error?res.error:"Accès refusé");
-    usComptes=(res.comptes||[]).slice().sort(function(a,b){ return String(dispName(a)).localeCompare(String(dispName(b))); });
-    renderUsers();
-  }).catch(function(e){
-    usComptes=[]; updateUsKpis();
-    $("us-tbody").innerHTML='<tr><td colspan="6"><div class="state err"><b>Impossible de charger les comptes</b>'+esc(e.message||e)+' — workflow « Admin — Comptes » actif et accès admin ?</div></td></tr>';
-    $("us-count").textContent="Erreur de chargement";
-  });
-}
-function dispName(c){ return (c.profil&&String(c.profil).trim())?String(c.profil).trim():String(c.email||"").split("@")[0]; }
-function updateUsKpis(){
-  var total=usComptes.length,actifs=0,attente=0,admins=0;
-  usComptes.forEach(function(c){ if(c.role==="admin")admins++; if(c.actif===false)return; if(c.aMotDePasse)actifs++; else attente++; });
-  $("us-total").textContent=total; $("us-actifs").textContent=actifs; $("us-attente").textContent=attente; $("us-admins").textContent=admins;
-}
+function loadUsers(){return call(URLS.comptes,{action:"list"}).then(function(res){if(!res||res.ok===false)throw new Error("refus");usData=(res.comptes||[]).slice().sort(function(a,b){return String(dn(a)).localeCompare(String(dn(b)));});renderUsers();}).catch(function(e){usData=[];$("us-table").innerHTML=errState("Impossible de charger les comptes");$("us-count").textContent="Erreur";});}
+function dn(c){return (c.profil&&String(c.profil).trim())?String(c.profil).trim():String(c.email||"").split("@")[0];}
 function renderUsers(){
-  var rows=usComptes.filter(function(c){
-    if(!usState.showInactive && c.actif===false) return false;
-    if(usState.q){ var hay=((c.email||"")+" "+(c.profil||"")+" "+(c.role||"")).toLowerCase(); if(hay.indexOf(usState.q)===-1) return false; }
-    return true;
-  });
-  var tb=$("us-tbody");
-  if(!rows.length){ tb.innerHTML='<tr><td colspan="6"><div class="state"><b>Aucun compte</b>Clique sur « Ajouter une personne » pour commencer.</div></td></tr>'; }
-  else{
-    tb.innerHTML=rows.map(function(c){
-      var nm=dispName(c);
-      var statut = c.actif===false ? '<span class="badge danger">Désactivé</span>'
-                 : (!c.aMotDePasse ? '<span class="badge warn">En attente</span>' : '<span class="badge ok">Actif</span>');
-      var role = c.role==="admin" ? '<span class="badge info">Admin</span>' : '<span class="badge">Utilisateur</span>';
-      return '<tr>'
-        +'<td><div class="u-cell"><div class="av" style="width:34px;height:34px;background:'+colorFor(nm)+'">'+esc(initials2(nm))+'</div><b>'+esc(nm)+'</b></div></td>'
-        +'<td class="cell-mono">'+esc(c.email)+'</td>'
-        +'<td>'+role+'</td><td>'+statut+'</td>'
-        +'<td class="cell-mono">'+esc((c.cree_le||"").slice(0,10)||"—")+'</td>'
-        +'<td style="text-align:right"><button class="btn sm ghost danger us-del" data-email="'+esc(c.email)+'">Supprimer</button></td></tr>';
-    }).join("");
-    tb.querySelectorAll(".us-del").forEach(function(b){ b.addEventListener("click", function(){ openDelUser(b.getAttribute("data-email")); }); });
-  }
-  $("us-count").textContent = rows.length+(rows.length>1?" comptes affichés":" compte affiché");
-  updateUsKpis();
+  var rows=usData.filter(function(c){if(!usState.inactive&&c.actif===false)return false;if(usState.q){var h=((c.email||"")+" "+(c.profil||"")+" "+(c.role||"")).toLowerCase();if(h.indexOf(usState.q)===-1)return false;}return true;});
+  var total=usData.length,actifs=0,attente=0,admins=0;usData.forEach(function(c){if(c.role==="admin")admins++;if(c.actif===false)return;if(c.aMotDePasse)actifs++;else attente++;});
+  setVal("us-total",total);setVal("us-actifs",actifs);setVal("us-attente",attente);setVal("us-admins",admins);
+  $("us-table").innerHTML=tbl([
+    {l:"Personne",k:"profil",f:function(v,c){return '<div class="u-cell">'+av(dn(c))+'<b>'+esc(dn(c))+'</b></div>';}},
+    {l:"Email",k:"email",cls:"cell-mono"},
+    {l:"Rôle",k:"role",f:function(v){return v==="admin"?badge("Admin","info"):badge("Utilisateur");}},
+    {l:"Statut",k:"actif",f:function(v,c){return c.actif===false?badge("Désactivé","danger"):(!c.aMotDePasse?badge("En attente","warn"):badge("Actif","ok"));}},
+    {l:"Créé le",k:"cree_le",cls:"cell-mono",f:function(v){return esc((v||"").slice(0,10)||"—");}},
+    {l:"",k:"email",cls:"",f:function(v,c){return '<div style="display:flex;gap:5px;justify-content:flex-end"><button class="btn xs ghost us-detail" data-e="'+esc(c.email)+'">Détails</button></div>';}}
+  ],rows,{empty:"Aucun compte",click:true,rowAttr:function(c){return 'data-e="'+esc(c.email)+'"';}});
+  $("us-count").textContent=rows.length+(rows.length>1?" comptes affichés":" compte affiché");
+  $("us-table").querySelectorAll("tbody tr[data-e]").forEach(function(tr){tr.addEventListener("click",function(e){if(e.target.closest("button"))return;userDrawer(tr.getAttribute("data-e"));});});
+  $("us-table").querySelectorAll(".us-detail").forEach(function(b){b.addEventListener("click",function(e){e.stopPropagation();userDrawer(b.getAttribute("data-e"));});});
 }
 function saveUser(){
   var email=($("mu-email").value||"").trim().toLowerCase();
-  if(!email||email.indexOf("@")===-1||email.indexOf(".")===-1){ toast("Renseigne un email valide."); $("mu-email").focus(); return; }
-  if(usComptes.some(function(c){ return String(c.email||"").toLowerCase()===email; })){ toast("Un compte existe déjà avec cet email."); return; }
-  var b=$("mu-save"); b.disabled=true; b.textContent="Création…";
-  n8nCall(URLS.comptes, {action:"add", email:email, profil:$("mu-profil").value, role:($("mu-role").value==="admin"?"admin":"user")})
-    .then(function(res){ if(!res||res.ok===false) throw new Error(res&&res.error?res.error:"Accès refusé"); closeModal("modal-user"); toast("Compte créé pour "+email+"."); return loadUsers(); })
-    .catch(function(e){ toast("Échec : "+(e.message||e)); })
-    .then(function(){ b.disabled=false; b.textContent="Créer le compte"; });
+  if(!email||email.indexOf("@")===-1||email.indexOf(".")===-1){toast("Email invalide.");return;}
+  if(usData.some(function(c){return String(c.email||"").toLowerCase()===email;})){toast("Compte déjà existant.");return;}
+  var b=$("mu-save");b.disabled=true;b.textContent="Création…";
+  call(URLS.comptes,{action:"add",email:email,profil:$("mu-profil").value,role:($("mu-role").value==="admin"?"admin":"user")}).then(function(res){if(!res||res.ok===false)throw new Error("refus");closeM("modal-user");toast("Compte créé pour "+email+".");return loadUsers();}).catch(function(e){toast("Échec : "+(e.message||e));}).then(function(){b.disabled=false;b.textContent="Créer le compte";});
 }
-function openDelUser(email){
-  var sess=qwSession()||{}; var row=usComptes.find(function(c){return c.email===email;});
-  if(row && sess.profil && row.profil===sess.profil){ toast("Tu ne peux pas supprimer ton propre compte."); return; }
-  usDel=email; $("md-sub").textContent="Le compte "+email+" ne pourra plus se connecter à l'assistant."; openModal("modal-del");
+function exportUsers(){if(!usData.length){toast("Rien à exporter.");return;}var rows=usData.map(function(c){return [c.email,c.profil,c.role,(c.actif===false?"non":"oui"),(c.aMotDePasse?"oui":"non"),c.cree_le||""];});dlCsv(toCsv(["email","profil","role","actif","mdp_defini","cree_le"],rows),"comptes-qwamplify.csv");toast("Export de "+usData.length+" comptes.");}
+function compteAction(payload,okMsg){return call(URLS.compteMaj,payload).then(function(res){if(!res||res.ok===false)throw new Error(res&&res.error?res.error:"refus");toast(okMsg);return loadUsers();}).catch(function(e){toast("Échec : "+(e.message||e));});}
+function userDrawer(email){
+  var c=usData.find(function(x){return x.email===email;});if(!c)return;
+  var nm=dn(c);var me=qwSession()||{};var isSelf=(me.profil&&c.profil===me.profil);
+  $("dr-av").style.background=colorFor(nm);$("dr-av").textContent=initials(nm);
+  $("dr-title").textContent=nm;$("dr-sub").textContent=c.email;
+  var statut=c.actif===false?badge("Désactivé","danger"):(!c.aMotDePasse?badge("En attente (1re connexion)","warn"):badge("Actif","ok"));
+  $("dr-body").innerHTML=''
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">'+(c.role==="admin"?badge("Administrateur","info"):badge("Utilisateur"))+statut+'</div>'
+    +'<div class="card pad" style="margin-bottom:14px"><div class="lst">'
+      +'<div class="lst-item"><div class="lst-meta"><b>Email</b></div><span class="cell-mono">'+esc(c.email)+'</span></div>'
+      +'<div class="lst-item"><div class="lst-meta"><b>Profil</b></div><span>'+esc(c.profil||"—")+'</span></div>'
+      +'<div class="lst-item"><div class="lst-meta"><b>Créé le</b></div><span>'+esc((c.cree_le||"").slice(0,10)||"—")+'</span></div>'
+      +'<div class="lst-item"><div class="lst-meta"><b>Mot de passe</b></div><span>'+(c.aMotDePasse?"Défini":"Pas encore")+'</span></div>'
+    +'</div></div>'
+    +'<h4 style="font-size:.9rem;margin:0 0 9px">Actions</h4><div class="grid" style="gap:8px;margin-bottom:18px">'
+      +(c.actif===false
+        ?'<button class="btn full" id="dr-activate">Réactiver le compte</button>'
+        :'<button class="btn full" id="dr-deactivate"'+(isSelf?' disabled title="Toi-même"':'')+'>Désactiver le compte</button>')
+      +'<button class="btn full" id="dr-role"'+(isSelf?' disabled title="Toi-même"':'')+'>'+(c.role==="admin"?"Retirer le rôle admin":"Passer administrateur")+'</button>'
+      +'<button class="btn full" id="dr-reset">Réinitialiser le mot de passe</button>'
+      +'<button class="btn full danger" id="dr-del"'+(isSelf?' disabled title="Toi-même"':'')+'>Supprimer le compte</button>'
+    +'</div>'
+    +'<h4 style="font-size:.9rem;margin:0 0 9px">Activité d\'accès</h4><div id="dr-activity">'+skel(80)+'</div>';
+  openDrawer();
+  var d2=$("dr-deactivate");if(d2)d2.onclick=function(){confirmAsk("Désactiver "+nm+" ?","La personne ne pourra plus se connecter.","Désactiver",true,function(){compteAction({action:"setActive",email:c.email,actif:false},"Compte désactivé.").then(function(){closeDrawer();});});};
+  var a2=$("dr-activate");if(a2)a2.onclick=function(){compteAction({action:"setActive",email:c.email,actif:true},"Compte réactivé.").then(function(){closeDrawer();});};
+  var r2=$("dr-role");if(r2&&!r2.disabled)r2.onclick=function(){var nr=c.role==="admin"?"user":"admin";confirmAsk((nr==="admin"?"Passer "+nm+" administrateur ?":"Retirer l'accès admin de "+nm+" ?"),nr==="admin"?"Cette personne pourra accéder à cette console.":"",nr==="admin"?"Confirmer":"Confirmer",nr!=="admin",function(){compteAction({action:"setRole",email:c.email,role:nr},"Rôle mis à jour.").then(function(){closeDrawer();});});};
+  var rs=$("dr-reset");if(rs)rs.onclick=function(){confirmAsk("Réinitialiser le mot de passe de "+nm+" ?","La personne devra le recréer à sa prochaine connexion (avec le code partagé).","Réinitialiser",true,function(){compteAction({action:"resetPassword",email:c.email},"Mot de passe réinitialisé.").then(function(){closeDrawer();});});};
+  var dl=$("dr-del");if(dl&&!dl.disabled)dl.onclick=function(){confirmAsk("Supprimer "+nm+" ?","Le compte sera définitivement supprimé.","Supprimer",true,function(){call(URLS.comptes,{action:"delete",email:c.email}).then(function(){toast("Compte supprimé.");closeDrawer();loadUsers();}).catch(function(){toast("Échec.");});});};
+  // activité d'accès depuis le journal
+  call(URLS.data,{action:"journal"}).then(function(res){
+    var j=(res&&res.journal)||[];var first=(c.profil||"").split(" ")[0].toLowerCase();
+    var mine=j.filter(function(r){return String(r.demandeur||"").toLowerCase().indexOf(first)!==-1;}).sort(function(a,b){return String(b.date).localeCompare(String(a.date));}).slice(0,10);
+    $("dr-activity").innerHTML=mine.length?('<div class="lst">'+mine.map(function(r){return '<div class="lst-item"><div class="lst-meta"><b>Boîte de '+esc(r.cible||"?")+'</b><small>'+esc(dtime(r.date))+'</small></div>'+badge(r.autorise?"Autorisé":"Refusé",r.autorise?"ok":"danger")+'</div>';}).join("")+'</div>'):emptyState("Aucun accès enregistré","");
+  }).catch(function(){$("dr-activity").innerHTML=errState("Indisponible");});
 }
-function doDelUser(){
-  if(!usDel){ closeModal("modal-del"); return; }
-  var b=$("md-confirm"); b.disabled=true; b.textContent="Suppression…";
-  n8nCall(URLS.comptes, {action:"delete", email:usDel})
-    .then(function(res){ if(!res||res.ok===false) throw new Error(res&&res.error?res.error:"Accès refusé"); closeModal("modal-del"); toast("Compte "+usDel+" supprimé."); return loadUsers(); })
-    .catch(function(e){ toast("Échec : "+(e.message||e)); })
-    .then(function(){ b.disabled=false; b.textContent="Supprimer définitivement"; usDel=null; });
-}
-function exportUsers(){
-  if(!usComptes.length){ toast("Aucun compte à exporter."); return; }
-  var lignes=[["email","profil","role","actif","mot_de_passe_defini","cree_le"].join(",")];
-  usComptes.forEach(function(c){ lignes.push([c.email,c.profil,c.role,(c.actif===false?"non":"oui"),(c.aMotDePasse?"oui":"non"),c.cree_le||""].map(function(x){return '"'+String(x==null?"":x).replace(/"/g,'""')+'"';}).join(",")); });
-  downloadCsv(lignes.join("\n"), "comptes-qwamplify.csv"); toast("Export CSV de "+usComptes.length+" comptes.");
-}
-function downloadCsv(text, name){ var blob=new Blob([text],{type:"text/csv;charset=utf-8;"}); var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
 
-/* ============================================================
-   MODULE — DEMANDES D'ACCÈS
-   ============================================================ */
-function initRequests(){ $("rq-refresh").addEventListener("click", function(){ loadRequests(); }); loadRequests(); }
-function loadRequests(){
-  $("rq-list").innerHTML='<div class="sk" style="height:120px"></div>';
-  n8nCall(URLS.data, {action:"requests"}).then(function(res){
-    if(!res||res.ok===false) throw new Error(res&&res.error?res.error:"Accès refusé");
-    var d=res.demandes||[];
-    setReqBadge(d.length);
-    if(!d.length){ $("rq-list").innerHTML='<div class="card pad"><div class="state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg><b>Aucune demande en attente</b>Tout est traité. 🎉</div></div>'; return; }
-    $("rq-list").innerHTML=d.map(function(x){
-      return '<article class="req" data-cible="'+esc(x.cible)+'" data-dem="'+esc(x.demandeur)+'">'
-        +'<div class="req-top"><div class="av" style="background:'+colorFor(x.demandeur)+'">'+esc(initials2(x.demandeur))+'</div>'
-        +'<div class="lst-meta"><b>'+esc(x.demandeur)+'</b><small>demande l\'accès à la boîte de <b>'+esc(x.cible)+'</b></small></div>'
-        +'<span class="badge warn">En attente</span></div>'
-        +'<div class="req-grid">'
-        +'<div><div class="k">Recherche</div>'+esc(x.requete||"—")+'</div>'
-        +'<div><div class="k">Motif du refus</div>'+esc(x.raison||"—")+'</div>'
-        +'<div><div class="k">Le</div>'+esc(fmtDateTime(x.date))+'</div></div>'
-        +'<div class="req-foot"><button class="btn primary sm" data-act="grant">Autoriser</button><button class="btn danger sm" data-act="deny">Refuser</button><button class="btn ghost sm" data-act="ignore">Ignorer</button></div>'
-        +'</article>';
-    }).join("");
-  }).catch(function(e){ $("rq-list").innerHTML='<div class="card pad"><div class="state err"><b>Impossible de charger les demandes</b>'+esc(e.message||e)+'</div></div>'; });
-  $("rq-list").onclick=function(e){
-    var btn=e.target.closest("button[data-act]"); if(!btn) return;
-    var card=btn.closest(".req"); if(!card) return;
-    var cible=card.getAttribute("data-cible"), dem=card.getAttribute("data-dem"), act=btn.getAttribute("data-act");
-    if(act==="grant"){ n8nCall(URLS.trans,{action:"approve",cle:cible,beneficiaire:dem}).then(function(){toast("Accès autorisé : "+dem+" peut consulter la boîte de "+cible+".");}).catch(function(){toast("Échec de l'autorisation.");}); }
-    else if(act==="deny"){ n8nCall(URLS.trans,{action:"refuse",cle:cible,beneficiaire:dem}).then(function(){toast("Demande de "+dem+" refusée.");}).catch(function(){toast("Échec du refus.");}); }
-    else { toast("Demande de "+dem+" ignorée."); }
-    card.classList.add("done"); card.querySelectorAll("button").forEach(function(b){b.disabled=true;});
-    var left=$("rq-list").querySelectorAll(".req:not(.done)").length; setReqBadge(left);
-  };
+/* ---- SESSIONS ACTIVES ---- */
+function initSessions(p){
+  p.innerHTML='<div class="row-between" style="margin-bottom:16px"><div><h3 class="sec-title">Sessions actives</h3><p class="sec-sub" style="margin:0">Personnes actuellement connectées (jeton non expiré). Les jetons ne sont jamais exposés.</p></div><button class="btn sm" id="se-refresh">Actualiser</button></div><div id="ss-body">'+skel(160)+'</div>';
+  $("se-refresh").addEventListener("click",function(){getDS("sessions",true).then(renderSessions);});
+  getDS("sessions").then(renderSessions).catch(function(){$("ss-body").innerHTML=errState("Sessions injoignables");});
 }
-function setReqBadge(n){ var b=$("badge-requests"); if(!b) return; b.textContent=n; b.classList.toggle("show", n>0); }
+function renderSessions(d){
+  var now=Date.now();var rows=(d.rows||[]).map(function(r){var exp=r.expire_le?new Date(r.expire_le.replace(" ","T")).getTime():0;return Object.assign({},r,{_live:exp>now});}).sort(function(a,b){return (b._live?1:0)-(a._live?1:0);});
+  var live=rows.filter(function(r){return r._live;});
+  $("ss-body").innerHTML='<div class="kpis" style="margin-bottom:16px">'+kpiHtml("teal","","Sessions actives",'<rect x="2" y="3" width="20" height="14" rx="2"/>').replace('id=""','')+kpiHtml("","","Sessions totales",'<path d="M12 8v8M8 12h8"/>').replace('id=""','')+'</div>';
+  // simpler: build kpis directly
+  $("ss-body").innerHTML=''
+    +'<div class="kpis" style="margin-bottom:16px"><div class="kpi teal"><div class="kpi-val">'+live.length+'</div><div class="kpi-lab">Sessions actives</div></div><div class="kpi"><div class="kpi-val">'+rows.length+'</div><div class="kpi-lab">Sessions en base</div></div></div>'
+    +tbl([
+      {l:"Personne",k:"profil",f:function(v,r){return '<div class="u-cell">'+av(r.profil||r.email)+'<b>'+esc(r.profil||r.email)+'</b></div>';}},
+      {l:"Email",k:"email",cls:"cell-mono"},
+      {l:"Rôle",k:"role",f:function(v){return v==="admin"?badge("Admin","info"):badge("Utilisateur");}},
+      {l:"État",k:"_live",f:function(v){return v?badge("● En ligne","ok"):badge("Expirée");}},
+      {l:"Connecté le",k:"cree_le",cls:"cell-mono",f:function(v){return esc(dtime(v));}},
+      {l:"Expire le",k:"expire_le",cls:"cell-mono",f:function(v){return esc(dtime(v));}}
+    ],rows,{empty:"Aucune session"});
+}
 
-/* ============================================================
-   MODULE — SÉCURITÉ & JOURNAL
-   ============================================================ */
+/* ---- ORGANIGRAMME ---- */
+function initOrg(p){
+  p.innerHTML='<div class="row-between" style="margin-bottom:16px"><div><h3 class="sec-title">Organigramme</h3><p class="sec-sub" style="margin:0">Hiérarchie qui sert de base à la pyramide des droits (qui peut voir quoi).</p></div></div><div id="og-body">'+skel(200)+'</div>';
+  getDS("organigramme").then(function(d){
+    var rows=d.rows||[];if(!rows.length){$("og-body").innerHTML=emptyState("Organigramme vide","");return;}
+    var byChef={};rows.forEach(function(r){var ch=(r.chef||"").toLowerCase();(byChef[ch]=byChef[ch]||[]).push(r);});
+    function card(r){return '<div class="card pad" style="padding:13px 15px"><div class="u-cell">'+av(r.nom)+'<div class="lst-meta"><b>'+esc(r.nom)+'</b><small>'+esc(r.role||"")+'</small></div></div></div>';}
+    function tree(cle,depth){var kids=byChef[(cle||"").toLowerCase()]||[];if(!kids.length)return "";return '<div style="margin-left:'+(depth?22:0)+'px;border-left:'+(depth?"2px solid var(--brd)":"none")+';padding-left:'+(depth?14:0)+'px">'+kids.map(function(k){return '<div style="margin:8px 0">'+card(k)+tree(k.cle,depth+1)+'</div>';}).join("")+'</div>';}
+    var roots=rows.filter(function(r){return !r.chef||!rows.some(function(x){return (x.cle||"").toLowerCase()===(r.chef||"").toLowerCase();});});
+    var html='';roots.forEach(function(r){html+='<div style="margin:8px 0">'+card(r)+tree(r.cle,1)+'</div>';});
+    $("og-body").innerHTML='<div class="card pad">'+html+'</div>'
+      +'<div class="card pad section-gap"><h3 class="sec-title">Tous les collaborateurs ('+rows.length+')</h3>'+tbl([{l:"Nom",k:"nom",f:function(v,r){return '<div class="u-cell">'+av(r.nom)+'<b>'+esc(r.nom)+'</b></div>';}},{l:"Rôle",k:"role"},{l:"Responsable",k:"chef",f:function(v){return v?esc(v):'<span class="muted">—</span>';}}],rows,{empty:"Vide"})+'</div>';
+  }).catch(function(){$("og-body").innerHTML=errState("Organigramme injoignable");});
+}
+
+/* ---- SÉCURITÉ & JOURNAL ---- */
 var seRows=[];
-function initSecurity(){
-  $("se-refresh").addEventListener("click", function(){ loadSecurity(); toast("Journal rafraîchi."); });
-  $("se-export").addEventListener("click", exportJournal);
-  $("se-person").addEventListener("change", renderSecurity);
-  $("se-verdict").addEventListener("change", renderSecurity);
-  loadSecurity();
+function initSecurity(p){
+  p.innerHTML=''
+  +'<div class="row-between" style="margin-bottom:16px"><div><h3 class="sec-title">Journal des accès</h3><p class="sec-sub" style="margin:0">Métadonnées uniquement — le contenu des emails n\'est jamais lu ni stocké.</p></div><div style="display:flex;gap:9px;flex-wrap:wrap"><button class="btn sm" id="se-export">Export CSV</button><button class="btn sm" id="se-refresh">Actualiser</button></div></div>'
+  +'<div id="se-alert"></div>'
+  +'<div class="card" style="padding:13px 15px;margin-bottom:14px"><div class="row-between" style="gap:12px"><select class="inp" id="se-person" style="max-width:230px"><option value="">Toutes les personnes</option></select><select class="inp" id="se-verdict" style="max-width:170px"><option value="">Tous les verdicts</option><option value="ok">Autorisés</option><option value="ko">Refusés</option></select><div style="flex:1"></div><span class="badge" id="se-count">—</span></div></div>'
+  +'<div id="se-table">'+skel(200)+'</div>';
+  $("se-refresh").addEventListener("click",function(){loadSec();toast("Rafraîchi.");});
+  $("se-export").addEventListener("click",function(){if(!seRows.length){toast("Vide.");return;}dlCsv(toCsv(["demandeur","cible","verdict","motif","date"],seRows.map(function(r){return [r.from,r.to,(r.verdict==="ok"?"autorise":"refuse"),r.reason,r.date];})),"journal-acces.csv");toast("Export de "+seRows.length+" accès.");});
+  loadSec();
 }
-function loadSecurity(){
-  $("se-tbody").innerHTML='<tr><td colspan="5"><div class="sk" style="height:60px;margin:6px 0"></div></td></tr>';
-  n8nCall(URLS.data, {action:"journal"}).then(function(res){
-    if(!res||res.ok===false) throw new Error(res&&res.error?res.error:"Accès refusé");
-    seRows=((res.journal)||[]).map(function(j){ return {from:j.demandeur||"?", to:j.cible||"?", verdict:(j.autorise?"ok":"ko"), reason:(j.raison||""), date:j.date||""}; })
-      .sort(function(a,b){ return String(b.date).localeCompare(String(a.date)); });
-    var set={}; seRows.forEach(function(r){ if(r.from)set[r.from]=1; if(r.to)set[r.to]=1; });
-    var names=Object.keys(set).sort();
-    $("se-person").innerHTML='<option value="">Toutes les personnes</option>'+names.map(function(n){return '<option>'+esc(n)+'</option>';}).join("");
-    renderSecurity();
-  }).catch(function(e){ seRows=[]; $("se-tbody").innerHTML='<tr><td colspan="5"><div class="state err"><b>Journal injoignable</b>'+esc(e.message||e)+'</div></td></tr>'; $("se-count").textContent="Erreur"; });
-}
-function renderSecurity(){
-  var pv=$("se-person").value, vv=$("se-verdict").value;
-  var list=seRows.filter(function(r){ if(pv && r.from!==pv && r.to!==pv) return false; if(vv && r.verdict!==vv) return false; return true; });
-  var tb=$("se-tbody");
-  if(!list.length){ tb.innerHTML='<tr><td colspan="5"><div class="state"><b>Aucun accès</b>Aucun accès ne correspond aux filtres.</div></td></tr>'; }
-  else{
-    tb.innerHTML=list.map(function(r){
-      return '<tr>'
-        +'<td><div class="u-cell"><div class="av" style="width:30px;height:30px;font-size:.7rem;background:'+colorFor(r.from)+'">'+esc(initials2(r.from))+'</div><b>'+esc(r.from)+'</b></div></td>'
-        +'<td>'+esc(r.to)+'</td>'
-        +'<td>'+(r.verdict==="ok"?'<span class="badge ok">Autorisé</span>':'<span class="badge danger">Refusé</span>')+'</td>'
-        +'<td class="muted" style="max-width:280px">'+esc(r.reason||"—")+'</td>'
-        +'<td class="cell-mono">'+esc(fmtDateTime(r.date))+'</td></tr>';
-    }).join("");
-  }
-  $("se-count").textContent=list.length+(list.length>1?" accès":" accès");
-}
-function exportJournal(){
-  if(!seRows.length){ toast("Journal vide."); return; }
-  var lignes=[["demandeur","cible","verdict","motif","date"].join(",")];
-  seRows.forEach(function(r){ lignes.push([r.from,r.to,(r.verdict==="ok"?"autorise":"refuse"),r.reason,r.date].map(function(x){return '"'+String(x==null?"":x).replace(/"/g,'""')+'"';}).join(",")); });
-  downloadCsv(lignes.join("\n"), "journal-acces-qwamplify.csv"); toast("Export CSV de "+seRows.length+" accès (métadonnées).");
+function loadSec(){call(URLS.data,{action:"journal"}).then(function(res){if(!res||res.ok===false)throw new Error("refus");seRows=((res.journal)||[]).map(function(j){return {from:j.demandeur||"?",to:j.cible||"?",verdict:(j.autorise?"ok":"ko"),reason:j.raison||"",date:j.date||""};}).sort(function(a,b){return String(b.date).localeCompare(String(a.date));});var set={};seRows.forEach(function(r){if(r.from)set[r.from]=1;if(r.to)set[r.to]=1;});var names=Object.keys(set).sort();$("se-person").innerHTML='<option value="">Toutes les personnes</option>'+names.map(function(n){return '<option>'+esc(n)+'</option>';}).join("");$("se-person").onchange=renderSec;$("se-verdict").onchange=renderSec;renderSec();}).catch(function(){$("se-table").innerHTML=errState("Journal injoignable");});}
+function renderSec(){
+  var pv=$("se-person").value,vv=$("se-verdict").value;
+  var list=seRows.filter(function(r){if(pv&&r.from!==pv&&r.to!==pv)return false;if(vv&&r.verdict!==vv)return false;return true;});
+  // alertes : personnes avec >=3 refus
+  var ref={};seRows.filter(function(r){return r.verdict==="ko";}).forEach(function(r){ref[r.from]=(ref[r.from]||0)+1;});
+  var alerts=Object.keys(ref).filter(function(k){return ref[k]>=3;}).sort(function(a,b){return ref[b]-ref[a];});
+  $("se-alert").innerHTML=alerts.length?('<div class="card pad" style="margin-bottom:14px;border-left:4px solid var(--danger)"><h3 class="sec-title" style="color:var(--danger)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>Accès refusés répétés</h3><p class="sec-sub" style="margin:6px 0 0">'+alerts.map(function(k){return esc(k)+" ("+ref[k]+" refus)";}).join(" · ")+'</p></div>'):"";
+  $("se-table").innerHTML=tbl([
+    {l:"Demandeur",k:"from",f:function(v){return '<div class="u-cell">'+av(v)+'<b>'+esc(v)+'</b></div>';}},
+    {l:"Boîte cible",k:"to"},
+    {l:"Verdict",k:"verdict",f:function(v){return v==="ok"?badge("Autorisé","ok"):badge("Refusé","danger");}},
+    {l:"Motif",k:"reason",cls:"muted",f:function(v){return esc(v||"—");}},
+    {l:"Date",k:"date",cls:"cell-mono",f:function(v){return esc(dtime(v));}}
+  ],list,{empty:"Aucun accès"});
+  $("se-count").textContent=list.length+" accès";
 }
 
-/* ============================================================
-   MODULE — MÉMOIRE ENTREPRISE
-   ============================================================ */
-var meData=[], meState={q:"",editId:null};
-function initMemory(){
-  var st=null;
-  $("me-search").addEventListener("input", function(){ var v=this.value; clearTimeout(st); st=setTimeout(function(){ meState.q=v; renderMemory(); },150); });
-  $("me-add").addEventListener("click", function(){ openMem(null); });
-  $("mm-save").addEventListener("click", saveMem);
-  loadMemory();
+/* ---- ACCÈS AUX BOÎTES ---- */
+function initBoxes(p){
+  p.innerHTML=''
+  +'<div class="row-between" style="margin-bottom:16px"><div><h3 class="sec-title">Accès aux boîtes</h3><p class="sec-sub" style="margin:0">Qui est autorisé à consulter la boîte de qui. Par défaut, chacun n\'a accès qu\'à sa propre boîte.</p></div><button class="btn primary sm" id="bx-grant">Accorder un accès</button></div>'
+  +'<div class="grid g2"><div class="card pad"><h3 class="sec-title">Autorisations actives</h3><p class="sec-sub">Accès accordés manuellement.</p><div id="bx-grants">'+skel(120)+'</div></div>'
+  +'<div class="card pad"><h3 class="sec-title">Refus enregistrés</h3><p class="sec-sub">Demandes explicitement refusées.</p><div id="bx-refus">'+skel(120)+'</div></div></div>';
+  var opts='<option value="">— choisir —</option>'+EMPLOYES.map(function(n){return '<option value="'+esc(n.toLowerCase())+'">'+esc(n)+'</option>';}).join("");
+  $("mg-benef").innerHTML=opts;$("mg-owner").innerHTML=opts;
+  $("bx-grant").addEventListener("click",function(){openM("modal-grant");});
+  $("mg-ok").onclick=function(){var benef=$("mg-benef").value,owner=$("mg-owner").value;if(!benef||!owner){toast("Choisis les deux.");return;}if(benef===owner){toast("Identiques.");return;}call(URLS.trans,{action:"approve",cle:owner,beneficiaire:benef}).then(function(){toast("Accès accordé.");closeM("modal-grant");loadBoxes();}).catch(function(){toast("Échec.");});};
+  loadBoxes();
 }
-function loadMemory(){
-  $("me-wrap").innerHTML='<div class="sk" style="height:130px"></div>';
-  n8nCall(URLS.memory, {action:"list", owner:""}).then(function(res){
-    meData=((res&&res.memories)||[]).map(function(m){ return {id:m.id, content:m.contenu||"", author:m.auteur||"?", date:((m.cree_le||"")+"").slice(0,10)}; });
-    renderMemory();
-  }).catch(function(){ meData=[]; $("me-wrap").innerHTML='<div class="card pad"><div class="state err"><b>Mémoire injoignable</b>Le workflow « Mémoire » est-il activé ?</div></div>'; });
-}
-function renderMemory(){
-  var q=meState.q.toLowerCase().trim();
-  var rows=meData.filter(function(e){ if(!q) return true; return (e.content+" "+e.author).toLowerCase().indexOf(q)!==-1; });
-  if(!rows.length){ $("me-wrap").innerHTML='<div class="card pad"><div class="state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15"/></svg><b>'+(meState.q?"Aucun résultat":"Mémoire vide")+'</b>'+(meState.q?"Aucune info ne correspond.":"Ajoute une première connaissance partagée.")+'</div></div>'; return; }
-  $("me-wrap").innerHTML='<div class="mcards">'+rows.map(function(e,i){
-    return '<div class="mcard" data-id="'+esc(e.id)+'">'
-      +'<span class="badge info" style="align-self:flex-start">Entreprise</span>'
-      +'<p>'+esc(e.content)+'</p>'
-      +'<div class="mcard-foot"><div class="av" style="width:28px;height:28px;border-radius:8px;font-size:.7rem;background:'+colorFor(e.author)+'">'+esc(initials2(e.author))+'</div>'
-      +'<div class="lst-meta"><b style="font-size:.8rem">'+esc(e.author)+'</b><small>'+esc(fmtDateShort(e.date))+'</small></div>'
-      +'<button class="btn icon ghost sm me-edit" title="Éditer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>'
-      +'<button class="btn icon ghost sm danger me-del" title="Supprimer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>'
-      +'</div></div>';
-  }).join("")+'</div>';
-  $("me-wrap").querySelectorAll(".me-edit").forEach(function(b){ b.addEventListener("click", function(){ var id=b.closest(".mcard").getAttribute("data-id"); var e=meData.find(function(x){return String(x.id)===String(id);}); openMem(e); }); });
-  $("me-wrap").querySelectorAll(".me-del").forEach(function(b){ b.addEventListener("click", function(){ var id=b.closest(".mcard").getAttribute("data-id"); delMem(id); }); });
-}
-function openMem(entry){
-  meState.editId=entry?entry.id:null;
-  $("mm-title").textContent=entry?"Éditer l'info":"Ajouter une info";
-  $("mm-content").value=entry?entry.content:"";
-  var sess=qwSession()||{};
-  $("mm-author").value=entry?entry.author:(sess.profil||"Hugo");
-  openModal("modal-mem");
-  setTimeout(function(){$("mm-content").focus();},60);
-}
-function saveMem(){
-  var content=$("mm-content").value.trim();
-  if(!content){ toast("Le contenu est obligatoire."); return; }
-  var author=$("mm-author").value.trim()||"Hugo";
-  var b=$("mm-save"); b.disabled=true; b.textContent="Enregistrement…";
-  var editId=meState.editId;
-  function doAdd(){ return n8nCall(URLS.memory,{action:"add",scope:"entreprise",owner:"",contenu:content,auteur:author,cree_le:new Date().toISOString()}); }
-  var p=editId ? n8nCall(URLS.memory,{action:"delete",id:editId}).then(doAdd) : doAdd();
-  p.then(function(res){ if(res&&res.ok){ toast(editId?"Info mise à jour.":"Info ajoutée."); closeModal("modal-mem"); loadMemory(); } else { toast("Refusé — workflow « Mémoire » actif ?"); } })
-   .catch(function(){ toast("Connexion impossible à la mémoire."); })
-   .then(function(){ b.disabled=false; b.textContent="Enregistrer"; });
-}
-function delMem(id){
-  if(!confirm("Supprimer cette info de la mémoire entreprise ?")) return;
-  n8nCall(URLS.memory,{action:"delete",id:id}).then(function(res){ if(res&&res.ok){ toast("Info supprimée."); loadMemory(); } else { toast("Échec de la suppression."); } }).catch(function(){ toast("Connexion impossible."); });
+function loadBoxes(){
+  getDS("grants",true).then(function(d){
+    var rows=d.rows||[];
+    $("bx-grants").innerHTML=rows.length?('<div class="lst">'+rows.map(function(r){return '<div class="lst-item">'+av(r.beneficiaire)+'<div class="lst-meta"><b>'+esc(r.beneficiaire)+'</b><small>peut consulter la boîte de '+esc(r.proprietaire)+'</small></div><button class="btn xs ghost danger bx-rev" data-o="'+esc(r.proprietaire)+'" data-b="'+esc(r.beneficiaire)+'">Révoquer</button></div>';}).join("")+'</div>'):emptyState("Aucune autorisation","Chacun n'accède qu'à sa boîte.");
+    $("bx-grants").querySelectorAll(".bx-rev").forEach(function(b){b.addEventListener("click",function(){confirmAsk("Révoquer cet accès ?","",("Révoquer"),true,function(){call(URLS.trans,{action:"revoke",cle:b.getAttribute("data-o"),beneficiaire:b.getAttribute("data-b")}).then(function(){toast("Accès révoqué.");loadBoxes();}).catch(function(){toast("Échec.");});});});});
+  }).catch(function(){$("bx-grants").innerHTML=errState("Indisponible");});
+  getDS("refusals",true).then(function(d){var rows=d.rows||[];$("bx-refus").innerHTML=rows.length?('<div class="lst">'+rows.map(function(r){return '<div class="lst-item">'+av(r.demandeur)+'<div class="lst-meta"><b>'+esc(r.demandeur)+'</b><small>refusé sur la boîte de '+esc(r.proprietaire)+'</small></div><span class="lst-time">'+esc((r.cree_le||"").slice(0,10))+'</span></div>';}).join("")+'</div>'):emptyState("Aucun refus","");}).catch(function(){$("bx-refus").innerHTML=errState("Indisponible");});
 }
 
-/* ============================================================
-   MODULE — RÉGLAGES & KILL-SWITCH
-   ============================================================ */
-function initSettings(){
-  loadAiState();
-  $("st-ks").addEventListener("change", function(){ confirmToggle(this.checked); /* revert visuel jusqu'à confirmation */ var self=this; setTimeout(function(){ self.checked=(aiState!=="off"); },10); });
-  $("st-ping").addEventListener("click", pingServices);
-  // infos session
-  var s=qwSession()||{};
-  $("st-prof").textContent=s.profil||"—";
-  $("st-role").textContent=s.role==="admin"?"Administrateur":(s.role||"utilisateur");
-  $("st-access").textContent= isRoleAdmin()?"Rôle administrateur":(getAdminCode()===ADMIN_CODE?"Code d'accès (2581)":"—");
-  $("st-exp").textContent= s.exp? new Date(s.exp).toLocaleString("fr-FR"):"—";
-  renderSvc({});
+/* ---- DEMANDES ---- */
+function initRequests(p){
+  p.innerHTML='<div class="row-between" style="margin-bottom:16px"><div><h3 class="sec-title">Demandes d\'accès en attente</h3><p class="sec-sub" style="margin:0">Quand l\'assistant refuse un accès, la demande arrive ici pour arbitrage.</p></div><button class="btn sm" id="rq-refresh">Actualiser</button></div><div id="rq-list">'+skel(120)+'</div>';
+  $("rq-refresh").addEventListener("click",loadRequests);loadRequests();
 }
-function renderSvc(states){
-  var defs=[["Comptes","comptes"],["Données","data"],["Réglages","params"],["Mémoire","memory"],["Transparence","trans"]];
-  $("st-svc").innerHTML=defs.map(function(d){
-    var st=states[d[1]];
-    var badge = st===true?'<span class="badge ok">OK</span>' : st===false?'<span class="badge danger">Hors ligne</span>' : '<span class="badge">Non testé</span>';
-    return '<div class="lst-item"><div class="lst-meta"><b>'+d[0]+'</b><small class="cell-mono">'+d[1]+'</small></div>'+badge+'</div>';
-  }).join("");
+function loadRequests(){
+  $("rq-list").innerHTML=skel(120);
+  call(URLS.data,{action:"requests"}).then(function(res){if(!res||res.ok===false)throw new Error("refus");var d=res.demandes||[];setBadge("requests",d.length);if(!d.length){$("rq-list").innerHTML='<div class="card pad">'+emptyState("Aucune demande en attente","Tout est traité 🎉")+'</div>';return;}
+    $("rq-list").innerHTML=d.map(function(x){return '<div class="card pad" style="margin-bottom:12px" data-c="'+esc(x.cible)+'" data-d="'+esc(x.demandeur)+'"><div class="row-between"><div class="u-cell">'+av(x.demandeur)+'<div class="lst-meta"><b>'+esc(x.demandeur)+'</b><small>demande l\'accès à la boîte de <b>'+esc(x.cible)+'</b></small></div></div>'+badge("En attente","warn")+'</div><div class="grid g3" style="margin:12px 0;font-size:.83rem"><div><div class="muted" style="font-size:.72rem;text-transform:uppercase">Recherche</div>'+esc(x.requete||"—")+'</div><div><div class="muted" style="font-size:.72rem;text-transform:uppercase">Motif du refus</div>'+esc(x.raison||"—")+'</div><div><div class="muted" style="font-size:.72rem;text-transform:uppercase">Le</div>'+esc(dtime(x.date))+'</div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary sm" data-a="grant">Autoriser</button><button class="btn danger sm" data-a="deny">Refuser</button><button class="btn ghost sm" data-a="ignore">Ignorer</button></div></div>';}).join("");
+    $("rq-list").querySelectorAll("[data-a]").forEach(function(btn){btn.addEventListener("click",function(){var card=btn.closest("[data-c]");var cible=card.getAttribute("data-c"),dem=card.getAttribute("data-d"),a=btn.getAttribute("data-a");if(a==="grant")call(URLS.trans,{action:"approve",cle:cible,beneficiaire:dem}).then(function(){toast("Accès autorisé.");}).catch(function(){toast("Échec.");});else if(a==="deny")call(URLS.trans,{action:"refuse",cle:cible,beneficiaire:dem}).then(function(){toast("Refusé.");}).catch(function(){toast("Échec.");});else toast("Ignoré.");card.style.opacity=".45";card.querySelectorAll("button").forEach(function(b){b.disabled=true;});var left=$("rq-list").querySelectorAll(".card[data-c]:not([style*='0.45'])").length;});});
+  }).catch(function(){$("rq-list").innerHTML='<div class="card pad">'+errState("Demandes injoignables")+'</div>';});
 }
-function pingServices(){
-  var b=$("st-ping"); b.disabled=true; b.textContent="Test en cours…";
-  // un seul appel suffisant pour valider l'accès admin global
-  n8nCall(URLS.data,{action:"stats"}).then(function(res){
-    var ok = !!(res && res.ok!==false);
-    renderSvc({comptes:ok,data:ok,params:ok,memory:ok,trans:ok});
-    toast(ok?"Connexion OK — accès admin validé.":"Réponse inattendue du serveur.");
-  }).catch(function(){ renderSvc({comptes:false,data:false,params:false,memory:false,trans:false}); toast("Serveur injoignable."); })
-   .then(function(){ b.disabled=false; b.textContent="Tester la connexion"; });
+function setBadge(name,n){var b=$("badge-"+name);if(!b)return;b.textContent=n;b.classList.toggle("show",n>0);}
+
+/* ---- CRM ---- */
+function initCrm(p){
+  p.innerHTML=''
+  +'<div class="seg" id="crm-tabs" style="margin-bottom:16px"><button class="active" data-t="deals">Affaires</button><button data-t="orgs">Sociétés</button><button data-t="persons">Contacts</button><button data-t="activities">Activités</button></div>'
+  +'<div id="crm-body">'+skel(220)+'</div>';
+  p.querySelectorAll("#crm-tabs button").forEach(function(b){b.addEventListener("click",function(){p.querySelectorAll("#crm-tabs button").forEach(function(x){x.classList.remove("active");});b.classList.add("active");crmTab(b.getAttribute("data-t"));});});
+  crmTab("deals");
+}
+function crmTab(t){
+  $("crm-body").innerHTML=skel(200);
+  if(t==="deals")getDS("crm_deals").then(function(d){var s=d.summary||{};$("crm-body").innerHTML=''
+    +'<div class="kpis">'+[mkpi(bign(s.total),"Affaires"),mkpi(money(s.valeur_open),"En cours ("+(s.open||0)+")","accent"),mkpi(s.won,"Gagnées","ok"),mkpi(s.lost,"Perdues","danger")].join("")+'</div>'
+    +'<div class="card pad section-gap"><h3 class="sec-title">Valeur gagnée cumulée</h3><div class="kpi-val" style="font-size:1.7rem;color:var(--ok)">'+money(s.valeur_won)+'</div></div>'
+    +'<div class="grid g2 section-gap"><div class="card pad"><h3 class="sec-title">Par responsable</h3><div style="margin-top:8px">'+rankBars(s.par_responsable,"deals",8)+'</div></div><div class="card pad"><h3 class="sec-title">Affaires ouvertes les plus importantes</h3><div style="margin-top:8px">'+tbl([{l:"Affaire",k:"titre"},{l:"Société",k:"org_nom"},{l:"Valeur",k:"valeur",cls:"mono",f:function(v){return '<b>'+money(v)+'</b>';}}],d.rows||[],{empty:"Aucune"})+'</div></div></div>';}).catch(crmErr);
+  else if(t==="orgs")getDS("crm_orgs").then(function(d){var s=d.summary||{};$("crm-body").innerHTML='<div class="kpis">'+[mkpi(bign(s.total),"Sociétés")].join("")+'</div><div class="grid g-1-2 section-gap"><div class="card pad"><h3 class="sec-title">Par secteur</h3><div style="margin-top:8px">'+rankBars(s.par_secteur,"",8)+'</div></div><div class="card pad"><h3 class="sec-title">Top sociétés (deals ouverts)</h3>'+tbl([{l:"Société",k:"nom"},{l:"Secteur",k:"secteur",f:function(v){return v?esc(v):'<span class="muted">—</span>';}},{l:"Deals ouv.",k:"nb_deals_ouverts",cls:"mono"},{l:"Contacts",k:"nb_personnes",cls:"mono"}],d.rows||[],{empty:"Aucune"})+'</div></div>';}).catch(crmErr);
+  else if(t==="persons")getDS("crm_persons").then(function(d){var s=d.summary||{};$("crm-body").innerHTML='<div class="kpis">'+mkpi(bign(s.total),"Contacts")+'</div><div class="card pad section-gap"><h3 class="sec-title">Contacts les plus actifs</h3>'+tbl([{l:"Nom",k:"nom",f:function(v,r){return '<div class="u-cell">'+av(r.nom)+'<b>'+esc(r.nom)+'</b></div>';}},{l:"Société",k:"org_nom",f:function(v){return v?esc(v):'<span class="muted">—</span>';}},{l:"Email",k:"email",cls:"cell-mono"},{l:"Deals ouv.",k:"nb_deals_ouverts",cls:"mono"},{l:"Gagnés",k:"nb_deals_gagnes",cls:"mono"}],d.rows||[],{empty:"Aucun"})+'</div>';}).catch(crmErr);
+  else getDS("crm_activities").then(function(d){var s=d.summary||{};$("crm-body").innerHTML='<div class="kpis">'+mkpi(bign(s.total),"Activités")+'</div><div class="grid g2 section-gap"><div class="card pad"><h3 class="sec-title">Par type</h3><div style="margin-top:8px">'+chips(s.par_type)+'</div></div><div class="card pad"><h3 class="sec-title">Par statut</h3><div style="margin-top:8px">'+chips(s.par_statut)+'</div></div></div><div class="card pad section-gap"><h3 class="sec-title">Activités récentes</h3>'+tbl([{l:"Titre",k:"titre"},{l:"Type",k:"type",f:function(v){return badge(v||"—");}},{l:"Affaire",k:"deal_titre",f:function(v){return v?esc(v):'<span class="muted">—</span>';}},{l:"Date",k:"date_debut",cls:"cell-mono"}],d.rows||[],{empty:"Aucune"})+'</div>';}).catch(crmErr);
+}
+function mkpi(val,lab,variant){return '<div class="kpi'+(variant?" "+variant:"")+'"><div class="kpi-val">'+esc(String(val==null?"—":val))+'</div><div class="kpi-lab">'+esc(lab)+'</div></div>';}
+function crmErr(){$("crm-body").innerHTML=errState("CRM injoignable");}
+
+/* ---- DRIVE ---- */
+function initDrive(p){
+  p.innerHTML='<div class="row-between" style="margin-bottom:16px"><div><h3 class="sec-title">Catalogue Drive</h3><p class="sec-sub" style="margin:0">Documents indexés par l\'assistant (avec résumés).</p></div><div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="inp" id="dr-search" placeholder="Filtrer les documents récents…" style="max-width:260px"></div></div><div id="drv-body">'+skel(220)+'</div>';
+  getDS("drive").then(function(d){
+    var s=d.summary||{};window._drvRows=d.rows||[];
+    $("drv-body").innerHTML=''
+      +'<div class="kpis">'+[mkpi(bign(d.count),"Documents","accent"),mkpi(Object.keys(s.par_type||{}).length,"Types de fichiers"),mkpi(Object.keys(s.par_dossier||{}).length,"Dossiers")].join("")+'</div>'
+      +'<div class="grid g2 section-gap"><div class="card pad"><h3 class="sec-title">Par type</h3><div style="margin-top:8px">'+chips(s.par_type)+'</div></div><div class="card pad"><h3 class="sec-title">Principaux dossiers</h3><div style="margin-top:8px">'+rankBars(s.par_dossier,"fich.",8)+'</div></div></div>'
+      +'<div class="card pad section-gap"><h3 class="sec-title">Documents récemment modifiés</h3><div id="drv-list" style="margin-top:6px"></div></div>';
+    renderDrive("");
+    $("dr-search").addEventListener("input",function(){renderDrive(this.value.trim().toLowerCase());});
+  }).catch(function(){$("drv-body").innerHTML=errState("Drive injoignable");});
+}
+function renderDrive(q){
+  var rows=(window._drvRows||[]).filter(function(r){if(!q)return true;return ((r.nom||"")+" "+(r.dossier||"")+" "+(r.resume||"")).toLowerCase().indexOf(q)!==-1;});
+  $("drv-list").innerHTML=tbl([
+    {l:"Document",k:"nom",f:function(v,r){return '<b>'+esc(v)+'</b>'+(r.resume?'<div class="muted" style="font-size:.76rem;max-width:420px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(r.resume)+'</div>':"");}},
+    {l:"Type",k:"type",f:function(v){return badge(v||"—");}},
+    {l:"Dossier",k:"dossier",f:function(v){return v?esc(v):'<span class="muted">—</span>';}},
+    {l:"Taille",k:"taille",cls:"mono"},
+    {l:"Modifié",k:"date_modif",cls:"cell-mono",f:function(v){return esc((v||"").slice(0,10));}},
+    {l:"",k:"lien",f:function(v){return v?'<a class="btn xs" href="'+esc(v)+'" target="_blank" rel="noopener">Ouvrir</a>':"";}}
+  ],rows,{empty:"Aucun document"});
 }
 
-/* ============================================================
-   AMORÇAGE
-   ============================================================ */
-function boot(){
-  // identité dans le rail
-  var s=qwSession()||{};
-  var nm=s.profil||"Admin";
-  $("sbAv").textContent=initials2(nm); $("sbAv").style.background=colorFor(nm);
-  $("sbName").textContent=nm;
-  $("sbRole").textContent= isRoleAdmin()?"Administrateur":(getAdminCode()===ADMIN_CODE?"Accès par code":"Administration");
-  $("app").classList.add("ready");
-  goto("overview");
+/* ---- MÉMOIRE ---- */
+var meData=[],meEdit=null,meQ="";
+function initMemory(p){
+  p.innerHTML='<div class="row-between" style="margin-bottom:16px"><div><h3 class="sec-title">Mémoire de l\'assistant</h3><p class="sec-sub" style="margin:0">Connaissances partagées (entreprise) et notes par profil.</p></div><div style="display:flex;gap:9px;flex-wrap:wrap"><div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="inp" id="me-search" placeholder="Rechercher…" style="max-width:220px"></div><button class="btn primary sm" id="me-add">Ajouter une info</button></div></div><div id="me-body">'+skel(160)+'</div>';
+  var t=null;$("me-search").addEventListener("input",function(){var v=this.value;clearTimeout(t);t=setTimeout(function(){meQ=v;renderMem();},150);});
+  $("me-add").addEventListener("click",function(){openMem(null);});$("mm-save").onclick=saveMem;
+  loadMem();
+}
+function loadMem(){
+  // entreprise via memoire-qwamplify (CRUD), toutes via hub (lecture)
+  Promise.all([call(URLS.memory,{action:"list",owner:""}).catch(function(){return{};}),getDS("memories",true).catch(function(){return{rows:[]};})]).then(function(r){
+    var ent=((r[0]&&r[0].memories)||[]).map(function(m){return {id:m.id,scope:"entreprise",owner:"",content:m.contenu||"",author:m.auteur||"?",date:((m.cree_le||"")+"").slice(0,10),editable:true};});
+    var all=(r[1].rows||[]).map(function(m){return {id:m.id,scope:m.scope||"?",owner:m.owner||"",content:m.contenu||"",author:m.auteur||"?",date:((m.cree_le||"")+"").slice(0,10),editable:false};});
+    var perso=all.filter(function(m){return m.scope!=="entreprise";});
+    meData=ent.concat(perso);renderMem();
+  });
+}
+function renderMem(){
+  var q=meQ.toLowerCase().trim();
+  var rows=meData.filter(function(e){if(!q)return true;return (e.content+" "+e.author+" "+e.owner).toLowerCase().indexOf(q)!==-1;});
+  var ent=rows.filter(function(e){return e.scope==="entreprise";}),perso=rows.filter(function(e){return e.scope!=="entreprise";});
+  function cardOf(e){return '<div class="card pad" style="padding:14px 16px"><div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:8px">'+(e.scope==="entreprise"?badge("Entreprise","info"):badge("Profil "+(e.owner||"?"),"purple"))+(e.editable?'<div style="display:flex;gap:4px"><button class="btn icon ghost xs me-edit" data-id="'+esc(e.id)+'" title="Éditer"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button><button class="btn icon ghost danger xs me-del" data-id="'+esc(e.id)+'" title="Supprimer"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div>':"")+'</div><p style="margin:0;font-size:.9rem;line-height:1.5">'+esc(e.content)+'</p><div class="muted" style="font-size:.76rem;margin-top:9px">'+esc(e.author)+' · '+esc(dshort(e.date))+'</div></div>';}
+  $("me-body").innerHTML=''
+    +'<h3 class="sec-title" style="margin-bottom:10px">Mémoire entreprise <span class="badge info" style="margin-left:6px">'+ent.length+'</span></h3>'
+    +(ent.length?'<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">'+ent.map(cardOf).join("")+'</div>':emptyState("Mémoire entreprise vide",""))
+    +'<h3 class="sec-title section-gap" style="margin-bottom:10px">Notes par profil <span class="badge purple" style="margin-left:6px">'+perso.length+'</span></h3>'
+    +(perso.length?'<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">'+perso.map(cardOf).join("")+'</div>':emptyState("Aucune note de profil",""));
+  $("me-body").querySelectorAll(".me-edit").forEach(function(b){b.addEventListener("click",function(){openMem(meData.find(function(x){return String(x.id)===String(b.getAttribute("data-id"))&&x.scope==="entreprise";}));});});
+  $("me-body").querySelectorAll(".me-del").forEach(function(b){b.addEventListener("click",function(){var id=b.getAttribute("data-id");confirmAsk("Supprimer cette info ?","",("Supprimer"),true,function(){call(URLS.memory,{action:"delete",id:id}).then(function(){toast("Supprimée.");loadMem();}).catch(function(){toast("Échec.");});});});});
+}
+function openMem(e){meEdit=e?e.id:null;$("mm-title").textContent=e?"Éditer l'info":"Ajouter une info";$("mm-content").value=e?e.content:"";var s=qwSession()||{};$("mm-author").value=e?e.author:(s.profil||"Hugo");openM("modal-mem");setTimeout(function(){$("mm-content").focus();},60);}
+function saveMem(){var content=$("mm-content").value.trim();if(!content){toast("Contenu obligatoire.");return;}var author=$("mm-author").value.trim()||"Hugo";var b=$("mm-save");b.disabled=true;b.textContent="Enregistrement…";var editId=meEdit;function add(){return call(URLS.memory,{action:"add",scope:"entreprise",owner:"",contenu:content,auteur:author,cree_le:new Date().toISOString()});}var pr=editId?call(URLS.memory,{action:"delete",id:editId}).then(add):add();pr.then(function(res){if(res&&res.ok){toast(editId?"Mise à jour.":"Ajoutée.");closeM("modal-mem");loadMem();}else toast("Refusé.");}).catch(function(){toast("Connexion impossible.");}).then(function(){b.disabled=false;b.textContent="Enregistrer";});}
+
+/* ---- NOTES & ABSENCES ---- */
+function initNotes(p){
+  p.innerHTML='<div class="row-between" style="margin-bottom:16px"><div><h3 class="sec-title">Notes & absences</h3><p class="sec-sub" style="margin:0">Notes de vacances partagées (visibles par l\'assistant). Expirent automatiquement.</p></div><button class="btn sm" id="nt-refresh">Actualiser</button></div><div id="nt-body">'+skel(140)+'</div>';
+  $("nt-refresh").addEventListener("click",function(){getDS("notes",true).then(renderNotes);});
+  getDS("notes").then(renderNotes).catch(function(){$("nt-body").innerHTML=errState("Notes injoignables");});
+}
+function renderNotes(d){
+  var rows=d.rows||[];
+  $("nt-body").innerHTML=rows.length?('<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">'+rows.map(function(r){return '<div class="card pad"><div class="u-cell" style="margin-bottom:9px">'+av(r.personne)+'<div class="lst-meta"><b>'+esc(r.personne||"?")+'</b><small>'+esc(dshort(r.date_debut))+(r.date_fin?(" → "+esc(dshort(r.date_fin))):"")+'</small></div></div><p style="margin:0;font-size:.9rem">'+esc(r.message||"")+'</p><div class="muted" style="font-size:.74rem;margin-top:9px">Par '+esc(r.auteur||"?")+(r.expire_le?(" · expire le "+esc(dshort(r.expire_le))):"")+'</div></div>';}).join("")+'</div>'):'<div class="card pad">'+emptyState("Aucune note","Personne n'a déposé de note de vacances.")+'</div>';
 }
 
+/* ---- CONVERSATIONS ---- */
+function initConvs(p){
+  p.innerHTML='<div class="row-between" style="margin-bottom:16px"><div><h3 class="sec-title">Conversations du chat</h3><p class="sec-sub" style="margin:0">Activité par personne. Le contenu des conversations n\'est pas affiché ici (confidentialité).</p></div><button class="btn sm" id="cv-refresh">Actualiser</button></div><div id="cv-body">'+skel(160)+'</div>';
+  $("cv-refresh").addEventListener("click",function(){getDS("conversations",true).then(renderConvs);});
+  getDS("conversations").then(renderConvs).catch(function(){$("cv-body").innerHTML=errState("Indisponible");});
+}
+function renderConvs(d){
+  var rows=(d.rows||[]).slice().sort(function(a,b){return String(b.maj||"").localeCompare(String(a.maj||""));});
+  var totMsg=rows.reduce(function(s,r){return s+num(r.nb_messages);},0);
+  $("cv-body").innerHTML='<div class="kpis" style="margin-bottom:16px">'+[mkpi(rows.length,"Personnes actives","accent"),mkpi(bign(totMsg),"Messages cumulés")].join("")+'</div>'
+    +tbl([{l:"Personne",k:"profil",f:function(v,r){return '<div class="u-cell">'+av(r.profil||r.email)+'<b>'+esc(r.profil||r.email)+'</b></div>';}},{l:"Email",k:"email",cls:"cell-mono"},{l:"Messages",k:"nb_messages",cls:"mono"},{l:"Dernière activité",k:"maj",cls:"cell-mono",f:function(v){return esc(dtime(v));}}],rows,{empty:"Aucune conversation"});
+}
+
+/* ---- RÉGLAGES ---- */
+function initSettings(p){
+  p.innerHTML=''
+  +'<div class="card pad" style="margin-bottom:16px"><div class="row-between" style="align-items:flex-start"><div style="max-width:560px"><h3 class="sec-title"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--blue)"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><path d="M12 2v10"/></svg>Kill-Switch de l\'assistant</h3><p class="sec-sub">Coupe instantanément l\'assistant pour toute l\'entreprise (incident, maintenance, fuite suspectée).</p><div id="st-ks-state"></div></div><label class="sw" style="margin-top:4px"><input type="checkbox" id="st-ks"><span class="slider"></span></label></div></div>'
+  +'<div class="grid g2"><div class="card pad"><h3 class="sec-title">Session administrateur</h3><p class="sec-sub">Session en cours.</p><div class="lst"><div class="lst-item"><div class="lst-meta"><b>Profil</b></div><span class="lst-time" id="st-prof">—</span></div><div class="lst-item"><div class="lst-meta"><b>Rôle</b></div><span class="lst-time" id="st-role">—</span></div><div class="lst-item"><div class="lst-meta"><b>Mode d\'accès</b></div><span class="lst-time" id="st-acc">—</span></div><div class="lst-item"><div class="lst-meta"><b>Session expire</b></div><span class="lst-time" id="st-exp">—</span></div></div></div>'
+  +'<div class="card pad"><h3 class="sec-title">État des services</h3><p class="sec-sub">Webhooks de la console.</p><div class="lst" id="st-svc"></div><button class="btn sm full" id="st-ping" style="margin-top:12px">Tester la connexion</button></div></div>'
+  +'<div class="dz" style="margin-top:16px"><h3 class="sec-title" style="color:var(--danger)"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>Zone sensible</h3><p class="sec-sub">Ces actions affectent toute l\'entreprise.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn danger sm" id="st-kill">Mettre l\'assistant en pause</button><button class="btn sm" id="st-logout">Fermer la session admin</button></div></div>'
+  +'<p class="muted" style="text-align:center;font-size:.76rem;margin-top:24px">Qwamplify · Console d\'administration · accès journalisé</p>';
+  loadAi();
+  $("st-ks").addEventListener("change",function(){var self=this;confirmToggle(this.checked);setTimeout(function(){self.checked=(aiState!=="off");},10);});
+  $("st-kill").addEventListener("click",function(){confirmToggle(false);});
+  $("st-logout").addEventListener("click",quit);
+  $("st-ping").addEventListener("click",pingSvc);
+  var s=qwSession()||{};$("st-prof").textContent=s.profil||"—";$("st-role").textContent=s.role==="admin"?"Administrateur":(s.role||"utilisateur");$("st-acc").textContent=isRoleAdmin()?"Rôle administrateur":(getCode()===ADMIN_CODE?"Code d'accès (2581)":"—");$("st-exp").textContent=s.exp?new Date(s.exp).toLocaleString("fr-FR"):"—";
+  svcRender({});
+}
+function svcRender(st){var defs=[["Comptes","comptes"],["Données","data"],["Hub données","hub"],["Actions compte","compteMaj"],["Réglages","params"],["Mémoire","memory"],["Transparence","trans"]];$("st-svc").innerHTML=defs.map(function(d){var v=st[d[1]];return '<div class="lst-item"><div class="lst-meta"><b>'+d[0]+'</b></div>'+(v===true?badge("OK","ok"):v===false?badge("Hors ligne","danger"):badge("Non testé"))+'</div>';}).join("");}
+function pingSvc(){var b=$("st-ping");b.disabled=true;b.textContent="Test…";call(URLS.data,{action:"stats"}).then(function(res){var ok=!!(res&&res.ok!==false);svcRender({comptes:ok,data:ok,hub:ok,compteMaj:ok,params:ok,memory:ok,trans:ok});toast(ok?"Connexion OK — accès admin validé.":"Réponse inattendue.");}).catch(function(){svcRender({comptes:false,data:false,hub:false,compteMaj:false,params:false,memory:false,trans:false});toast("Serveur injoignable.");}).then(function(){b.disabled=false;b.textContent="Tester la connexion";});}
+
+/* ============ AMORÇAGE ============ */
+function boot(){var s=qwSession()||{};var nm=s.profil||"Admin";$("sbAv").textContent=initials(nm);$("sbAv").style.background=colorFor(nm);$("sbName").textContent=nm;$("sbRole").textContent=isRoleAdmin()?"Administrateur":(getCode()===ADMIN_CODE?"Accès par code":"Administration");$("app").classList.add("ready");loadAi();goto("overview");
+  // pré-charge le compteur de demandes pour le badge nav
+  call(URLS.data,{action:"requests"}).then(function(res){if(res&&res.demandes)setBadge("requests",res.demandes.length);}).catch(function(){});
+}
 function start(){
-  wireGate(); wireNav(); wireModals(); wirePulse();
-  var gb=$("gateBack"); if(gb) gb.href=assistantUrl();
-  // code transmis par l'URL (#code=2581) depuis le chat → on le stocke puis on nettoie
-  try{
-    var h=(location.hash||"").match(/code=(\d{4})/);
-    if(h && h[1]===ADMIN_CODE){ setAdminCode(h[1]); history.replaceState(null,"",location.pathname); }
-  }catch(e){}
-  if(hasAccess()){ boot(); }
-  else { openGate(); }
+  buildNav();wireGate();wireModals();wirePulse();
+  $("sbToggle").addEventListener("click",function(){$("app").classList.toggle("nav-open");});
+  $("btnLogout").addEventListener("click",quit);
+  $("mc-ok").addEventListener("click",function(){closeM("modal-confirm");if(confirmCb){var cb=confirmCb;confirmCb=null;cb();}});
+  var gb=$("gateBack");if(gb)gb.href=assistantUrl();
+  try{var h=(location.hash||"").match(/code=(\d{4})/);if(h&&h[1]===ADMIN_CODE){setCode(h[1]);history.replaceState(null,"",location.pathname);}}catch(e){}
+  if(hasAccess())boot();else openGate();
 }
-
-if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", start);
-else start();
-
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start);else start();
 })();
 </script>
 </body>
