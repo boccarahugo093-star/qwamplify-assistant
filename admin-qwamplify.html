@@ -374,6 +374,8 @@ function dshort(s){s=String(s||"");if(s.length<10)return s||"—";var p=s.slice(
 function dtime(s){s=String(s||"");if(!s)return"—";return s.replace("T"," ").slice(0,16);}
 function num(v){var n=Number(v);return isFinite(n)?n:0;}
 function money(n){return num(n).toLocaleString("fr-FR")+" €";}
+var TARIF=0.03;
+function euro(n){n=Number(n)||0;return n.toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";}
 function bign(n){n=num(n);if(n>=1e6)return (n/1e6).toFixed(n>=1e7?0:1)+" M";if(n>=1e3)return (n/1e3).toFixed(n>=1e4?0:1)+" k";return String(n);}
 function av(name,sz){sz=sz||34;return '<span class="av" style="width:'+sz+'px;height:'+sz+'px;font-size:'+(sz*0.4)+'px;background:'+colorFor(name)+'">'+esc(initials(name))+'</span>';}
 function badge(t,v){return '<span class="badge'+(v?" "+v:"")+'">'+esc(t)+'</span>';}
@@ -440,6 +442,7 @@ var NAV=[
   {sec:"Pilotage"},
   {t:"overview",l:"Vue d'ensemble",sub:"Pilotage de l'assistant Qwamplify",ic:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',init:initOverview},
   {t:"usage",l:"Usage & activité",sub:"Mesuré sur les accès réels",ic:'<path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/>',init:initUsage},
+  {t:"costs",l:"Coûts",sub:"Estimation de la facturation",ic:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M7 15h4"/>',init:initCosts},
   {sec:"Personnes"},
   {t:"users",l:"Utilisateurs",sub:"Comptes, rôles et accès",ic:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',init:initUsers},
   {t:"sessions",l:"Sessions actives",sub:"Qui est connecté en ce moment",ic:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',init:initSessions},
@@ -449,8 +452,6 @@ var NAV=[
   {t:"boxes",l:"Accès aux boîtes",sub:"Autorisations entre collaborateurs",ic:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',init:initBoxes},
   {t:"requests",l:"Demandes d'accès",sub:"Arbitrage des demandes",ic:'<path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/>',badge:"requests",init:initRequests},
   {sec:"Données métier"},
-  {t:"crm",l:"CRM",sub:"Pipeline, sociétés, contacts",ic:'<path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/>',init:initCrm},
-  {t:"drive",l:"Drive",sub:"Catalogue des documents",ic:'<path d="M22 12.6V19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6l2 3h8a2 2 0 0 1 2 2z"/>',init:initDrive},
   {t:"memory",l:"Mémoire",sub:"Connaissances de l'assistant",ic:'<path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-2.5-2.5"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 2.5-2.5"/><path d="M5 7h2M5 11h2M17 7h2M17 11h2"/>',init:initMemory},
   {t:"notes",l:"Notes & absences",sub:"Notes de vacances partagées",ic:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/>',init:initNotes},
   {t:"conversations",l:"Conversations",sub:"Activité du chat par personne",ic:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',init:initConvs},
@@ -515,7 +516,8 @@ function initOverview(p){
     kpiHtml("ok","ov-access","Accès journalisés",'<path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/>'),
     kpiHtml("warn","ov-pending","Comptes en attente",'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
     kpiHtml("danger","ov-refused","Accès refusés",'<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/>'),
-    kpiHtml("purple","ov-mem","Infos mémorisées",'<path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15M14.5 2A2.5 2.5 0 0 0 12 4.5v15"/>')
+    kpiHtml("purple","ov-mem","Infos mémorisées",'<path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15M14.5 2A2.5 2.5 0 0 0 12 4.5v15"/>'),
+    kpiHtml("teal","ov-cost-kpi","Coût estimé",'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>')
   ].join("")+'</div>'
   +'<div class="grid g-2-1 section-gap">'
     +'<div class="card pad"><div class="row-between"><h3 class="sec-title">Activité récente</h3><button class="btn sm ghost" data-go="security">Tout voir</button></div><p class="sec-sub">Derniers accès aux boîtes traités par la garde de confidentialité.</p><div class="lst" id="ov-activity">'+skel(54)+'</div></div>'
@@ -524,9 +526,8 @@ function initOverview(p){
       +'<div class="card pad"><h3 class="sec-title">Sessions ouvertes</h3><p class="sec-sub">Personnes connectées en ce moment.</p><div id="ov-sess">'+skel(60)+'</div></div>'
     +'</div>'
   +'</div>'
-  +'<div class="grid g3 section-gap">'
-    +'<div class="card pad"><h3 class="sec-title">CRM</h3><div id="ov-crm">'+skel(70)+'</div></div>'
-    +'<div class="card pad"><h3 class="sec-title">Drive</h3><div id="ov-drive">'+skel(70)+'</div></div>'
+  +'<div class="grid g2 section-gap">'
+    +'<div class="card pad"><h3 class="sec-title">Coûts estimés</h3><p class="sec-sub">'+euro(TARIF)+' par requête (message envoyé à l\'assistant).</p><div id="ov-cost">'+skel(70)+'</div></div>'
     +'<div class="card pad"><h3 class="sec-title">Actions rapides</h3><div class="grid" style="gap:8px;margin-top:8px">'
       +'<button class="btn full" data-go="users">Ajouter une personne</button>'
       +'<button class="btn full" data-go="boxes">Gérer les accès aux boîtes</button>'
@@ -545,8 +546,7 @@ function initOverview(p){
     setVal("ov-sessions",live.length);
     $("ov-sess").innerHTML=live.length?live.slice(0,5).map(function(r){return '<div class="lst-item">'+av(r.profil)+'<div class="lst-meta"><b>'+esc(r.profil||r.email)+'</b><small>'+esc(r.email)+'</small></div>'+badge(r.role==="admin"?"Admin":"Utilisateur",r.role==="admin"?"info":"")+'</div>';}).join(""):emptyState("Personne de connecté","");
   }).catch(function(){$("ov-sess").innerHTML=errState("Indisponible");setVal("ov-sessions","—");});
-  getDS("crm_deals").then(function(d){var s=d.summary||{};$("ov-crm").innerHTML='<div class="kpi-val" style="font-size:1.5rem">'+money(s.valeur_open)+'</div><div class="kpi-lab">en cours sur '+(s.open||0)+' affaires ouvertes</div><div style="margin-top:10px">'+badge((s.won||0)+" gagnées","ok")+' '+badge((s.lost||0)+" perdues","danger")+'</div><button class="btn sm full" data-go="crm" style="margin-top:12px">Ouvrir le CRM</button>';wireGo($("ov-crm"));}).catch(function(){$("ov-crm").innerHTML=errState("CRM indisponible");});
-  getDS("drive").then(function(d){var s=d.summary||{};var types=Object.keys(s.par_type||{}).length;$("ov-drive").innerHTML='<div class="kpi-val" style="font-size:1.5rem">'+bign(d.count)+'</div><div class="kpi-lab">documents catalogués · '+types+' types</div><button class="btn sm full" data-go="drive" style="margin-top:12px">Ouvrir le Drive</button>';wireGo($("ov-drive"));}).catch(function(){$("ov-drive").innerHTML=errState("Drive indisponible");});
+  getDS("conversations").then(function(d){var req=(d.summary&&d.summary.requetes)||0;var cost=req*TARIF;setVal("ov-cost-kpi",euro(cost));$("ov-cost").innerHTML='<div class="kpi-val" style="font-size:1.7rem;color:var(--blue)">'+euro(cost)+'</div><div class="kpi-lab">'+req+' requête'+(req>1?"s":"")+' facturée'+(req>1?"s":"")+'</div><button class="btn sm full" data-go="costs" style="margin-top:12px">Voir le détail des coûts</button>';wireGo($("ov-cost"));}).catch(function(){$("ov-cost").innerHTML=errState("Coûts indisponibles");setVal("ov-cost-kpi","—");});
   loadAi().then(function(){var off=aiState==="off";$("ov-ks-sub").textContent=off?"L'assistant est actuellement en pause.":"L'assistant répond normalement.";$("ov-ks-box").innerHTML=(off?badge("● En pause","danger"):badge("● En ligne","ok"))+'<button class="btn '+(off?"primary":"")+' sm full" id="ov-ks-btn" style="margin-top:12px">'+(off?"Réactiver l'assistant":"Mettre en pause")+'</button>';$("ov-ks-btn").addEventListener("click",function(){confirmToggle(aiState==="off");});});
 }
 function kpiHtml(variant,id,label,ic){return '<div class="kpi '+variant+'"><div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+ic+'</svg></div><div class="kpi-val" id="'+id+'">—</div><div class="kpi-lab">'+esc(label)+'</div></div>';}
@@ -857,6 +857,31 @@ function renderConvs(d){
   var totMsg=rows.reduce(function(s,r){return s+num(r.nb_messages);},0);
   $("cv-body").innerHTML='<div class="kpis" style="margin-bottom:16px">'+[mkpi(rows.length,"Personnes actives","accent"),mkpi(bign(totMsg),"Messages cumulés")].join("")+'</div>'
     +tbl([{l:"Personne",k:"profil",f:function(v,r){return '<div class="u-cell">'+av(r.profil||r.email)+'<b>'+esc(r.profil||r.email)+'</b></div>';}},{l:"Email",k:"email",cls:"cell-mono"},{l:"Messages",k:"nb_messages",cls:"mono"},{l:"Dernière activité",k:"maj",cls:"cell-mono",f:function(v){return esc(dtime(v));}}],rows,{empty:"Aucune conversation"});
+}
+
+/* ---- COÛTS ---- */
+function initCosts(p){
+  p.innerHTML='<div class="row-between" style="margin-bottom:16px"><div><h3 class="sec-title"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--blue)"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Coûts</h3><p class="sec-sub" style="margin:0">Estimation de la facturation : <b>'+euro(TARIF)+'</b> par requête (chaque message envoyé à l\'assistant).</p></div><button class="btn sm" id="co-refresh">Actualiser</button></div><div id="co-body">'+skel(180)+'</div>';
+  $("co-refresh").addEventListener("click",function(){getDS("conversations",true).then(renderCosts);toast("Actualisé.");});
+  getDS("conversations").then(renderCosts).catch(function(){$("co-body").innerHTML=errState("Coûts injoignables");});
+}
+function renderCosts(d){
+  var rows=(d.rows||[]).map(function(r){return {profil:r.profil||r.email,email:r.email,req:num(r.nb_user),maj:r.maj};}).sort(function(a,b){return b.req-a.req;});
+  var totReq=rows.reduce(function(s,r){return s+r.req;},0);
+  var totCost=totReq*TARIF;
+  var people=rows.filter(function(r){return r.req>0;}).length;
+  $("co-body").innerHTML=''
+    +'<div class="kpis">'+[mkpi(euro(totCost),"Coût total estimé","accent"),mkpi(totReq,"Requêtes facturées"),mkpi(euro(TARIF),"Tarif par requête","teal"),mkpi(euro(people?totCost/people:0),"Coût moyen / personne")].join("")+'</div>'
+    +'<div class="card pad section-gap"><h3 class="sec-title">Coût par personne</h3><p class="sec-sub">Basé sur le nombre de messages envoyés à l\'assistant.</p>'
+    +tbl([
+      {l:"Personne",k:"profil",f:function(v,r){return '<div class="u-cell">'+av(r.profil)+'<b>'+esc(r.profil)+'</b></div>';}},
+      {l:"Email",k:"email",cls:"cell-mono"},
+      {l:"Requêtes",k:"req",cls:"mono"},
+      {l:"Coût",k:"req",cls:"mono",f:function(v){return '<b>'+euro(v*TARIF)+'</b>';}},
+      {l:"Dernière activité",k:"maj",cls:"cell-mono",f:function(v){return esc(dtime(v));}}
+    ],rows,{empty:"Aucune requête — coût : "+euro(0)})
+    +'</div>'
+    +'<p class="muted" style="font-size:.78rem;margin-top:14px">Le compteur démarre à '+euro(0)+' et augmente de '+euro(TARIF)+' à chaque nouveau message envoyé à l\'assistant. Estimation indicative.</p>';
 }
 
 /* ---- RÉGLAGES ---- */
